@@ -8,21 +8,21 @@ import os as os
 
 def index(request):
 
+    f = pyedflib.EdfReader(
+        './prova.edf')
+    n = f.signals_in_file
 
-path = os.path.expanduser(
-    "‎⁨~/Senza titolo⁩/Users⁩/manuelcretone⁩⁨/Desktop⁩/Project⁩/⁨web_site⁩/upload⁩")
-f = pyedflib.EdfReader(path
-)
-n = f.signals_in_file
- signal_labels = f.getSignalLabels()
-  sigbufs = np.zeros((n, f.getNSamples()[0]))
-   for i in np.arange(n):
+    signal_read = f.getSignalHeaders()
+    signal_labels = f.getSignalLabels()
+    sigbufs = np.zeros((n, f.getNSamples()[0]))
+    for i in np.arange(n):
         sigbufs[i, :] = f.readSignal(i)
+
         print(sigbufs)
     context = {
-        'file': sigbufs
+        'file': sigbufs,
+        'signal': signal_labels,
+        'read': signal_read
     }
 
     return render(request, 'index.html', context=context)
-
-
