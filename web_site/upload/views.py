@@ -17,6 +17,11 @@ def simple_upload(request):
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
         uploaded_file_url = fs.url(filename)
+        path = os.getcwd() + uploaded_file_url
+        print("PATH")
+        print(path)
+
+        index(request, path)
         return render(request, 'index.html', {
             'uploaded_file_url': uploaded_file_url
 
@@ -26,8 +31,7 @@ def simple_upload(request):
 
 def index(request, file):
 
-    f = pyedflib.EdfReader(
-        file)
+    f = pyedflib.EdfReader(file)
     n = f.signals_in_file
     print("SIGNALS =>")
     print(n)
