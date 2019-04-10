@@ -24,10 +24,10 @@ def simple_upload(request):
     return render(request, 'index.html')
 
 
-def index(request):
+def index(request, file):
 
     f = pyedflib.EdfReader(
-        './prova.edf')
+        file)
     n = f.signals_in_file
     print("SIGNALS =>")
     print(n)
