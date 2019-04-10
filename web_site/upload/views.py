@@ -21,11 +21,11 @@ def simple_upload(request):
         print("PATH")
         print(path)
 
-        index(request, path)
-        return render(request, 'index.html', {
+        
+        render(request, 'index.html', {
             'uploaded_file_url': uploaded_file_url
-
         })
+        return index(request, path)
     return render(request, 'index.html')
 
 
