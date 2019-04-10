@@ -5,8 +5,8 @@ from . import views
 
 urlpatterns = [
     # il nome si riferisce a questo particolare ULR mappato
-    path('', views.simple_upload, name='loaded'),
-    path('loaded', views.index, name='loaded')
+    path('', views.simple_upload, name='index'),
+    # path('loaded', views.index, name='loaded')
 ]
 
 
