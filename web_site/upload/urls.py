@@ -6,7 +6,8 @@ from . import views
 urlpatterns = [
     # il nome si riferisce a questo particolare ULR mappato
     path('', views.simple_upload, name='index'),
-    # path('loaded', views.index, name='loaded')
+    # path('loaded', views.showimage, name='loaded')
+    path('loaded', views.get_svg)
 ]
 
 
