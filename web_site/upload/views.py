@@ -36,7 +36,7 @@ def simple_upload(request):
     return render(request, 'index.html')
 
 
-def setPlt(file):
+def setPlt():
     f = pyedflib.EdfReader(
         '/Users/manuelcretone/Desktop/Project/web_site/media/prova.edf')
 
