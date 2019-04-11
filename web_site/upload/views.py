@@ -36,12 +36,22 @@ def simple_upload(request):
     return render(request, 'index.html')
 
 
-def setPlt():
+def setPlt(file):
+    f = pyedflib.EdfReader(
+        '/Users/manuelcretone/Desktop/Project/web_site/media/prova.edf')
 
-    x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    y = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    sz = 10
-    plt.scatter(x, y, s=sz, alpha=0.5)
+    n = f.signals_in_file
+    signal_labels = f.getSignalLabels()
+    sigbufs = np.zeros((n, f.getNSamples()[0]))
+    fig = plt.figure()
+    rows = 4
+    cols = 2
+    seconds = 60
+    for i in np.arange(rows * cols):
+        sigbufs[i, :] = f.readSignal(i)
+        axes = fig.add_subplot(rows, cols, i+1)
+        axes.set_title(signal_labels[i])
+        axes.plot(sigbufs[i, :256*seconds], linewidth=0.5)
 
 
 def pltToSvg():

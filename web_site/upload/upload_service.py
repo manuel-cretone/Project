@@ -28,6 +28,5 @@ def upload_file(par):
         uploaded_file_url = fs.url(filename)
         path = os.getcwd() + uploaded_file_url
         signal = read_file(path)
-        print("ccioooooaoooooooooooo")
 
     return (upload_file, signal)
