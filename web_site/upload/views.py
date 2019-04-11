@@ -55,4 +55,5 @@ def index(request, file):
         'total_signal': total_signal,
         'time': time
     }
+
     return render(request, 'loaded.html', context=context)
