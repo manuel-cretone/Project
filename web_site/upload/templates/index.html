@@ -5,9 +5,18 @@
   <button type="submit">Upload</button>
 </form>
 
+{% endblock %}
+
 {% if uploaded_file_url %}
 <p>
   File uploaded at:
   <a href="loaded">{{ uploaded_file_url }}</a>
 </p>
-{% endif %} {% endblock %}
+{% endif %} 
+
+
+<div>
+  {% block info %}
+  No file loaded yet
+  {% endblock %}
+</div>

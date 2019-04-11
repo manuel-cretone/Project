@@ -20,13 +20,13 @@ def simple_upload(request):
         path = os.getcwd() + uploaded_file_url
         print("PATH")
         print(path)
-
         
         render(request, 'index.html', {
             'uploaded_file_url': uploaded_file_url
         })
         return index(request, path)
-    return render(request, 'index.html')
+    else:
+        return render(request, 'index.html')
 
 
 def index(request, file):
@@ -34,7 +34,7 @@ def index(request, file):
     f = pyedflib.EdfReader(file)
     n = f.signals_in_file
     print("SIGNALS =>")
-    print(n)
+    # print(n)
     signal_read = f.getSignalHeaders()
     m = f.getDigitalMaximum()
     total_signal = f.readSignal(0, 0, 1000)
@@ -55,5 +55,4 @@ def index(request, file):
         'total_signal': total_signal,
         'time': time
     }
-
     return render(request, 'loaded.html', context=context)
