@@ -7,11 +7,11 @@ from . import templates
 
 urlpatterns = [
     # il nome si riferisce a questo particolare ULR mappato
-    path('', views.simple_upload, name='loaded'),
+    path('', views.simple_upload),
     # path('loaded', views.index, name='loaded')
-    path('loaded', views.get_svg),
+    path('loaded', views.chart, name = 'loaded'),
     # path('ch', views.ch),
-    path('ch', views.ch)
+    path('ch', views.chart)
 ]
 
 

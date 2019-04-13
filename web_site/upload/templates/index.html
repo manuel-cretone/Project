@@ -7,16 +7,18 @@
 
 {% endblock %}
 
-{% if uploaded_file_url %}
-<p>
+<!-- {% if uploaded_file_url %}
+<div>
   File uploaded at:
   <a href="loaded">{{ uploaded_file_url }}</a>
-</p>
-{% endif %} 
+</div>
+{% endif %}  -->
 
+{% block channels %}
+{% endblock %}
 
 <div>
-  {% block info %}
-  No file loaded yet
+  {% block chart %}
+  No chart to diaplay
   {% endblock %}
 </div>

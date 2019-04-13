@@ -20,16 +20,35 @@ def simple_upload(request):
         filename = fs.save(myfile.name, myfile)
         uploaded_file_url = fs.url(filename)
         path = os.getcwd() + uploaded_file_url
-        # print("PATH")
-        # print(path)
-        
-        # render(request, 'index.html', {
-        #     'uploaded_file_url': uploaded_file_url
-        # })
-        # return index(request, path)
-        return get_svg(path)
+        file = pyedflib.EdfReader(path)
+        return readFileInfo(request, file)
     else:
         return render(request, 'index.html')
+
+
+def readFileInfo(request, file):
+    signal_labels = file.getSignalLabels()
+    etichette = [0] *10
+    for i in range(10):
+        # segnali[i] = int(sigbufs[i])
+        etichette[i] = signal_labels[i]
+    render(request, 'loaded1.html', {'signal_label': etichette})
+    channel = request.POST['chn_list']
+    return chart(request, file, channel)
+
+
+def chart(request, file, channel):
+    # n = f.signals_in_file
+    print(channel)
+    #sigbufs = np.zeros((n, f.getNSamples()[0]))
+    # for i in np.arange(n):
+    #     sigbufs[i, :] = f.readSignal(i)
+    sigbufs = file.readSignal(channel, start=0, n= 1000)
+    segnali = [0] *10
+    for i in range(10):
+        segnali[i] = sigbufs[i]
+    return render(request, 'loaded1.html', {'sigbufs': segnali})
+    # return render(request, 'loaded.html', context=context)
 
 
 def index(request, file):
@@ -122,4 +141,6 @@ line_chart_json = LineChartJSONView.as_view()
 
 
 def ch(request):
-    return render(request, 'chart.html')
+    return render(request, 'loaded1.html')
+
+
