@@ -28,13 +28,13 @@ def simple_upload(request):
 
 def readFileInfo(request, file):
     signal_labels = file.getSignalLabels()
-    etichette = [0] *10
-    for i in range(10):
-        # segnali[i] = int(sigbufs[i])
-        etichette[i] = signal_labels[i]
-    render(request, 'loaded1.html', {'signal_label': etichette})
-    channel = request.POST['chn_list']
-    return chart(request, file, channel)
+    etichette = [0] *100
+    # for i in range(100):
+    #     # segnali[i] = int(sigbufs[i])
+    #     etichette[i] = signal_labels[i]
+    # render(request, 'loaded1.html', {'signal_label': etichette})
+    # channel = request.POST['chn_list']
+    return chart(request, file, 0)
 
 
 def chart(request, file, channel):
@@ -43,9 +43,9 @@ def chart(request, file, channel):
     #sigbufs = np.zeros((n, f.getNSamples()[0]))
     # for i in np.arange(n):
     #     sigbufs[i, :] = f.readSignal(i)
-    sigbufs = file.readSignal(channel, start=0, n= 1000)
-    segnali = [0] *10
-    for i in range(10):
+    sigbufs = file.readSignal(3, start=0, n= 1000)
+    segnali = [0] *1000
+    for i in range(1000):
         segnali[i] = sigbufs[i]
     return render(request, 'loaded1.html', {'sigbufs': segnali})
     # return render(request, 'loaded.html', context=context)
