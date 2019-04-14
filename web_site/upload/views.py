@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
+global file
 
 def simple_upload(request):
     if request.method == 'POST' and request.FILES['myfile']:
@@ -27,19 +28,25 @@ def simple_upload(request):
 
 
 def readFileInfo(request, file):
-    signal_labels = file.getSignalLabels()
-    etichette = [0] *100
+
+    if request.method == "POST":
+        a = request.POST.get('chn_list')
+        print(a)
+    # signal_labels = file.getSignalLabels()
+    # etichette = [0] *100
+    # selezione = request.POST.get('chn_list')
     # for i in range(100):
     #     # segnali[i] = int(sigbufs[i])
     #     etichette[i] = signal_labels[i]
     # render(request, 'loaded1.html', {'signal_label': etichette})
     # channel = request.POST['chn_list']
+    # print(selezione)
     return chart(request, file, 0)
 
 
 def chart(request, file, channel):
     # n = f.signals_in_file
-    print(channel)
+    # print(channel)
     #sigbufs = np.zeros((n, f.getNSamples()[0]))
     # for i in np.arange(n):
     #     sigbufs[i, :] = f.readSignal(i)

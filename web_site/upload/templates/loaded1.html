@@ -7,11 +7,17 @@
     {% extends "index.html" %}
 
     {% block channels %}
-    <select id="chn" name="chn_list" onChange="{% url 'loaded' %}">
-      {% for channel in signal_label %}
-      <option value= "{{forloop.counter}}">{{channel}}</option>
-      {% endfor %}
-    </select>
+    <form action="{% url 'stampaScelta' %}" method="POST">
+        {% csrf_token %}
+      <select name="chn_list">
+        <option value=0> prima</option>
+        <option value=2> priama</option>
+        <!-- {% for channel in signal_label %}
+        <option value= "{{forloop.counter}}">{{channel}}</option>
+        {% endfor %} -->
+      </select>
+      <input  type = "submit" value="Submit">
+    </form>
     {% endblock %}
 
     {% block chart %}

@@ -11,7 +11,7 @@ urlpatterns = [
     # path('loaded', views.index, name='loaded')
     path('loaded', views.chart, name = 'loaded'),
     # path('ch', views.ch),
-    path('ch', views.chart)
+    path('ch', views.readFileInfo, name='stampaScelta')
 ]
 
 
