@@ -33,12 +33,38 @@ def simple_upload(request):
         global signal
         upload, file, signal, label = upload_service.upload_file(request)
         print(signal)
-        return render(request, 'index.html', {
+        return render(request, 'loaded1.html', {
             'uploaded_file_url': upload,
             'signal': signal,
             'label': label
         })
     return render(request, 'index.html')
+
+
+def stampa(request):
+    if request.method == 'POST':
+        a = request.POST['select']
+        print(int(a))
+        label = file.getSignalLabels()
+        segnali = chart(int(a))
+        return render(request, 'loaded1.html', {'label': label, 'segnali':segnali})
+    else:
+        label = file.getSignalLabels()
+        return render(request, 'index.html', {'label': label})
+
+def chart(channel):
+    # n = f.signals_in_file
+    # print(channel)
+    #sigbufs = np.zeros((n, f.getNSamples()[0]))
+    # for i in np.arange(n):
+    #     sigbufs[i, :] = f.readSignal(i)
+    sigbufs = file.readSignal(channel, start=0, n= 1000)
+    segnali = [0] *1000
+    for i in range(1000):
+        segnali[i] = sigbufs[i]
+    return segnali
+    # return render(request, 'loaded1.html', {'sigbufs': segnali})
+    # return render(request, 'loaded.html', context=context)
 
 
 def readFileInfo(request, file):
@@ -58,18 +84,7 @@ def readFileInfo(request, file):
     return chart(request, file, 0)
 
 
-def chart(request, file, channel):
-    # n = f.signals_in_file
-    # print(channel)
-    #sigbufs = np.zeros((n, f.getNSamples()[0]))
-    # for i in np.arange(n):
-    #     sigbufs[i, :] = f.readSignal(i)
-    sigbufs = file.readSignal(3, start=0, n= 1000)
-    segnali = [0] *1000
-    for i in range(1000):
-        segnali[i] = sigbufs[i]
-    return render(request, 'loaded1.html', {'sigbufs': segnali})
-    # return render(request, 'loaded.html', context=context)
+
 
 
 def index(request, file):

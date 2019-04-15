@@ -7,14 +7,12 @@
     {% extends "index.html" %}
 
     {% block channels %}
-    <form action="{% url 'stampaScelta' %}" method="POST">
+    <form action="{% url 'stampa' %}" method="POST">
         {% csrf_token %}
-      <select name="chn_list">
-        <option value=0> prima</option>
-        <option value=2> priama</option>
-        <!-- {% for channel in signal_label %}
-        <option value= "{{forloop.counter}}">{{channel}}</option>
-        {% endfor %} -->
+      <select name="select">
+        {% for channel in label %}
+        <option value= "{{forloop.counter0}}">{{channel}}</option>
+        {% endfor %}
       </select>
       <input  type = "submit" value="Submit">
     </form>
@@ -25,7 +23,7 @@
     <canvas id="myChart" width="20px" height="20px"></canvas>
     <script>
       var ctx = document.getElementById("myChart");
-      var context_var = {{ sigbufs|safe }};
+      var context_var = {{ segnali|safe }};
       var myChart = new Chart(ctx, {
         type: "line",
         data: {
