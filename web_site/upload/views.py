@@ -12,19 +12,33 @@ from django.shortcuts import render
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
-global file
+from . import upload_service
+
+# def simple_upload(request):
+#     if request.method == 'POST' and request.FILES['myfile']:
+#         myfile = request.FILES['myfile']
+#         fs = FileSystemStorage()
+#         filename = fs.save(myfile.name, myfile)
+#         uploaded_file_url = fs.url(filename)
+#         path = os.getcwd() + uploaded_file_url
+#         file = pyedflib.EdfReader(path)
+#         return readFileInfo(request, file)
+#     else:
+#         return render(request, 'index.html')
 
 def simple_upload(request):
-    if request.method == 'POST' and request.FILES['myfile']:
-        myfile = request.FILES['myfile']
-        fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        path = os.getcwd() + uploaded_file_url
-        file = pyedflib.EdfReader(path)
-        return readFileInfo(request, file)
-    else:
-        return render(request, 'index.html')
+    if request.method == 'POST':
+        global file
+        global label
+        global signal
+        upload, file, signal, label = upload_service.upload_file(request)
+        print(signal)
+        return render(request, 'index.html', {
+            'uploaded_file_url': upload,
+            'signal': signal,
+            'label': label
+        })
+    return render(request, 'index.html')
 
 
 def readFileInfo(request, file):
