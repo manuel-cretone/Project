@@ -1,6 +1,5 @@
 from django.shortcuts import render
 import pyedflib
-# import matplotlib.pyplot as plt
 import numpy as np
 import os as os
 import io
