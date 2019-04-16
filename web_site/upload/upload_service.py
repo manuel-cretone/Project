@@ -4,7 +4,7 @@ import numpy as np
 import os as os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from django import forms
 
 
