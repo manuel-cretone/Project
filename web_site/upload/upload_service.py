@@ -15,7 +15,7 @@ def read_file(file):
     sigbufs = np.zeros((n, f.getNSamples()[0]))
     for i in np.arange(n):
         sigbufs[i, :] = f.readSignal(i)
-    print(sigbufs)
+    # print(sigbufs)
     return(f, sigbufs, label)
 
 

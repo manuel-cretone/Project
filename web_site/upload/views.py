@@ -30,7 +30,7 @@ def simple_upload(request):
         global label
         global signal
         upload, file, signal, label = upload_service.upload_file(request)
-        print(signal)
+        # print(signal)
         return render(request, 'loaded1.html', {
             'uploaded_file_url': upload,
             'signal': signal,
