@@ -20,7 +20,7 @@
 
     {% block chart %}
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
-    <canvas id="myChart" width="20px" height="20px"></canvas>
+    <canvas id="myChart"></canvas>
     <script>
       var ctx = document.getElementById("myChart");
       var context_var = {{ segnali|safe }};
