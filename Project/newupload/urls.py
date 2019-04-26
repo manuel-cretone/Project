@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.upload_file, name="upload_file"),
-    path('getj/', views.getJson, name="getJson"),
-    path('getparam/', views.manageParam, name="manageParam")
+    # path('getj/', views.getJson, name="getJson"),
+    path('manageparam/', views.manageParam, name="manageParam")
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]
