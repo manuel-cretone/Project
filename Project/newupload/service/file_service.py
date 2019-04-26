@@ -28,11 +28,12 @@ def extension_recognise(file):
 
 
 
-def read_edf_file(file, channel, start, len):
-    file = pyedflib.EdfReader(file)
+def read_edf_file(filePath, channel, start, len):
+    file = pyedflib.EdfReader(filePath)
     channel = int(channel)
     start = int(start)
     len = int(len)
     valori = np.zeros(len)
     valori = file.readSignal(channel, start, len).tolist()
+    file._close
     return(valori)

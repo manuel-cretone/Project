@@ -49,8 +49,7 @@ def readFile(channel, start, len):
     valori = fun(file_path, channel, start, len)
     hist, bins = counts_occurrences(valori, 1.5)
     # print(hist)
-    fit_distribution(bins, hist)
-    data = {"file": file_path, "canale": channel, "inizio":start, "dimensione":len,"valori": valori, "hist": hist}
+    data = {"file": file_path, "canale": channel, "inizio":start, "dimensione":len,"valori": valori}
     response = JsonResponse(data)
     return response
 
