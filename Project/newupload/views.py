@@ -28,8 +28,22 @@ def upload_file(request):
         uploaded_file_url = fs.url(filename)
         global file_path
         file_path = absolute_path(uploaded_file_url)
-    return manageParam(request)
+    return file_info(file_path)
 
+def file_info(filePath):
+    file = pyedflib.EdfReader(filePath)
+    channels = np.empty(100)
+    lenght = np.empty(100)
+    channels = file.getSignalLabels()
+    lenght = file.getNSamples().tolist()
+    print(channels)
+    print(lenght)
+    data = {
+        "file": filePath, 
+        "channels": channels,
+        "lenght": lenght
+    }
+    return JsonResponse(data)
 
 @csrf_exempt #per far effettuare richieste POST senza autenticazione
 def manageParam(request):
