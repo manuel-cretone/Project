@@ -3,6 +3,7 @@ from django.http import JsonResponse
 import pyedflib
 import numpy as np
 import os
+import glob
 from django.core.files.storage import FileSystemStorage
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
@@ -16,34 +17,57 @@ from .service.statisticService import *
 
 
 global file_path
+file_path = None
 # file_path = "C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\media\\chb01_01.edf"
 
 
 @csrf_exempt
 def upload_file(request):
-    if request.FILES['myfile']:
-        myfile = request.FILES['myfile']
+    if len(request.FILES) == 0:
+        return JsonResponse({"error": "No file uploaded"})
+    elif request.FILES.get('myfile', False):
         fs = FileSystemStorage()
+        dir = fs.base_location
+        files = os.listdir(dir)
+        for f in files:
+            os.remove(os.path.join(dir, f))
+        myfile = request.FILES['myfile']
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
+        # uploaded_file_url = fs.url(filename)
+        # file_path = absolute_path(uploaded_file_url)
         global file_path
-        file_path = absolute_path(uploaded_file_url)
-    return file_info(file_path)
+        file_path = os.path.join(dir, filename)
+        print("path",file_path)
+        try:
+            extension_recognise(file_path)
+        except:
+            return JsonResponse({"error": "File not supported"})
+        return JsonResponse(file_info(file_path))
+    else:
+        return JsonResponse({"error": "no myfile field"})
 
 def file_info(filePath):
     file = pyedflib.EdfReader(filePath)
-    channels = np.empty(100)
-    lenght = np.empty(100)
-    channels = file.getSignalLabels()
-    lenght = file.getNSamples().tolist()
-    print(channels)
-    print(lenght)
+    startDate = file.getStartdatetime()
+    fileDuration = file.getFileDuration()
+    channels = len(file.getSignalLabels())
+    channelLabels = np.empty(channels)
+    nSignals = np.empty(channels)
+    channelLabels = file.getSignalLabels()
+    nSignals = file.getNSamples().tolist()
+
+    # print(file.))
+    
     data = {
         "file": filePath, 
+        "startDate": startDate,
+        "fileDuration": fileDuration,
         "channels": channels,
-        "lenght": lenght
+        "channelLabels": channelLabels,
+        "nSignals": nSignals,
+
     }
-    return JsonResponse(data)
+    return data
 
 @csrf_exempt #per far effettuare richieste POST senza autenticazione
 def manageParam(request):

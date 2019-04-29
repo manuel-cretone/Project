@@ -14,8 +14,8 @@ def absolute_path(file):
 
 
 # [check extension file if .edf, .txt, .pdf]
-def extension_recognise(file):
-    info, ex = os.path.splitext(file)
+def extension_recognise(filePath):
+    info, ex = os.path.splitext(filePath)
 
     if(ex == '.edf'):
         return read_edf_file
@@ -24,7 +24,7 @@ def extension_recognise(file):
     # elif(ex == '.csv'):
     #     return redirect('')
     else:
-        raise("File inserito non supportato")
+        raise ValueError("File inserito non supportato")
 
 
 
