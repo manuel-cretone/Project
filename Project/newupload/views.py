@@ -24,7 +24,7 @@ file_path = None
 @csrf_exempt
 def upload_file(request):
     if len(request.FILES) == 0:
-        return JsonResponse({"error": "No file uploaded"})
+        return JsonResponse({"error": "No file uploaded"}, status=400)
     elif request.FILES.get('myfile', False):
         fs = FileSystemStorage()
         dir = fs.base_location
@@ -41,10 +41,10 @@ def upload_file(request):
         try:
             extension_recognise(file_path)
         except:
-            return JsonResponse({"error": "File not supported"})
+            return JsonResponse({"error": "File not supported"}, status=415)
         return JsonResponse(file_info(file_path))
     else:
-        return JsonResponse({"error": "no myfile field"})
+        return JsonResponse({"error": "no myfile field"}, status=400)
 
 def file_info(filePath):
     file = pyedflib.EdfReader(filePath)
