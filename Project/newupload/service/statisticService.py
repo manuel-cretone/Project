@@ -1,7 +1,8 @@
 import numpy as np
 import math
+from statistics import *
 
-def average_values(values):
+def average_value(values):
     average = np.mean(values, dtype=float)
     return average
 
@@ -14,6 +15,14 @@ def max_value(values):
 def min_value(values):
     min = np.min(values)
     return min
+
+def variance(values):
+    var = pvariance(values)
+    return var
+
+def stdev(values):
+    stdev = pstdev(values)
+    return stdev
 
 
 def counts_occurrences(values, width):
