@@ -93,20 +93,20 @@ def readFile(channel, start, len):
     return response
 
 
-def getStatistic(values):
-    min = min_value(values)
-    max = max_value(values)
-    average = average_value(values)
-    var = variance(values)
-    stdev = stdev(values)
-    hist, bins = counts_occurrences(values, 1.5)
+# def getStatistic(values):
+#     min = min_value(values)
+#     max = max_value(values)
+#     average = average_value(values)
+#     var = variance(values)
+#     stdev = stdev(values)
+#     hist, bins = counts_occurrences(values, 1.5)
 
-    data = {
-        "min" = min,
-        "max" = max,
-        "average" = average,
-        "var" = var,
-        "stdev" = stdev
-    }
+#     data = {
+#         "min" = min,
+#         "max" = max,
+#         "average" = average,
+#         "var" = var,
+#         "stdev" = stdev
+# #     }
 
-    return data
+#     return data
