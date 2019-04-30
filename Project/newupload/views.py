@@ -79,16 +79,34 @@ def manageParam(request):
         channel = request.GET.get("channel", 0)
         start = request.GET.get("start", 0)
         len = request.GET.get("len", 30)
+    # return readFile(channel, start, len)
     return readFile(channel, start, len)
 
 
 def readFile(channel, start, len):
     fun = extension_recognise(file_path)
     valori = fun(file_path, channel, start, len)
-    hist, bins = counts_occurrences(valori, 1.5)
+
     # print(hist)
     data = {"file": file_path, "canale": channel, "inizio":start, "dimensione":len,"valori": valori}
     response = JsonResponse(data)
     return response
 
 
+def getStatistic(values):
+    min = min_value(values)
+    max = max_value(values)
+    average = average_value(values)
+    var = variance(values)
+    stdev = stdev(values)
+    hist, bins = counts_occurrences(values, 1.5)
+
+    data = {
+        "min" = min,
+        "max" = max,
+        "average" = average,
+        "var" = var,
+        "stdev" = stdev
+    }
+
+    return data
