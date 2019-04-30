@@ -37,3 +37,25 @@ def read_edf_file(filePath, channel, start, len):
     valori = file.readSignal(channel, start, len).tolist()
     file._close
     return(valori)
+
+
+def file_info(filePath):
+    file = pyedflib.EdfReader(filePath)
+    startDate = file.getStartdatetime()
+    fileDuration = file.getFileDuration()
+    channels = len(file.getSignalLabels())
+    channelLabels = np.empty(channels)
+    nSignals = np.empty(channels)
+    channelLabels = file.getSignalLabels()
+    nSignals = file.getNSamples().tolist()
+
+    data = {
+        "file": filePath, 
+        "startDate": startDate,
+        "fileDuration": fileDuration,
+        "channels": channels,
+        "channelLabels": channelLabels,
+        "nSignals": nSignals,
+
+    }
+    return data

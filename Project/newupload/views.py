@@ -42,34 +42,12 @@ def upload_file(request):
             extension_recognise(file_path)
         except:
             return JsonResponse({"error": "File not supported"}, status=415)
-        return JsonResponse(file_info(file_path))
+        return JsonResponse(file_info(file_path), status = 200)
     else:
         return JsonResponse({"error": "no myfile field"}, status=400)
 
-def file_info(filePath):
-    file = pyedflib.EdfReader(filePath)
-    startDate = file.getStartdatetime()
-    fileDuration = file.getFileDuration()
-    channels = len(file.getSignalLabels())
-    channelLabels = np.empty(channels)
-    nSignals = np.empty(channels)
-    channelLabels = file.getSignalLabels()
-    nSignals = file.getNSamples().tolist()
 
-    # print(file.))
-    
-    data = {
-        "file": filePath, 
-        "startDate": startDate,
-        "fileDuration": fileDuration,
-        "channels": channels,
-        "channelLabels": channelLabels,
-        "nSignals": nSignals,
 
-    }
-    return data
-
-@csrf_exempt #per far effettuare richieste POST senza autenticazione
 def manageParam(request):
     if request.method == 'POST':
         channel = request.POST.get("channel", 0)
@@ -80,33 +58,45 @@ def manageParam(request):
         start = request.GET.get("start", 0)
         len = request.GET.get("len", 30)
     # return readFile(channel, start, len)
-    return readFile(channel, start, len)
+    return (channel, start, len)
 
 
 def readFile(channel, start, len):
     fun = extension_recognise(file_path)
-    valori = fun(file_path, channel, start, len)
+    values = fun(file_path, channel, start, len)
 
-    # print(hist)
-    data = {"file": file_path, "canale": channel, "inizio":start, "dimensione":len,"valori": valori}
-    response = JsonResponse(data)
+    return values
+
+#view per leggere valori
+@csrf_exempt #per far effettuare richieste POST senza autenticazione
+def getValues(request):
+    channel, start, len = manageParam(request)
+    values = readFile(channel, start, len)
+    data = {
+        "file": file_path,
+        "canale": channel,
+        "inizio":start,
+        "dimensione":len,
+        "valori": values
+    }
+    response = JsonResponse(data, status = 200)
     return response
 
 
-# def getStatistic(values):
-#     min = min_value(values)
-#     max = max_value(values)
-#     average = average_value(values)
-#     var = variance(values)
-#     stdev = stdev(values)
-#     hist, bins = counts_occurrences(values, 1.5)
+def getStatistic(values):
+    min = min_value(values)
+    max = max_value(values)
+    average = average_value(values)
+    var = dataVariance(values)
+    stdev = standardDev(values)
+    hist, bins = counts_occurrences(values, 1.5)
 
-#     data = {
-#         "min" = min,
-#         "max" = max,
-#         "average" = average,
-#         "var" = var,
-#         "stdev" = stdev
-# #     }
+    data = {
+        "min": min,
+        "max": max,
+        "average": average,
+        "var": var,
+        "stdev": stdev
+    }
 
-#     return data
+    return data

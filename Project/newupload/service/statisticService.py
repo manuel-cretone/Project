@@ -16,11 +16,11 @@ def min_value(values):
     min = np.min(values)
     return min
 
-def variance(values):
+def dataVariance(values):
     var = pvariance(values)
     return var
 
-def stdev(values):
+def standardDev(values):
     stdev = pstdev(values)
     return stdev
 
