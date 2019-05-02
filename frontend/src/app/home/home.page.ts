@@ -1,5 +1,6 @@
+import { Serverdata } from './../interface/Serverdata.interface';
 import { UploadData } from '../interface/UploadData.interface';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ServiceService } from '../service/service.service';
 
 @Component({
@@ -8,30 +9,41 @@ import { ServiceService } from '../service/service.service';
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-  constructor(private service: ServiceService) {}
-  signals: Array<any>;
-  file: File = null;
-  upload: Array<UploadData>;
+  @Input()
+  selectChannel = null;
 
-  async ngOnInit() {
-    // this.signals = await this.service.getSignal('4', '10', '2');
-  }
+  constructor(private service: ServiceService) {}
+  signals: Serverdata;
+  file: File = null;
+  upload: UploadData;
+  checkFile = false;
+  Channels;
+
+  ngOnInit() {}
 
   async signal() {
-    // const f = new FileReader();
-    // // this.service.getFile(this.file);
-    // console.log(this.file);
-    // console.log(f.readAsDataURL(this.file));
+    await this.service.getSignal('4', '10', '2').then((data: Serverdata) => {
+      this.signals = data;
+    });
   }
+
   onFileSelected(event) {
     this.file = event.target.files[0];
   }
-  async onUpload() {
-    // upload code goes here
-    const uploadData = new FormData();
-    uploadData.append('myfile', this.file, this.file.name);
 
-    this.upload = await this.service.getFile(uploadData);
-    console.log(this.upload);
+  async onUpload() {
+    const uploadData = new FormData();
+    if (this.file != null) {
+      uploadData.append('myfile', this.file, this.file.name);
+      await this.service.UploadFile(uploadData).then((data: UploadData) => {
+        this.upload = data;
+        this.Channels = data.channelLabels;
+      });
+      this.checkFile = true;
+    } else {
+      this.checkFile = false;
+    }
+    console.log(this.selectChannel);
+    console.log(this.Channels);
   }
 }

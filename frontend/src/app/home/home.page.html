@@ -11,14 +11,33 @@
 
 <ion-content>
   <input type="file" value="Click" (change)="onFileSelected($event)" />
+  <p *ngIf="!checkFile">Carica il file</p>
   <br />
   <ion-button type="submit" (click)="onUpload()">submit</ion-button>
+  <ion-button type="submit" (click)="signal()">signal</ion-button>
   <br />
-  <ion-content ng-if="file">
-    <ion-label>Seleziona Canale</ion-label>
-
-    <!-- <ion-select *ngFor="let hero of heroes" [(ngModel)]="gender">
-      <ion-option value="f">Female</ion-option>
-    </ion-select> -->
-  </ion-content>
+  <div *ngIf="checkFile">
+    <ion-item>
+      <ion-label>Seleziona Canale</ion-label>
+      <ion-select>
+        <ion-select-option
+          *ngFor="let channel of Channels"
+          value="{{ channel }}"
+          >{{ channel }}</ion-select-option
+        >
+      </ion-select>
+      <!-- <select name="select">
+      <option *ngFor="let channel of Channels" value="{{ channel.counter0 }}">{{
+        channel
+      }}</option>
+    </select> -->
+    </ion-item>
+    <ion-item>
+      <ion-input type="number" placeholder="start Number"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="number" placeholder="Number of signal"></ion-input>
+    </ion-item>
+    <ion-button type="submit">Draw</ion-button>
+  </div>
 </ion-content>
