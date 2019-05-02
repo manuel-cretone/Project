@@ -8,9 +8,9 @@ import numpy as np
 from newupload import views 
 
 
-def absolute_path(file):
-    path = os.getcwd() + file
-    return path
+# def absolute_path(file):
+#     path = os.getcwd() + file
+#     return path
 
 
 # [check extension file if .edf, .txt, .pdf]
@@ -26,6 +26,11 @@ def extension_recognise(filePath):
     else:
         raise ValueError("File inserito non supportato")
 
+
+def readFile(file_path, channel, start=0, len=None):
+    fun = extension_recognise(file_path)
+    values = fun(file_path, channel, start, len)
+    return values
 
 
 def read_edf_file(filePath, channel, start=0, len=None):

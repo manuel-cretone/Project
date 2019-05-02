@@ -74,18 +74,13 @@ def readParams(request):
     len = request.GET.get("len", 30)
     return (channel, start, len)
 
-def readFile(channel, start=0, len=None):
-    fun = extension_recognise(file_path)
-    values = fun(file_path, channel, start, len)
-
-    return values
 
 #view per leggere valori
 @method_decorator(csrf_exempt, name='dispatch')
 class Values(View):
     def get(self, request):
         channel, start, len = readParams(request)
-        values = readFile(channel, start, len)
+        values = readFile(file_path, channel, start, len)
         data = {
             "file": file_path,
             "canale": channel,
@@ -104,7 +99,7 @@ class Values(View):
 class Statistics(View):
     def get(self, request):
         channel, start, len = readParams(request)
-        values = readFile(channel, start, len)
+        values = readFile(file_path, channel, start, len)
         data = getStatistic(values)
         response = JsonResponse(data, status = 200)
         return response
