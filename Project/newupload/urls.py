@@ -3,8 +3,8 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    path('', views.upload_file, name="upload_file"),
-    # path('getj/', views.getJson, name="getJson"),
-    path('getvalues/', views.getValues, name="getValues")
+    path('', views.Upload.as_view(), name="upload_file"),
+    path('values', views.Values.as_view(), name="getValues"),
+    path('statistics', views.Statistics.as_view(), name="getStatistics"),
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]

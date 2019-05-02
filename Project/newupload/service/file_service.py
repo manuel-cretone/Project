@@ -28,7 +28,7 @@ def extension_recognise(filePath):
 
 
 
-def read_edf_file(filePath, channel, start, len):
+def read_edf_file(filePath, channel, start=0, len=None):
     file = pyedflib.EdfReader(filePath)
     channel = int(channel)
     start = int(start)
@@ -37,6 +37,7 @@ def read_edf_file(filePath, channel, start, len):
     valori = file.readSignal(channel, start, len).tolist()
     file._close
     return(valori)
+
 
 
 def file_info(filePath):
