@@ -6,5 +6,6 @@ urlpatterns = [
     path('', views.Upload.as_view(), name="upload_file"),
     path('values/', views.Values.as_view(), name="getValues"),
     path('statistics/', views.Statistics.as_view(), name="getStatistics"),
+    path('distribution/', views.Distribution.as_view(), name="distribution"),
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]

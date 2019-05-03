@@ -28,8 +28,8 @@ def standardDev(values):
 def count_occurrences(values, width):
     b = (abs(min_value(values)) + abs(max_value(values)))/width
     array, bins = np.histogram(values, bins=math.ceil(b))
-    # print (bins)
-    # print(array)
+    array = array.tolist()
+    bins = bins.tolist()
     return array, bins
 
 def fit_distribution(x,y):

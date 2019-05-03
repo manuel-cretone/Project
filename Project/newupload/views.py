@@ -80,13 +80,14 @@ def readParams(request):
 class Values(View):
     def get(self, request):
         channel, start, len = readParams(request)
-        values = readFile(file_path, channel, start, len)
+        values, timeScale = readFile(file_path, channel, start, len)
         data = {
             "file": file_path,
             "canale": channel,
             "inizio":start,
             "dimensione":len,
-            "valori": values
+            "valori": values,
+            "timeScale": timeScale
         }
         response = JsonResponse(data, status = 200)
         return response
@@ -110,6 +111,18 @@ class Statistics(View):
 
 
 #view per ottenere istogramma valori
-class histogram(View):
+class Distribution(View):
     def get(self, request):
-        pass
+        channel, start, len = readParams(request)
+        values = readFile(file_path, channel, start, len)
+        hist, bins = count_occurrences(values, 2) #esempio con parametro 2 
+        data = {
+            "hist": hist,
+            "bins": bins
+        }
+        response = JsonResponse(data, status = 200)
+        return response
+
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)

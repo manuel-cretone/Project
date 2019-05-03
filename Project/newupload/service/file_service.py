@@ -40,8 +40,13 @@ def read_edf_file(filePath, channel, start=0, len=None):
     len = int(len)
     valori = np.zeros(len)
     valori = file.readSignal(channel, start, len).tolist()
+    
+    freq = file.samplefrequency(channel)
+    second = 1/freq
+    end = (start*second) + (second*len)
+    timeScale = np.linspace((start*second), end, num=len, endpoint=False).tolist()
     file._close
-    return(valori)
+    return(valori, timeScale)
 
 
 
