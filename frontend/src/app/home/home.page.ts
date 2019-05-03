@@ -1,3 +1,4 @@
+import { HomeService } from './home.service';
 import { Serverdata } from './../interface/Serverdata.interface';
 import { UploadData } from '../interface/UploadData.interface';
 import { Component, OnInit, Input } from '@angular/core';
@@ -9,22 +10,30 @@ import { ServiceService } from '../service/service.service';
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-  @Input()
-  selectChannel = null;
+  @Input() selectChannel: string;
+  @Input() selectStart: string;
+  @Input() selectNumberSignal: string;
 
-  constructor(private service: ServiceService) {}
+  constructor(
+    private service: ServiceService,
+    private homeService: HomeService
+  ) {}
   signals: Serverdata;
   file: File = null;
   upload: UploadData;
   checkFile = false;
+  checkButton = false;
   Channels;
 
   ngOnInit() {}
 
-  async signal() {
-    await this.service.getSignal('4', '10', '2').then((data: Serverdata) => {
-      this.signals = data;
-    });
+  async signal(channel, start, numberSignals) {
+    await this.service
+      .getSignal(channel, start, numberSignals)
+      .then((data: Serverdata) => {
+        this.signals = data;
+      });
+    console.log(this.signals);
   }
 
   onFileSelected(event) {
@@ -43,7 +52,17 @@ export class HomePage implements OnInit {
     } else {
       this.checkFile = false;
     }
-    console.log(this.selectChannel);
-    console.log(this.Channels);
+  }
+
+  draw() {
+    this.checkButton = true;
+    const channel = this.homeService.numberOfList(
+      this.upload.channelLabels,
+      this.selectChannel
+    );
+    const start = this.selectStart;
+    const numberSignals = this.selectNumberSignal;
+    this.signal(channel, start, numberSignals);
+    this.checkButton = false;
   }
 }
