@@ -2,6 +2,7 @@ import { Serverdata } from '../interface/Serverdata.interface';
 import { UploadData } from '../interface/UploadData.interface';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,23 +10,19 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 export class ServiceService {
   constructor(private http: HttpClient) {}
 
-  async getSignal(channel: string, len: string, start: string) {
+  getSignal(channel: string, len: string, start: string) {
     const params = new HttpParams()
       .set('channel', channel)
       .set('len', len)
       .set('start', start);
-    return (await this.http
+    return this.http
       .get('http://127.0.0.1:8000/newupload/manageparam/', {
         params
       })
-      .toPromise()) as Array<Serverdata>;
-    // .subscribe((data: Serverdata[]) => {
-    //   console.log(data);
-    // });
+      .toPromise();
   }
-  async getFile(file: FormData) {
-    return (await this.http
-      .post('http://127.0.0.1:8000/newupload/', file)
-      .toPromise()) as Array<UploadData>;
+
+  UploadFile(file: FormData) {
+    return this.http.post('http://127.0.0.1:8000/newupload/', file).toPromise();
   }
 }
