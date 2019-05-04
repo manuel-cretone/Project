@@ -8,9 +8,9 @@ import numpy as np
 from newupload import views 
 
 
-def absolute_path(file):
-    path = os.getcwd() + file
-    return path
+# def absolute_path(file):
+#     path = os.getcwd() + file
+#     return path
 
 
 # [check extension file if .edf, .txt, .pdf]
@@ -27,13 +27,46 @@ def extension_recognise(filePath):
         raise ValueError("File inserito non supportato")
 
 
+def readFile(file_path, channel, start=0, len=None):
+    fun = extension_recognise(file_path)
+    values = fun(file_path, channel, start, len)
+    return values
 
-def read_edf_file(filePath, channel, start, len):
+
+def read_edf_file(filePath, channel, start=0, len=None):
     file = pyedflib.EdfReader(filePath)
     channel = int(channel)
     start = int(start)
     len = int(len)
     valori = np.zeros(len)
     valori = file.readSignal(channel, start, len).tolist()
+    
+    freq = file.samplefrequency(channel)
+    second = 1/freq
+    end = (start*second) + (second*len)
+    timeScale = np.linspace((start*second), end, num=len, endpoint=False).tolist()
     file._close
-    return(valori)
+    return(valori, timeScale)
+
+
+
+def file_info(filePath):
+    file = pyedflib.EdfReader(filePath)
+    startDate = file.getStartdatetime()
+    fileDuration = file.getFileDuration()
+    channels = len(file.getSignalLabels())
+    channelLabels = np.empty(channels)
+    nSignals = np.empty(channels)
+    channelLabels = file.getSignalLabels()
+    nSignals = file.getNSamples().tolist()
+
+    data = {
+        "file": filePath, 
+        "startDate": startDate,
+        "fileDuration": fileDuration,
+        "channels": channels,
+        "channelLabels": channelLabels,
+        "nSignals": nSignals,
+
+    }
+    return data
