@@ -1,8 +1,9 @@
 import { HomeService } from './home.service';
 import { Serverdata } from './../interface/Serverdata.interface';
 import { UploadData } from '../interface/UploadData.interface';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { ServiceService } from '../service/service.service';
+import { Chart } from 'chart.js';
 
 @Component({
   selector: 'app-home',
@@ -10,14 +11,13 @@ import { ServiceService } from '../service/service.service';
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-  @Input() selectChannel: string;
-  @Input() selectStart: string;
-  @Input() selectNumberSignal: string;
-
   constructor(
     private service: ServiceService,
     private homeService: HomeService
   ) {}
+  @Input() selectChannel: string;
+  @Input() selectStart: string;
+  @Input() selectNumberSignal: string;
   signals: Serverdata;
   file: File = null;
   upload: UploadData;
@@ -25,11 +25,22 @@ export class HomePage implements OnInit {
   checkButton = false;
   Channels;
 
+  ////////////////////////////////////////////////////////////////
+  public barChartOptions: any = {
+    scaleShowVerticalLines: false,
+    responsive: true
+  };
+  public barChartLabels: string[] = [];
+  public barChartType = 'line';
+  public barChartLegend = true;
+
+  public barChartData: any[] = [{ data: [], label: 'Series A' }];
+
   ngOnInit() {}
 
-  async signal(channel, start, numberSignals) {
+  async signal(channel, numberSignals, start) {
     await this.service
-      .getSignal(channel, start, numberSignals)
+      .getSignal(channel, numberSignals, start)
       .then((data: Serverdata) => {
         this.signals = data;
       });
@@ -54,15 +65,18 @@ export class HomePage implements OnInit {
     }
   }
 
-  draw() {
+  async draw() {
     this.checkButton = true;
-    const channel = this.homeService.numberOfList(
-      this.upload.channelLabels,
-      this.selectChannel
-    );
-    const start = this.selectStart;
-    const numberSignals = this.selectNumberSignal;
-    this.signal(channel, start, numberSignals);
-    this.checkButton = false;
+    if (this.checkButton) {
+      const channel = this.homeService.numberOfList(
+        this.upload.channelLabels,
+        this.selectChannel
+      );
+      await this.signal(channel, this.selectNumberSignal, this.selectStart);
+      this.barChartData = [
+        { data: this.signals.valori, label: this.selectChannel }
+      ];
+      this.barChartLabels = this.signals.valori;
+    }
   }
 }

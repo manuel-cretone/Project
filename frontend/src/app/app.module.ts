@@ -1,3 +1,4 @@
+import { ChartsModule } from 'ng2-charts';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -15,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
   entryComponents: [],
   imports: [
     BrowserModule,
+    ChartsModule,
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule
