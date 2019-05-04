@@ -16,7 +16,7 @@ export class ServiceService {
       .set('len', len)
       .set('start', start);
     return this.http
-      .get('http://127.0.0.1:8000/newupload/manageparam/', {
+      .get('http://127.0.0.1:8000/newupload/values/', {
         params
       })
       .toPromise();
@@ -24,5 +24,18 @@ export class ServiceService {
 
   UploadFile(file: FormData) {
     return this.http.post('http://127.0.0.1:8000/newupload/', file).toPromise();
+  }
+
+  gestStatistics(channel: string, len: string, start: string) {
+    const params = new HttpParams()
+      .set('channel', channel)
+      .set('start', start)
+      .set('len', len);
+
+    return this.http
+      .get('http://127.0.0.1:8000/newupload/statistics/', {
+        params
+      })
+      .toPromise();
   }
 }

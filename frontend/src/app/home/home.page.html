@@ -42,9 +42,34 @@
       ></ion-input>
     </ion-item>
     <ion-button type="submit" (click)="draw()">Draw</ion-button>
-
-    <ion-card padding *ngIf="checkButton">
-      <div>
+    <div *ngIf="checkButton">
+      <ion-card padding>
+        <!-- <app-chart></app-chart> -->
+        <div>
+          <div style="display: block">
+            <canvas
+              height="400"
+              width="400"
+              baseChart
+              [datasets]="barChartData"
+              [labels]="barChartLabels"
+              [options]="barChartOptions"
+              [legend]="barChartLegend"
+              [chartType]="barChartType"
+            ></canvas>
+          </div>
+        </div>
+      </ion-card>
+      <ion-card padding>
+        <h5>Statistics</h5>
+        <p>Minimun Value:</p>
+        <p>Maximum Value:</p>
+        <p>Average:</p>
+        <p>var:</p>
+        <p>stdev:</p>
+      </ion-card>
+      <ion-card padding>
+        <h5>BARCHART</h5>
         <div style="display: block">
           <canvas
             height="400"
@@ -54,10 +79,10 @@
             [labels]="barChartLabels"
             [options]="barChartOptions"
             [legend]="barChartLegend"
-            [chartType]="barChartType"
+            [chartType]="barChart"
           ></canvas>
         </div>
-      </div>
-    </ion-card>
+      </ion-card>
+    </div>
   </div>
 </ion-content>

@@ -1,9 +1,11 @@
+import { ChartComponent } from './../component/chart/chart.component';
 import { HomeService } from './home.service';
 import { Serverdata } from './../interface/Serverdata.interface';
 import { UploadData } from '../interface/UploadData.interface';
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { ServiceService } from '../service/service.service';
 import { Chart } from 'chart.js';
+import { Statistics } from '../interface/Statistics.interface';
 
 @Component({
   selector: 'app-home',
@@ -24,7 +26,7 @@ export class HomePage implements OnInit {
   checkFile = false;
   checkButton = false;
   Channels;
-
+  Statics: Statistics;
   ////////////////////////////////////////////////////////////////
   public barChartOptions: any = {
     scaleShowVerticalLines: false,
@@ -32,6 +34,7 @@ export class HomePage implements OnInit {
   };
   public barChartLabels: string[] = [];
   public barChartType = 'line';
+  public barChart = 'bar';
   public barChartLegend = true;
 
   public barChartData: any[] = [{ data: [], label: 'Series A' }];
@@ -72,11 +75,23 @@ export class HomePage implements OnInit {
         this.upload.channelLabels,
         this.selectChannel
       );
+
       await this.signal(channel, this.selectNumberSignal, this.selectStart);
+      // this.chart.fillLineChart(this.signals, this.selectChannel);
+      // await this.getStatics(channel, this.selectNumberSignal, this.selectStart);
       this.barChartData = [
         { data: this.signals.valori, label: this.selectChannel }
       ];
-      this.barChartLabels = this.signals.valori;
+      this.barChartLabels = this.signals.timeScale;
     }
   }
+
+  // async getStatics(channel, numberSignals, start) {
+  //   await this.service
+  //     .gestStatistics(channel, start, numberSignals)
+  //     .then((data: Statics) => {
+  //       this.Statics = data;
+  //     });
+  //   console.log(this.Statics);
+  // }
 }
