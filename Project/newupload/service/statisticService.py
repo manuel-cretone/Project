@@ -26,8 +26,17 @@ def standardDev(values):
 
 
 def count_occurrences(values, width):
-    b = (abs(min_value(values)) + abs(max_value(values)))/width
-    array, bins = np.histogram(values, bins=math.ceil(b))
+    # b = (abs(min_value(values)) + abs(max_value(values)))/width
+    # base = int(math.floor(min_value(values)))
+    # end = int(math.ceil(max_value(values)))
+    # b = np.linspace(base, end, num=100)
+    # print("start",base,"end", end)
+    # print(f"BINS?: {b}")
+    # array, bins = np.histogram(values, bins=math.ceil(b))
+    array, bins = np.histogram(values, bins='auto')
+    # print("VALORI", values)
+    # print(bins)
+    # print(array)
     array = array.tolist()
     bins = bins.tolist()
     return array, bins
