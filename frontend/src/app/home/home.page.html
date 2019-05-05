@@ -32,6 +32,7 @@
         type="number"
         [(ngModel)]="selectStart"
         placeholder="Start Number"
+        max="921599"
       ></ion-input>
     </ion-item>
     <ion-item>
@@ -39,10 +40,24 @@
         type="number"
         [(ngModel)]="selectNumberSignal"
         placeholder="Number of Signal"
+        max="921599"
       ></ion-input>
     </ion-item>
-    <ion-button type="submit" (click)="draw()">Draw</ion-button>
-    <div *ngIf="checkButton">
+    <ion-button
+      *ngIf="selectChannel && selectStart < 921599 && selectNumberSignal < 1001"
+      type="submit"
+      (click)="draw()"
+      >Draw</ion-button
+    >
+    <p
+      *ngIf="selectStart > 921599 || selectNumberSignal > 1000"
+      style="color:crimson"
+    >
+      Parametri non corretti
+    </p>
+    <div
+      *ngIf="checkButton && selectStart < 921599 && selectNumberSignal < 1001"
+    >
       <ion-card padding>
         <!-- <app-chart></app-chart> -->
         <div>

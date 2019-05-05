@@ -18,8 +18,8 @@ export class HomePage implements OnInit {
     private homeService: HomeService
   ) {}
   @Input() selectChannel: string;
-  @Input() selectStart: string;
-  @Input() selectNumberSignal: string;
+  @Input() selectStart: number;
+  @Input() selectNumberSignal: number;
   signals: Serverdata;
   file: File = null;
   upload: UploadData;
@@ -76,14 +76,15 @@ export class HomePage implements OnInit {
         this.upload.channelLabels,
         this.selectChannel
       );
-
-      await this.signal(channel, this.selectNumberSignal, this.selectStart);
-      // this.chart.fillLineChart(this.signals, this.selectChannel);
-      // await this.getStatics(channel, this.selectNumberSignal, this.selectStart);
-      this.barChartData = [
-        { data: this.signals.valori, label: this.selectChannel, fill: false }
-      ];
-      this.barChartLabels = this.signals.timeScale;
+      if (this.selectStart < 921600 && this.selectNumberSignal < 1001) {
+        await this.signal(channel, this.selectNumberSignal, this.selectStart);
+        // this.chart.fillLineChart(this.signals, this.selectChannel);
+        // await this.getStatics(channel, this.selectNumberSignal, this.selectStart);
+        this.barChartData = [
+          { data: this.signals.valori, label: this.selectChannel, fill: false }
+        ];
+        this.barChartLabels = this.signals.timeScale;
+      }
     }
   }
 
