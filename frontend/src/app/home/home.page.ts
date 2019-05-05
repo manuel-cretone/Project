@@ -45,9 +45,9 @@ export class HomePage implements OnInit {
   ///////////////////////////////////////////////////////////////
   ngOnInit() {}
 
-  async signal(channel, numberSignals, start) {
+  async signal(channel, start, numberSignals) {
     await this.service
-      .getSignal(channel, numberSignals, start)
+      .getSignal(channel, start, numberSignals)
       .then((data: Serverdata) => {
         this.signals = data;
       });
@@ -80,17 +80,17 @@ export class HomePage implements OnInit {
         this.selectChannel
       );
 
-      await this.signal(channel, this.selectNumberSignal, this.selectStart);
+      await this.signal(channel, this.selectStart, this.selectNumberSignal);
       // this.chart.fillLineChart(this.signals, this.selectChannel);
       await this.getStatistics(
         channel,
-        this.selectNumberSignal,
-        this.selectStart
+        this.selectStart,
+        this.selectNumberSignal
       );
       await this.getOccurrency(
         channel,
-        this.selectNumberSignal,
-        this.selectStart
+        this.selectStart,
+        this.selectNumberSignal
       );
       this.barChartData = [
         { data: this.signals.valori, label: this.selectChannel, fill: false }
@@ -99,7 +99,7 @@ export class HomePage implements OnInit {
     }
   }
 
-  async getStatistics(channel, numberSignals, start) {
+  async getStatistics(channel, start, numberSignals) {
     await this.service
       .gestStatistics(channel, start, numberSignals)
       .then((data: Statistics) => {
@@ -108,7 +108,7 @@ export class HomePage implements OnInit {
     console.log(this.Statistics);
   }
 
-  async getOccurrency(channel, numberSignals, start) {
+  async getOccurrency(channel, start, numberSignals) {
     this.distribution = await this.service.getOccurrency(
       channel,
       start,
