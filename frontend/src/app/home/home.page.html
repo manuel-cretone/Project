@@ -29,16 +29,16 @@
     </ion-item>
     <ion-item>
       <ion-input
-        type="text"
+        type="number"
         [(ngModel)]="selectStart"
-        placeholder="start Number"
+        placeholder="Start Number"
       ></ion-input>
     </ion-item>
     <ion-item>
       <ion-input
-        type="text"
+        type="number"
         [(ngModel)]="selectNumberSignal"
-        placeholder="Number of signal"
+        placeholder="Number of Signal"
       ></ion-input>
     </ion-item>
     <ion-button type="submit" (click)="draw()">Draw</ion-button>
@@ -48,8 +48,8 @@
         <div>
           <div style="display: block">
             <canvas
-              height="400"
-              width="400"
+              height="100"
+              width="100"
               baseChart
               [datasets]="barChartData"
               [labels]="barChartLabels"

@@ -31,7 +31,7 @@ export class HomePage implements OnInit {
   public barChartOptions: any = {
     scaleShowVerticalLines: false,
     responsive: true,
-    fill: false,
+    fill: false
   };
   public barChartLabels: string[] = [];
   public barChartType = 'line';
@@ -81,7 +81,7 @@ export class HomePage implements OnInit {
       // this.chart.fillLineChart(this.signals, this.selectChannel);
       // await this.getStatics(channel, this.selectNumberSignal, this.selectStart);
       this.barChartData = [
-        { data: this.signals.valori, label: this.selectChannel , fill: false}
+        { data: this.signals.valori, label: this.selectChannel, fill: false }
       ];
       this.barChartLabels = this.signals.timeScale;
     }

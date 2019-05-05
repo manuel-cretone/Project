@@ -1,6 +1,6 @@
 import { Statistics } from '../../interface/Statistics.interface';
 import { Serverdata } from './../../interface/Serverdata.interface';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ServiceService } from '../../service/service.service';
 @Component({
   selector: 'app-chart',
@@ -8,6 +8,9 @@ import { ServiceService } from '../../service/service.service';
   styleUrls: ['./chart.component.scss']
 })
 export class ChartComponent implements OnInit {
+  // tslint:disable-next-line:no-input-rename
+  @Input('signals') signals: Serverdata;
+
   constructor(private service: ServiceService) {}
 
   barChartLabels = new Array<any>();
@@ -25,13 +28,16 @@ export class ChartComponent implements OnInit {
 
   public barChartData: any[] = [{ data: [], label: '' }];
 
-  async ngOnInit() {}
+  async ngOnInit() {
+    console.log('siamo in COMPONENT');
+    console.log(this.signals);
+    this.fillLineChart(this.signals);
+  }
 
-  // async ngOnChanges() {}
-  fillLineChart(serverData: Serverdata, selectChannel: string) {
+  fillLineChart(signal: Serverdata) {
     this.barChartType = 'line';
-    this.barChartData = [{ data: serverData.valori, label: selectChannel }];
-    this.barChartLabels = serverData.timeScale;
+    this.barChartData = [{ data: signal.valori, label: '' }];
+    this.barChartLabels = signal.timeScale;
   }
 
   // Statistiche sul grafico bar chart
