@@ -32,7 +32,6 @@
         type="number"
         [(ngModel)]="selectStart"
         placeholder="Start Number"
-        max="921599"
       ></ion-input>
     </ion-item>
     <ion-item>
@@ -40,23 +39,28 @@
         type="number"
         [(ngModel)]="selectNumberSignal"
         placeholder="Number of Signal"
-        max="921599"
       ></ion-input>
     </ion-item>
     <ion-button
-      *ngIf="selectChannel && selectStart < 921599 && selectNumberSignal < 1001"
+      *ngIf="
+        selectChannel != undefined &&
+        selectStart < 921599 &&
+        selectStart != undefined &&
+        selectNumberSignal != undefined &&
+        selectNumberSignal <= 7681
+      "
       type="submit"
       (click)="draw()"
       >Draw</ion-button
     >
     <p
-      *ngIf="selectStart > 921599 || selectNumberSignal > 1000"
+      *ngIf="selectStart > 921599 || selectNumberSignal > 7680"
       style="color:crimson"
     >
       Parametri non corretti
     </p>
     <div
-      *ngIf="checkButton && selectStart < 921599 && selectNumberSignal < 1001"
+      *ngIf="checkButton && selectStart < 921599 && selectNumberSignal <= 7680"
     >
       <ion-card padding>
         <!-- <app-chart></app-chart> -->
@@ -75,13 +79,13 @@
           </div>
         </div>
       </ion-card>
-      <ion-card padding>
+      <ion-card padding *ngIf="Statistics">
         <h5>Statistics</h5>
-        <p>Minimun Value:</p>
-        <p>Maximum Value:</p>
-        <p>Average:</p>
-        <p>var:</p>
-        <p>stdev:</p>
+        <p>Minimun Value: {{ Statistics.min }}</p>
+        <p>Maximum Value: {{ Statistics.max }}</p>
+        <p>Average: {{ Statistics.average }}</p>
+        <p>Variance: {{ Statistics.var }}</p>
+        <p>Standard Deviation: {{ Statistics.stdev }}</p>
       </ion-card>
       <ion-card padding>
         <h5>BARCHART</h5>
@@ -90,11 +94,11 @@
             height="400"
             width="400"
             baseChart
-            [datasets]="barChartData"
-            [labels]="barChartLabels"
+            [datasets]="barData"
+            [labels]="barlabel"
             [options]="barChartOptions"
             [legend]="barChartLegend"
-            [chartType]="barChart"
+            chartType="bar"
           ></canvas>
         </div>
       </ion-card>

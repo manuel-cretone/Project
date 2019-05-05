@@ -38,4 +38,17 @@ export class ServiceService {
       })
       .toPromise();
   }
+
+  async getOccurrency(channel: string, start: string, len: string) {
+    const params = new HttpParams()
+      .set('channel', channel)
+      .set('start', start)
+      .set('len', len);
+
+    return (await this.http
+      .get('http://127.0.0.1:8000/newupload/distribution/', {
+        params
+      })
+      .toPromise()) as { hist: any; bins: any };
+  }
 }

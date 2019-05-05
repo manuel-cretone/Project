@@ -26,7 +26,8 @@ export class HomePage implements OnInit {
   checkFile = false;
   checkButton = false;
   Channels;
-  Statics: Statistics;
+  Statistics: Statistics;
+  distribution = { hist: [], bins: [] };
   ////////////////////////////////////////////////////////////////
   public barChartOptions: any = {
     scaleShowVerticalLines: false,
@@ -39,7 +40,9 @@ export class HomePage implements OnInit {
   public barChartLegend = true;
 
   public barChartData: any[] = [{ data: [], label: 'Series A' }];
-
+  public barData: any[] = [{ data: [], label: 'Series A' }];
+  public barlabel: string[] = [];
+  ///////////////////////////////////////////////////////////////
   ngOnInit() {}
 
   async signal(channel, numberSignals, start) {
@@ -76,24 +79,49 @@ export class HomePage implements OnInit {
         this.upload.channelLabels,
         this.selectChannel
       );
-      if (this.selectStart < 921600 && this.selectNumberSignal < 1001) {
-        await this.signal(channel, this.selectNumberSignal, this.selectStart);
-        // this.chart.fillLineChart(this.signals, this.selectChannel);
-        // await this.getStatics(channel, this.selectNumberSignal, this.selectStart);
-        this.barChartData = [
-          { data: this.signals.valori, label: this.selectChannel, fill: false }
-        ];
-        this.barChartLabels = this.signals.timeScale;
-      }
+
+      await this.signal(channel, this.selectNumberSignal, this.selectStart);
+      // this.chart.fillLineChart(this.signals, this.selectChannel);
+      await this.getStatistics(
+        channel,
+        this.selectNumberSignal,
+        this.selectStart
+      );
+      await this.getOccurrency(
+        channel,
+        this.selectNumberSignal,
+        this.selectStart
+      );
+      this.barChartData = [
+        { data: this.signals.valori, label: this.selectChannel, fill: false }
+      ];
+      this.barChartLabels = this.signals.timeScale;
     }
   }
 
-  // async getStatics(channel, numberSignals, start) {
-  //   await this.service
-  //     .gestStatistics(channel, start, numberSignals)
-  //     .then((data: Statics) => {
-  //       this.Statics = data;
-  //     });
-  //   console.log(this.Statics);
-  // }
+  async getStatistics(channel, numberSignals, start) {
+    await this.service
+      .gestStatistics(channel, start, numberSignals)
+      .then((data: Statistics) => {
+        this.Statistics = data;
+      });
+    console.log(this.Statistics);
+  }
+
+  async getOccurrency(channel, numberSignals, start) {
+    this.distribution = await this.service.getOccurrency(
+      channel,
+      start,
+      numberSignals
+    );
+    console.log(this.distribution);
+    this.barData = [
+      {
+        data: this.distribution.hist,
+        label: this.selectChannel,
+        fill: false
+      }
+    ];
+    this.barlabel = this.distribution.bins;
+  }
 }
