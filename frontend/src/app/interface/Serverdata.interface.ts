@@ -4,4 +4,5 @@ export interface Serverdata {
   inizio: string;
   dimensione: string;
   valori: [];
+  timeScale: [];
 }
