@@ -10,11 +10,12 @@ import { Observable } from 'rxjs';
 export class ServiceService {
   constructor(private http: HttpClient) {}
 
-  getSignal(channel: string, len: string, start: string) {
+  getSignal(channel: string, start: string, len: string) {
     const params = new HttpParams()
       .set('channel', channel)
-      .set('len', len)
-      .set('start', start);
+      .set('start', start)
+      .set('len', len);
+
     return this.http
       .get('http://127.0.0.1:8000/newupload/values/', {
         params
@@ -26,7 +27,7 @@ export class ServiceService {
     return this.http.post('http://127.0.0.1:8000/newupload/', file).toPromise();
   }
 
-  gestStatistics(channel: string, len: string, start: string) {
+  gestStatistics(channel: string, start: string, len: string) {
     const params = new HttpParams()
       .set('channel', channel)
       .set('start', start)
