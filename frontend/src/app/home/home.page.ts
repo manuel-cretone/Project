@@ -40,6 +40,11 @@ export class HomePage implements OnInit {
               autoSkipPadding: 50
           }
       }]
+  },
+  elements: {
+    point: {
+        radius: 0
+    }
   }
   };
   public barChartOptions1: any = {
