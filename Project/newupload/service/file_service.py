@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 # import newupload as newupload
 import pyedflib
 import numpy as np
-from newupload import views 
+# from newupload import views 
 import datetime
 import pandas as pd
 

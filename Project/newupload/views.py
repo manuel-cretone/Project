@@ -11,8 +11,10 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import redirect
 from django.views import View
 
-# import sys
-# sys.path.insert(0, '../service')
+import sys
+sys.path.insert(0, '../CNN')
+
+# from CNN import 
 
 from .service.file_service import *
 from .service.statisticService import *
