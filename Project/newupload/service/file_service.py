@@ -6,6 +6,8 @@ from django.shortcuts import redirect
 import pyedflib
 import numpy as np
 from newupload import views 
+import datetime
+import pandas as pd
 
 
 # def absolute_path(file):
@@ -29,8 +31,8 @@ def extension_recognise(filePath):
 
 def readFile(file_path, channel, start=0, len=None):
     fun = extension_recognise(file_path)
-    values = fun(file_path, channel, start, len)
-    return values
+    values, timeScale = fun(file_path, channel, start, len)
+    return values, timeScale
 
 
 def read_edf_file(filePath, channel, start=0, len=None):
@@ -43,10 +45,15 @@ def read_edf_file(filePath, channel, start=0, len=None):
     
     freq = file.samplefrequency(channel)
     second = 1/freq
-    end = (start*second) + (second*len)
-    timeScale = np.linspace((start*second), end, num=len, endpoint=False).tolist()
+    startTime = file.getStartdatetime() + datetime.timedelta(seconds=start*second)
+    # startTime = startTime.strftime('%y-%m-%d-%H-%M-%S')
+    # print(f"INII{startTime}")
+    # endTime = startTime + datetime.timedelta(second=second*len)
+    # timeScale = np.linspace(startTime, endTime, num=len, endpoint=False).tolist()
+
+    timeScale = pd.date_range(startTime, freq = f"{second}S", periods=len).tolist()
     file._close
-    return(valori, timeScale)
+    return valori, timeScale
 
 
 
