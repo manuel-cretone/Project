@@ -31,14 +31,13 @@ export class ChartComponent implements OnInit {
   async ngOnInit() {
     console.log('siamo in COMPONENT');
     console.log(this.signals);
-    this.fillLineChart(this.signals);
   }
 
-  fillLineChart(signal: Serverdata) {
-    this.barChartType = 'line';
-    this.barChartData = [{ data: signal.valori, label: '' }];
-    this.barChartLabels = signal.timeScale;
-  }
+  // fillLineChart(signal: Serverdata) {
+  //   this.barChartType = 'line';
+  //   this.barChartData = [{ data: signal.valori, label: '' }];
+  //   this.barChartLabels = signal.timeScale;
+  // }
 
   // Statistiche sul grafico bar chart
   fillBarChart(statistics: Statistics) {
