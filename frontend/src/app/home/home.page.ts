@@ -32,20 +32,7 @@ export class HomePage implements OnInit {
   public barChartOptions: any = {
     scaleShowVerticalLines: false,
     responsive: true,
-    fill: false,
-    scales: {
-      xAxes: [{
-          ticks: {
-              autoSkip: true,
-              autoSkipPadding: 50
-          }
-      }]
-  }
-  };
-  public barChartOptions1: any = {
-    scaleShowVerticalLines: false,
-    responsive: true,
-    fill: false,
+    fill: false
   };
   public barChartLabels: string[] = [];
   public barChartType = 'line';

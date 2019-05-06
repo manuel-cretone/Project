@@ -114,7 +114,7 @@ class Statistics(View):
 class Distribution(View):
     def get(self, request):
         channel, start, len = readParams(request)
-        values, timeScale = readFile(file_path, channel, start, len)
+        values = readFile(file_path, channel, start, len)
         hist, bins = count_occurrences(values, 20) #esempio con parametro 2 
         data = {
             "hist": hist,
