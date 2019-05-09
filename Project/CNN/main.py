@@ -11,11 +11,11 @@ global file_path
 file_path = "C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\media\\chb01_01.edf"
 
 
-def createListFile(split):
+def createListFile(name, split):
     c = 0
     for i in split:
         a = str(c)
-        np.savetxt("test" + a + ".txt", i)
+        np.savetxt(name + a + ".txt", i)
         c = c+1
        # print(i)
 
@@ -24,24 +24,21 @@ def createListFile(split):
 
 def obtainValue(timeStart, timeStop):
     if (timeStart >= timeStop):
-        raise Exception("start > end wtf")
+        raise Exception("start > end?? wtf")
     numberOfStart = timeStart*256
     numberStop = timeStop*256
     numberOfSignals = numberStop-numberOfStart
     return numberOfStart, numberStop, numberOfSignals
 
 
-def overlapping(a, w, o):
-    if(a.size < w):
-        return np.empty((1,w))
-    sh = (a.size - w + 1, w)
-    st = a.strides * 2
-    view = np.lib.stride_tricks.as_strided(a, strides=st, shape=sh)[0::o]
-    return view
-    # print("overlapping")
-    # for i in view:
-    #     print(i)
-    # print(view)
+# def overlapping(a, w, o):
+#     if(a.size < w):
+#         return np.empty((1,w))
+#     sh = (a.size - w + 1, w)
+#     st = a.strides * 2
+#     view = np.lib.stride_tricks.as_strided(a, strides=st, shape=sh)[0::o]
+#     return view
+
 
 def myOverlapping(array, window, overlapping):
     if (overlapping < 1):
@@ -60,9 +57,6 @@ def myOverlapping(array, window, overlapping):
 
     return result
 
-# prende i valori compresi nella sezione di Seizure e fa l'overlapping su quella
-# zona restiuendo un vettore con le
-
 
 # def seizureSignals(channel, timeStart, timeStop):
 #     start, stop, len = obtainValue(timeStart, timeStop)
@@ -74,48 +68,55 @@ def myOverlapping(array, window, overlapping):
 
 def getSignals(file_path, channel, start=0, len=None):
     f = pyedflib.EdfReader(file_path)
+    if (len == None):
+        len = f.getNSamples()[channel] - start
     signals = f.readSignal(channel, start, len)
     x = np.array(signals)
     f._close()
     return x
 
 
-def spliteArray(signals, sizeWindow):
-    x = np.array(signals)
-    split = np.array_split(x, sizeWindow)
-    return split
+# def spliteArray(signals, sizeWindow):
+#     x = np.array(signals)
+#     split = np.array_split(x, sizeWindow)
+#     return split
 
 
-def main():
-
-    channel = 0
-    windowSize = 100
-    overl = 10
-    startSeizureSignal, stopSeizureSignal, len = obtainValue(100 , 200)
-
+def getDataset(file_path, channel, seizureStart, seizureEnd, windowSize, overlapping):
+    startSeizureSignal, stopSeizureSignal, len = obtainValue(seizureStart , seizureEnd)
     seizure = getSignals(file_path, channel=0, start=startSeizureSignal, len=len)
-    # prova = np.array([1,2,3,4,5,6,7,8,9,0])
-    # overlapSeizure = myOverlapping(prova, 9, 1)
-    overlapSeizure = myOverlapping(seizure, windowSize, overl)
-
+    overlapSeizure = myOverlapping(seizure, windowSize, overlapping)
     nSeizurewWindows = overlapSeizure.shape[0]
+
     valuesPre = getSignals(file_path, channel = channel, start = 0, len=startSeizureSignal)
-    valuesPost = getSignals(file_path, channel = channel, start= stopSeizureSignal, len = 921600-stopSeizureSignal)
-   # add control in order to not consider all values
+    valuesPost = getSignals(file_path, channel = channel, start= stopSeizureSignal, len = None)
+      # add control in order to not consider all values
     windowsPre = myOverlapping(valuesPre, windowSize, windowSize)
     windowsPost = myOverlapping(valuesPost, windowSize, windowSize)
-
-    print("lunghezza pre", windowsPre.shape[0])
-    print("lunghezza post", windowsPost.shape[0])
-
+    
     if(windowsPre.shape[0] < (nSeizurewWindows/2)):
         nonSeizure = np.concatenate((windowsPre, windowsPost[:(nSeizurewWindows-windowsPre.shape[0])]))
     elif(windowsPost.shape[0] < (nSeizurewWindows/2)):
         nonSeizure = np.concatenate((windowsPre[:(nSeizurewWindows-windowsPost.shape[0])], windowsPost))
     else:
-        nonSeizure = np.concatenate((windowsPre[:int(nSeizurewWindows/2)], windowsPost[:int(nSeizurewWindows/2)]))
+        nonSeizure = np.concatenate((windowsPre[:math.ceil(nSeizurewWindows/2)], windowsPost[:math.ceil(nSeizurewWindows/2)]))
     
-    print(f"nonseizure {nonSeizure.shape}\nseizure{overlapSeizure.shape}")
+    return overlapSeizure, nonSeizure
+
+def main():
+
+    channel = 0
+    seizureStart = 100
+    seizureEnd = 150
+    windowSize = 50
+    overlapping = 30
+
+    seizureSignals, normalSignals = getDataset(file_path, channel, seizureStart, seizureEnd, windowSize, overlapping)
+    print("seizure", seizureSignals.shape)
+    print("normal", normalSignals.shape)
+    # createListFile("seizure", seizureSignals)
+    # createListFile("normal", normalSignals)
+
 
 if __name__ == '__main__':
     main()
