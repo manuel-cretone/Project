@@ -1,3 +1,4 @@
+import pandas as pd
 import pyedflib
 import numpy as np
 import sys
@@ -11,12 +12,28 @@ global file_path
 file_path = "C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\media\\chb01_01.edf"
 
 
-def createListFile(name, split):
-    c = 0
-    for i in split:
-        a = str(c)
-        np.savetxt(name + a + ".txt", i)
-        c = c+1
+# def createListFile(name, split):
+#     c = 0
+#     for i in split:
+#         a = str(c)
+#         np.savetxt(name + a + ".txt", i)
+#         c = c+1
+def createListFile(array, target):
+    df = pd.DataFrame(columns=['value', 'target'])
+    for i in range(array.shape[0]):
+        print("IIIIIIIIII")
+        print(i)
+        raw_data = {'value': array[i],
+                    'target': target
+                    }
+        df = df.append(raw_data, ignore_index=True)
+
+    print("Raw Data")
+    print(df)
+    print(df.shape)
+    # df = pd.DataFrame(raw_data, columns=['value', 'target'])
+    #df.to_csv('output.csv', index=False, header=True)
+    return df
        # print(i)
 
 # prende in input i secondi in cui inizia la scarica e ritorna a quale segnale
@@ -107,7 +124,7 @@ def main():
 
     channel = 0
     seizureStart = 100
-    seizureEnd = 150
+    seizureEnd = 101
     windowSize = 50
     overlapping = 30
 
@@ -116,6 +133,16 @@ def main():
     print("normal", normalSignals.shape)
     # createListFile("seizure", seizureSignals)
     # createListFile("normal", normalSignals)
+    df_seizure = createListFile(seizureSignals, 1)
+    df_notSeizure = createListFile(seizureSignals, 0)
+    df = df_seizure.append(df_notSeizure, ignore_index=True)
+    df.to_csv('output.csv', index=False, header=True)
+
+    data = pd.read_csv("output.csv")
+    print(data)
+    # train = pd.read_csv("train.csv")   
+    # x_train = train["text"].values
+    # y_train = train['target'].values
 
 
 if __name__ == '__main__':

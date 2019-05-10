@@ -1,8 +1,8 @@
-import { Serverdata } from '../interface/Serverdata.interface';
+import { Serverdata } from './../interface/Serverdata.interface';
+
 import { UploadData } from '../interface/UploadData.interface';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
