@@ -63,21 +63,7 @@
       *ngIf="checkButton && selectStart < 921599 && selectNumberSignal <= 7680"
     >
       <ion-card padding>
-        <!-- <app-chart></app-chart> -->
-        <div>
-          <div style="display: block">
-            <canvas
-              height="100"
-              width="100"
-              baseChart
-              [datasets]="barChartData"
-              [labels]="barChartLabels"
-              [options]="barChartOptions"
-              [legend]="barChartLegend"
-              [chartType]="barChartType"
-            ></canvas>
-          </div>
-        </div>
+        <app-chart *ngIf="signals" [signals]="signals"></app-chart>
       </ion-card>
       <ion-card padding *ngIf="Statistics">
         <h5>Statistics</h5>
@@ -89,21 +75,11 @@
       </ion-card>
       <ion-card padding>
         <h5>BARCHART</h5>
-        <!-- <div *ngIf="signals">
-          <app-chart [signals]="signals"></app-chart>
-        </div> -->
-
-        <div style="display: block">
-          <canvas
-            height="400"
-            width="400"
-            baseChart
-            [datasets]="barData"
-            [labels]="barlabel"
-            [options]="barChartOptions1"
-            [legend]="barChartLegend"
-            chartType="bar"
-          ></canvas>
+        <div *ngIf="distribution">
+          <app-chart
+            [signals]="signals"
+            [distribution]="distribution"
+          ></app-chart>
         </div>
       </ion-card>
     </div>

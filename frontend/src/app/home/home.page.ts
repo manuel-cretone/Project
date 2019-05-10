@@ -27,40 +27,8 @@ export class HomePage implements OnInit {
   checkButton = false;
   Channels;
   Statistics: Statistics;
-  distribution = { hist: [], bins: [] };
-  ////////////////////////////////////////////////////////////////
-  public barChartOptions: any = {
-    scaleShowVerticalLines: false,
-    responsive: true,
-    fill: false,
-    scales: {
-      xAxes: [{
-          ticks: {
-              autoSkip: true,
-              autoSkipPadding: 50
-          }
-      }]
-  },
-  elements: {
-    point: {
-        radius: 0
-    }
-  }
-  };
-  public barChartOptions1: any = {
-    scaleShowVerticalLines: false,
-    responsive: true,
-    fill: false,
-  };
-  public barChartLabels: string[] = [];
-  public barChartType = 'line';
-  public barChart = 'bar';
-  public barChartLegend = true;
+  distribution: { hist: []; bins: [] };
 
-  public barChartData: any[] = [{ data: [], label: 'Series A' }];
-  public barData: any[] = [{ data: [], label: 'Series A' }];
-  public barlabel: string[] = [];
-  ///////////////////////////////////////////////////////////////
   ngOnInit() {}
 
   async signal(channel, start, numberSignals) {
@@ -110,10 +78,6 @@ export class HomePage implements OnInit {
         this.selectStart,
         this.selectNumberSignal
       );
-      this.barChartData = [
-        { data: this.signals.valori, label: this.selectChannel, fill: false }
-      ];
-      this.barChartLabels = this.signals.timeScale;
     }
   }
 
@@ -133,13 +97,5 @@ export class HomePage implements OnInit {
       numberSignals
     );
     console.log(this.distribution);
-    this.barData = [
-      {
-        data: this.distribution.hist,
-        label: this.selectChannel,
-        fill: false
-      }
-    ];
-    this.barlabel = this.distribution.bins;
   }
 }
