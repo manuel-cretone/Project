@@ -4,37 +4,30 @@ import numpy as np
 import sys
 import math
 sys.path.insert(0, '../newupload')
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import os
 
 # from service.file_service import *
 # from service.statisticService import *
 
 global file_path
 file_path = "C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\media\\chb01_01.edf"
+global discard
+discard = 256 * 60 * 5
 
 
-# def createListFile(name, split):
-#     c = 0
-#     for i in split:
-#         a = str(c)
-#         np.savetxt(name + a + ".txt", i)
-#         c = c+1
-def createListFile(array, target):
-    df = pd.DataFrame(columns=['value', 'target'])
-    for i in range(array.shape[0]):
-        print("IIIIIIIIII")
-        print(i)
-        raw_data = {'value': array[i],
-                    'target': target
-                    }
-        df = df.append(raw_data, ignore_index=True)
-
-    print("Raw Data")
-    print(df)
-    print(df.shape)
-    # df = pd.DataFrame(raw_data, columns=['value', 'target'])
-    #df.to_csv('output.csv', index=False, header=True)
-    return df
-       # print(i)
+# def createListFile(array, target):
+#     df = pd.DataFrame(columns=['value', 'target'])
+#     for i in range(array.shape[0]):
+#         # print(i)
+#         # raw_data = np.array(( array[i], target))
+#         raw_data = {'value': array[i],
+#                     'target': target
+#                     }
+#         df = df.append(raw_data, ignore_index=True)
+#     return df
 
 # prende in input i secondi in cui inizia la scarica e ritorna a quale segnale
 #  inizia la scarica
@@ -48,39 +41,24 @@ def obtainValue(timeStart, timeStop):
     return numberOfStart, numberStop, numberOfSignals
 
 
-# def overlapping(a, w, o):
-#     if(a.size < w):
-#         return np.empty((1,w))
-#     sh = (a.size - w + 1, w)
-#     st = a.strides * 2
-#     view = np.lib.stride_tricks.as_strided(a, strides=st, shape=sh)[0::o]
-#     return view
 
-
-def myOverlapping(array, window, overlapping):
-    if (overlapping < 1):
-        raise Exception("overlapping must be integer > 1")
+def myOverlapping(array, window, stride):
+    if (stride < 1):
+        raise Exception("stride must be integer > 1")
     if(array.size < window):
         return np.append(array, np.zeros(window - array.size)).reshape((1, window))
     a=0
     b=window
     result = array[:window]
-    passi = math.ceil((array.size - window + 1)/overlapping)
+    passi = math.ceil((array.size - window + 1)/stride)
     for p in range(passi-1):
-        a = a + overlapping
-        b = b + overlapping
+        a = a + stride
+        b = b + stride
         result = np.append(result, array[a:b])
     result = result.reshape((-1, window))
 
     return result
 
-
-# def seizureSignals(channel, timeStart, timeStop):
-#     start, stop, len = obtainValue(timeStart, timeStop)
-#     f = pyedflib.EdfReader(file_path)
-#     signals = f.readSignal(channel, start, len)
-#     x = np.array(signals)
-#     return x
 
 
 def getSignals(file_path, channel, start=0, len=None):
@@ -93,23 +71,30 @@ def getSignals(file_path, channel, start=0, len=None):
     return x
 
 
-# def spliteArray(signals, sizeWindow):
-#     x = np.array(signals)
-#     split = np.array_split(x, sizeWindow)
-#     return split
-
-
-def getDataset(file_path, channel, seizureStart, seizureEnd, windowSize, overlapping):
+def getDataset(file_path, channel, seizureStart, seizureEnd, windowSize, stride):
     startSeizureSignal, stopSeizureSignal, len = obtainValue(seizureStart , seizureEnd)
-    seizure = getSignals(file_path, channel=0, start=startSeizureSignal, len=len)
-    overlapSeizure = myOverlapping(seizure, windowSize, overlapping)
+    seizure = getSignals(file_path, channel=channel, start=startSeizureSignal, len=len)
+    overlapSeizure = myOverlapping(seizure, windowSize, stride)
     nSeizurewWindows = overlapSeizure.shape[0]
 
-    valuesPre = getSignals(file_path, channel = channel, start = 0, len=startSeizureSignal)
-    valuesPost = getSignals(file_path, channel = channel, start= stopSeizureSignal, len = None)
+    newStart = startSeizureSignal - discard
+    newEnd = stopSeizureSignal + discard
+
+    if(newStart<0 or newEnd > 921600):
+        raise Exception("Overflow due to discard")
+
+    windowsPre = getSignals(file_path, channel = channel, start = 0, len=newStart)
+    windowsPost = getSignals(file_path, channel = channel, start= newEnd, len = None)
       # add control in order to not consider all values
-    windowsPre = myOverlapping(valuesPre, windowSize, windowSize)
-    windowsPost = myOverlapping(valuesPost, windowSize, windowSize)
+    # windowsPre = myOverlapping(valuesPre, windowSize, windowSize)
+    # windowsPost = myOverlapping(valuesPost, windowSize, windowSize)
+    len1 = math.floor(windowsPre.shape[0] / windowSize) * windowSize
+    windowsPre = windowsPre[0:len1]
+    len2 = math.floor(windowsPost.shape[0] / windowSize) * windowSize
+    windowsPost = windowsPost[0:len2]
+
+    windowsPre = windowsPre.reshape(-1,windowSize)
+    windowsPost = windowsPost.reshape(-1,windowSize)
     
     if(windowsPre.shape[0] < (nSeizurewWindows/2)):
         nonSeizure = np.concatenate((windowsPre, windowsPost[:(nSeizurewWindows-windowsPre.shape[0])]))
@@ -120,29 +105,34 @@ def getDataset(file_path, channel, seizureStart, seizureEnd, windowSize, overlap
     
     return overlapSeizure, nonSeizure
 
+def createDataset(filename, seizureStart, seizureEnd, windowSize, stride):
+    
+    os.mkdir(filename)
+    for channel in range(23):
+        try:
+            seizureSignals, normalSignals = getDataset("./edf_files/"+filename+".edf", channel, seizureStart, seizureEnd, windowSize, stride)
+            signals = np.concatenate((seizureSignals, normalSignals))
+            df = pd.DataFrame(data = signals)
+            df.to_csv("./"+filename+'/chn'+channel.__str__()+'.csv', index=False, header=False)
+        except:
+            print("file ignored: ", filename)
+            pass
+        
+    target = np.concatenate((np.ones(seizureSignals.shape[0], dtype=np.int64), np.zeros(normalSignals.shape[0], dtype=np.int64)))
+    df_target = pd.DataFrame(data=target)
+    df_target.to_csv("./"+filename+'/target.csv', index=False, header=False)
+
+
+
 def main():
-
-    channel = 0
-    seizureStart = 100
-    seizureEnd = 101
-    windowSize = 50
-    overlapping = 30
-
-    seizureSignals, normalSignals = getDataset(file_path, channel, seizureStart, seizureEnd, windowSize, overlapping)
-    print("seizure", seizureSignals.shape)
-    print("normal", normalSignals.shape)
-    # createListFile("seizure", seizureSignals)
-    # createListFile("normal", normalSignals)
-    df_seizure = createListFile(seizureSignals, 1)
-    df_notSeizure = createListFile(seizureSignals, 0)
-    df = df_seizure.append(df_notSeizure, ignore_index=True)
-    df.to_csv('output.csv', index=False, header=True)
-
-    data = pd.read_csv("output.csv")
-    print(data)
-    # train = pd.read_csv("train.csv")   
-    # x_train = train["text"].values
-    # y_train = train['target'].values
+    windowSize = 256*30
+    stride = 10
+    file_list = pd.read_csv("./edf_files/files.csv", header = 0, sep=";")
+    for i in range(file_list.shape[0]):
+        filename = file_list["file"][i]
+        seizureStart = file_list["start"][i]
+        seizureEnd = file_list["stop"][i]
+        createDataset(filename, seizureStart, seizureEnd, windowSize, stride)
 
 
 if __name__ == '__main__':
