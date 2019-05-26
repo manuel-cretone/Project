@@ -10,6 +10,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.shortcuts import redirect
 from django.views import View
+import pandas as pd
+import torch
+import torch.nn as nn
+import shutil
 
 import sys
 sys.path.insert(0, '../CNN')
@@ -18,7 +22,9 @@ sys.path.insert(0, '../CNN')
 
 from .service.file_service import *
 from .service.statisticService import *
-
+from .service.train import *
+from .service.data_generator import *
+from .service.train import ConvNet
 
 global file_path
 file_path = None
@@ -128,3 +134,41 @@ class Distribution(View):
     def post(self, request):
         response = {"error": "Method not allowed"}
         return JsonResponse(response, status=405)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class Predict(View):
+    def get(self, request):
+        windowSize = 256*30
+        nomeFile = "provanome/"
+        windowsGenerator(nomeFile, windowSize)
+        
+        model = ConvNet()      
+        model.load_state_dict(torch.load("C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\CNN\\trained_model_20190525-133930.pth"))
+        model = model.eval()
+
+        dataset = EvalDataset(nomeFile)
+        train_loader = DataLoader(dataset=dataset,
+                                batch_size=1,
+                                shuffle=False)
+        
+        for i, data in enumerate(train_loader):
+            result = model(data)
+            _, predicted = torch.max(result.data, 1)
+            print("finestra",i,": ",predicted)
+
+        
+
+#create a folder with one csv file for each channel
+def windowsGenerator(file_name, windowSize):
+    shutil.rmtree('./'+file_name, ignore_errors = True)
+    os.mkdir(file_name)
+    for channel in range(23):
+        signals = getSignals(file_path, channel)
+        #last seconds discarded
+        len = math.floor(signals.size / windowSize) * windowSize
+        signals = signals[:len]
+
+        signals = signals.reshape((-1, windowSize))
+        df = pd.DataFrame(data = signals)
+        df.to_csv("./"+file_name+'/chn'+channel.__str__()+'.csv', index=False, header=False)

@@ -7,5 +7,6 @@ urlpatterns = [
     path('values/', views.Values.as_view(), name="getValues"),
     path('statistics/', views.Statistics.as_view(), name="getStatistics"),
     path('distribution/', views.Distribution.as_view(), name="distribution"),
+    path('predict/', views.Predict.as_view(), name="predict"),
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]
