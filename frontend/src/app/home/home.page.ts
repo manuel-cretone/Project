@@ -1,10 +1,9 @@
-import { ChartComponent } from './../component/chart/chart.component';
 import { HomeService } from './home.service';
 import { Serverdata } from './../interface/Serverdata.interface';
 import { UploadData } from '../interface/UploadData.interface';
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ServiceService } from '../service/service.service';
-import { Chart } from 'chart.js';
+
 import { Statistics } from '../interface/Statistics.interface';
 
 @Component({
@@ -60,6 +59,11 @@ export class HomePage implements OnInit {
 
   async draw() {
     this.checkButton = true;
+    console.log(this.selectChannel);
+    console.log(this.Channels);
+    this.onUpload();
+    console.log('DATTTTTAAA');
+    console.log(this.upload);
     if (this.checkButton) {
       const channel = this.homeService.numberOfList(
         this.upload.channelLabels,
@@ -79,6 +83,10 @@ export class HomePage implements OnInit {
         this.selectNumberSignal
       );
     }
+    this.upload = null;
+    this.selectChannel = null;
+    this.selectStart = null;
+    this.selectNumberSignal = null;
   }
 
   async getStatistics(channel, start, numberSignals) {

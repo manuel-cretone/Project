@@ -52,4 +52,11 @@ export class ServiceService {
       })
       .toPromise()) as { hist: any; bins: any };
   }
+  addingNumberOfLineChart(channel: number[][]) {
+    for (let i = 0; i < channel[1].length; i++) {
+      channel[1][i] += 100;
+    }
+
+    return channel;
+  }
 }

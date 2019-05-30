@@ -14,6 +14,7 @@ import { ChartComponent } from '../component/chart/chart.component';
     FormsModule,
     IonicModule,
     ChartsModule,
+
     RouterModule.forChild([
       {
         path: '',
