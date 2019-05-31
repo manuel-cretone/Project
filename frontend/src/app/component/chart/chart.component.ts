@@ -2,6 +2,7 @@ import { Serverdata } from './../../interface/Serverdata.interface';
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { ServiceService } from '../../service/service.service';
 import * as Highcharts from 'highcharts';
+import { Chart, StockChart } from 'angular-highcharts';
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
@@ -13,32 +14,55 @@ export class ChartComponent implements OnChanges {
   @Input('signals') signals: Serverdata;
   // tslint:disable-next-line:no-input-rename
   @Input('distribution') distribution: { hist: []; bins: [] };
-
-  data = [[1.2, 2], [2.4, 3]];
-  multi: number[][] = [[1, 2, 3], [23, 24, 25]];
+  public highChartsOptions: Highcharts.Options;
   barChartLabels = new Array<any>();
-  barChartType = '';
-  barChartOptions = {
-    scaleShowVerticalLines: false,
-    responsive: true,
-    scales: {
-      xAxes: [
-        {
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 50
-          }
-        }
-      ]
-    },
-    elements: {
-      point: {
-        radius: 0
-      }
-    }
-  };
+  barChartType: string;
+  barChartData = [];
 
-  public barChartData: any[] = [{ data: [], label: '' }];
+  // barChartOptions = [];
+  barChartOptions = {
+    chart: {
+      type: this.barChartType
+    },
+    title: {
+      text: 'Monthly Average Temperature'
+    },
+    subtitle: {
+      text: 'Source: WorldClimate.com'
+    },
+    xAxis: {
+      categories: []
+    },
+    yAxis: {
+      title: {
+        text: 'Temperature °C'
+      }
+    },
+    tooltip: {
+      valueSuffix: ' °C'
+    },
+    series: {}[]
+  };
+  highcharts = new Highcharts.Chart(this.barChartOptions);
+  //   scaleShowVerticalLines: false,
+  //   responsive: true,
+  //   scales: {
+  //     xAxes: [
+  //       {
+  //         ticks: {
+  //           autoSkip: true,
+  //           autoSkipPadding: 50
+  //         }
+  //       }
+  //     ]
+  //   },
+  //   elements: {
+  //     point: {
+  //       radius: 0
+  //     }
+  //   }
+  // };
+
   /////////////////////////////////////////////////////////////////////
   // Highcharts = Highcharts;
   // series = [];
@@ -93,23 +117,25 @@ export class ChartComponent implements OnChanges {
     }
   }
   async fillLineChart(signal: Serverdata) {
-    this.service.addingNumberOfLineChart(this.multi);
     this.barChartType = 'line';
-    this.barChartData = [
-      {
-        data: signal.valori,
-        label: signal.canale,
-        fill: false
-      }
-    ];
-    this.barChartLabels = signal.timeScale;
+    this.barChartData = signal.valori;
+    console.log('FILL LINE CHART');
+    console.log(this.barChartData);
+    this.barChartOptions.xAxis.categories = [];
+    this.barChartOptions.series[0].data.pop();
+    this.barChartOptions.series[0].data.push(this.barChartData);
+    this.highcharts.redraw(true);
+    // this.highcharts.setOptions(this.highChartsOptions);
   }
 
   // Statistiche sul grafico bar chart
   fillBarChart(distr: { hist: []; bins: [] }) {
     this.barChartType = 'bar';
-    this.barChartData = [{ data: distr.hist, label: '', fill: false }];
-    this.barChartLabels = distr.bins;
-    this.barChartOptions.scales.xAxes = [];
+    // this.barChartData = distr.hist;
+    // this.barChartLabels = distr.bins;
+    this.barChartOptions.chart.type = this.barChartType;
+    this.barChartOptions.xAxis.categories = distr.bins;
+    this.barChartOptions.series[0].data = distr.hist;
+    // this.barChartOptions.scales.xAxes = [];
   }
 }

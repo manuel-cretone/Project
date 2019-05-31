@@ -7,13 +7,14 @@ import { RouterModule } from '@angular/router';
 import { ServiceService } from '../service/service.service';
 import { HomePage } from './home.page';
 import { ChartComponent } from '../component/chart/chart.component';
-
+import { HighchartsChartModule } from 'highcharts-angular';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     ChartsModule,
+    HighchartsChartModule,
 
     RouterModule.forChild([
       {
