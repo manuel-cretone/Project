@@ -28,6 +28,8 @@ from .service.train import ConvNet
 
 global file_path
 file_path = None
+global channels
+global nSignals
 # file_path = "C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\media\\chb01_01.edf"
 
 
@@ -54,7 +56,11 @@ class Upload(View):
                 extension_recognise(file_path)
             except:
                 return JsonResponse({"error": "File not supported"}, status=415)
-            return JsonResponse(file_info(file_path), status = 200)
+            response = file_info(file_path)
+            global channels, nSignals
+            channels = response["channels"]
+            nSignal = response["nSignals"]
+            return JsonResponse(response, status = 200)
         else:
             return JsonResponse({"error": "no myfile field"}, status=400)
     
@@ -63,19 +69,6 @@ class Upload(View):
         return JsonResponse(response, status=405)
 
 
-
-# def manageParam(request):
-#     if request.method == 'POST':
-#         channel = request.POST.get("channel", 0)
-#         start = request.POST.get("start", 0)
-#         len = request.POST.get("len", 30)
-#     if request.method == 'GET':
-#         channel = request.GET.get("channel", 0)
-#         start = request.GET.get("start", 0)
-#         len = request.GET.get("len", 30)
-#     # return readFile(channel, start, len)
-#     return (channel, start, len)
-
 def readParams(request):
     channel = request.GET.get("channel", 0)
     start = request.GET.get("start", 0)
@@ -83,7 +76,7 @@ def readParams(request):
     return (channel, start, len)
 
 
-#view per leggere valori
+#view per leggere i valori
 @method_decorator(csrf_exempt, name='dispatch')
 class Values(View):
     def get(self, request):
@@ -104,11 +97,34 @@ class Values(View):
         response = {"error": "Method not allowed"}
         return JsonResponse(response, status=405)
 
+
+#view per ottenere una finestra con tutti i canali 
+@method_decorator(csrf_exempt, name='dispatch')
+class CompleteWindow(View):
+    def get(self, request):
+        global channels
+        channel, start, len = readParams(request)
+        data = {"inizio":start,
+                "dimensione":len
+                }
+        for i in range(channels):
+            values, timeScale = readFile(file_path, channel, start, len)
+            data["chn"+str(i)] = values
+        data["timeScale"] = timeScale
+        response = JsonResponse(data, status = 200)
+        return response
+
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
+
+
 #view per ottenere statistiche
 class Statistics(View):
     def get(self, request):
         channel, start, len = readParams(request)
-        values, timeScale = readFile(file_path, channel, start, len)
+        values, timeScale = readFile(file_path, channel, start=0, len=None)
+        
         data = getStatistic(values)
         response = JsonResponse(data, status = 200)
         return response
@@ -122,7 +138,7 @@ class Statistics(View):
 class Distribution(View):
     def get(self, request):
         channel, start, len = readParams(request)
-        values, timeScale = readFile(file_path, channel, start, len)
+        values, timeScale = readFile(file_path, channel, start=0, len=None)
         hist, bins = count_occurrences(values, 20) #esempio con parametro 2 
         data = {
             "hist": hist,
