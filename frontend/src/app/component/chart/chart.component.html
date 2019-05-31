@@ -1,5 +1,5 @@
 <div>
-  <div style="display: block">
+  <!-- <div style="display: block">
     <canvas
       baseChart
       [datasets]="barChartData"
@@ -8,5 +8,9 @@
       legend="false"
       [chartType]="barChartType"
     ></canvas>
-  </div>
+  </div> -->
+  <highcharts-chart
+    [Highcharts]="highcharts"
+    [options]="barChartOptions"
+  ></highcharts-chart>
 </div>

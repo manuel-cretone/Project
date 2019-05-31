@@ -10,12 +10,13 @@
 </ion-header>
 
 <ion-content>
+  <!-- <app-chart></app-chart> -->
   <input type="file" value="Click" (change)="onFileSelected($event)" />
   <p *ngIf="!checkFile">Carica il file</p>
   <br />
   <ion-button type="submit" (click)="onUpload()">submit</ion-button>
-  <ion-button type="submit" (click)="signal()">signal</ion-button>
   <br />
+
   <div *ngIf="checkFile">
     <ion-item>
       <ion-label>Seleziona Canale</ion-label>
@@ -59,6 +60,7 @@
     >
       Parametri non corretti
     </p>
+
     <div
       *ngIf="checkButton && selectStart < 921599 && selectNumberSignal <= 7680"
     >
