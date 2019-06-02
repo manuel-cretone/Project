@@ -59,6 +59,7 @@ def file_info(filePath):
     startDate = file.getStartdatetime()
     fileDuration = file.getFileDuration()
     channels = len(file.getSignalLabels())
+    sampleFrequency = file.getSampleFrequency(0)
     channelLabels = np.empty(channels)
     nSignals = np.empty(channels)
     channelLabels = file.getSignalLabels()
@@ -69,6 +70,7 @@ def file_info(filePath):
         "startDate": startDate,
         "fileDuration": fileDuration,
         "channels": channels,
+        "sampleFrequency": sampleFrequency,
         "channelLabels": channelLabels,
         "nSignals": nSignals,
 

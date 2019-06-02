@@ -37,36 +37,44 @@ global nSignals
 @method_decorator(csrf_exempt, name='dispatch')
 class Upload(View):
     def post(self, request):
-        if len(request.FILES) == 0:
-            return JsonResponse({"error": "No file uploaded"}, status=400)
-        elif request.FILES.get('myfile', False):
+        subFolder = "up"
+        cleanFolder(subFolder)
+        filename, response, status = handleFile(request, subFolder)
+        if(status==200):
             fs = FileSystemStorage()
-            dir = fs.base_location
-            files = os.listdir(dir)
-            for f in files:
-                os.remove(os.path.join(dir, f))
-            myfile = request.FILES['myfile']
-            filename = fs.save(myfile.name, myfile)
-            # uploaded_file_url = fs.url(filename)
-            # file_path = absolute_path(uploaded_file_url)
-            global file_path
-            file_path = os.path.join(dir, filename)
-            print("path",file_path)
-            try:
-                extension_recognise(file_path)
-            except:
-                return JsonResponse({"error": "File not supported"}, status=415)
-            response = file_info(file_path)
-            global channels, nSignals
+            global file_path, channels, nSignals
+            file_path = os.path.join(fs.base_location, filename)
             channels = response["channels"]
             nSignal = response["nSignals"]
-            return JsonResponse(response, status = 200)
-        else:
-            return JsonResponse({"error": "no myfile field"}, status=400)
+        return JsonResponse(response, status=status)
     
     def get(self, request):
         response = {"error": "Method not allowed"}
         return JsonResponse(response, status=405)
+
+def handleFile(request, subFolder):
+    if len(request.FILES) == 0:
+            return ("", {"error": "No file uploaded"}, 400)
+    elif request.FILES.get('myfile', False):
+        fs = FileSystemStorage()
+        myfile = request.FILES['myfile']
+        filename = fs.save(os.path.join(subFolder, myfile.name), myfile)
+        file_path = os.path.join(fs.base_location, filename)
+        try:
+            extension_recognise(file_path)
+        except:
+            return ("", {"error": "File not supported"}, 415)
+        response = file_info(file_path)
+        return (filename, response, 200)
+    else:
+        return ("", {"error": "no myfile field"}, 400)
+
+def cleanFolder(subFolder):
+    fs = FileSystemStorage()
+    dir = os.path.join(fs.base_location, subFolder)
+    files = os.listdir(dir)
+    for f in files:
+        os.remove(os.path.join(dir, f))
 
 
 def readParams(request):
@@ -75,6 +83,29 @@ def readParams(request):
     len = request.GET.get("len", 30)
     return (channel, start, len)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UploadTraining(View):
+    def post(self, request):
+        subFolder = "training"
+        # cleanFolder(subFolder)
+        filename, response, status = handleFile(request, subFolder)
+        if(status==200):
+            # fs = FileSystemStorage()
+            # file_path = os.path.join(fs.base_location, filename)
+            # channels = response["channels"]
+            # nSignal = response["nSignals"]
+            # sampleFrequency = response["sampleFrequency"]
+
+            seizureStart = request.POST.get("seizureStart", 0)
+            seizureEnd = request.POST.get("seizureEnd", 0)
+            response["seizureStart"] = seizureStart
+            response["seizureEnd"] = seizureEnd
+        return JsonResponse(response, status=status)
+    
+    def get(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
 
 #view per leggere i valori
 @method_decorator(csrf_exempt, name='dispatch')
@@ -107,9 +138,12 @@ class CompleteWindow(View):
         data = {"inizio":start,
                 "dimensione":len
                 }
+        window = []
         for i in range(channels):
             values, timeScale = readFile(file_path, channel, start, len)
-            data["chn"+str(i)] = values
+            # data["chn"+str(i)] = values
+            window.append(values)
+        data["window"] = window
         data["timeScale"] = timeScale
         response = JsonResponse(data, status = 200)
         return response
