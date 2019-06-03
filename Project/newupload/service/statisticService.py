@@ -33,7 +33,7 @@ def count_occurrences(values, width):
     # print("start",base,"end", end)
     # print(f"BINS?: {b}")
     # array, bins = np.histogram(values, bins=math.ceil(b))
-    array, bins = np.histogram(values, bins='sturges')
+    array, bins = np.histogram(values, bins='rice')
     # print("VALORI", values)
     print("num bins", bins.size)
     # print(array)

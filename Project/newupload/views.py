@@ -115,15 +115,17 @@ class Values(View):
 class CompleteWindow(View):
     def get(self, request):
         global channels
-        channel, start, len = readParams(request)
+        channel, start, lenght = readParams(request)
         data = {"inizio":start,
-                "dimensione":len
+                "dimensione":lenght
                 }
         window = []
         for i in range(channels):
-            values, timeScale = readFile(file_path, channel, start, len)
+            values, timeScale = readFile(file_path, channel, start, lenght)
             # data["chn"+str(i)] = values
             window.append(values)
+        nChannels = int(len(window))
+        data["nChannels"] = nChannels
         data["window"] = window
         data["timeScale"] = timeScale
         response = JsonResponse(data, status = 200)
@@ -137,7 +139,7 @@ class CompleteWindow(View):
 #view per ottenere statistiche
 class Statistics(View):
     def get(self, request):
-        channel, start, len = readParams(request)
+        channel, start, length = readParams(request)
         values, timeScale = readFile(file_path, channel, start=0, len=None)
         
         data = getStatistic(values)
@@ -152,7 +154,7 @@ class Statistics(View):
 #view per ottenere istogramma valori
 class Distribution(View):
     def get(self, request):
-        channel, start, len = readParams(request)
+        channel, start, length = readParams(request)
         values, timeScale = readFile(file_path, channel, start=0, len=None)
         hist, bins = count_occurrences(values, 20) #esempio con parametro 2 
         data = {
@@ -234,8 +236,8 @@ def windowsGenerator(file_name, windowSize):
     for channel in range(23):
         signals = getSignals(file_path, channel)
         #last seconds discarded
-        len = math.floor(signals.size / windowSize) * windowSize
-        signals = signals[:len]
+        length = math.floor(signals.size / windowSize) * windowSize
+        signals = signals[:length]
 
         signals = signals.reshape((-1, windowSize))
         df = pd.DataFrame(data = signals)
@@ -245,5 +247,5 @@ def windowsGenerator(file_name, windowSize):
 def readParams(request):
     channel = request.GET.get("channel", 0)
     start = request.GET.get("start", 0)
-    len = request.GET.get("len", 30)
-    return (channel, start, len)
+    length = request.GET.get("len", 30)
+    return (channel, start, length)
