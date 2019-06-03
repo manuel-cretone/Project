@@ -23,14 +23,14 @@ sys.path.insert(0, '../CNN')
 from .service.file_service import *
 from .service.statisticService import *
 from .service.train import *
-from .service.data_generator import *
+
 from .service.train import ConvNet
+from .service.dataset_service import *
 
 global file_path
 file_path = None
 global channels
 global nSignals
-# file_path = "C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\media\\chb01_01.edf"
 
 
 #view per file upload
@@ -43,7 +43,7 @@ class Upload(View):
         if(status==200):
             fs = FileSystemStorage()
             global file_path, channels, nSignals
-            file_path = os.path.join(fs.base_location, filename)
+            file_path = os.path.join(fs.base_location, subFolder, filename)
             channels = response["channels"]
             nSignal = response["nSignals"]
         return JsonResponse(response, status=status)
@@ -52,60 +52,40 @@ class Upload(View):
         response = {"error": "Method not allowed"}
         return JsonResponse(response, status=405)
 
-def handleFile(request, subFolder):
-    if len(request.FILES) == 0:
-            return ("", {"error": "No file uploaded"}, 400)
-    elif request.FILES.get('myfile', False):
-        fs = FileSystemStorage()
-        myfile = request.FILES['myfile']
-        filename = fs.save(os.path.join(subFolder, myfile.name), myfile)
-        file_path = os.path.join(fs.base_location, filename)
-        try:
-            extension_recognise(file_path)
-        except:
-            return ("", {"error": "File not supported"}, 415)
-        response = file_info(file_path)
-        return (filename, response, 200)
-    else:
-        return ("", {"error": "no myfile field"}, 400)
 
-def cleanFolder(subFolder):
-    fs = FileSystemStorage()
-    dir = os.path.join(fs.base_location, subFolder)
-    files = os.listdir(dir)
-    for f in files:
-        os.remove(os.path.join(dir, f))
-
-
-def readParams(request):
-    channel = request.GET.get("channel", 0)
-    start = request.GET.get("start", 0)
-    len = request.GET.get("len", 30)
-    return (channel, start, len)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class UploadTraining(View):
     def post(self, request):
         subFolder = "training"
-        # cleanFolder(subFolder)
         filename, response, status = handleFile(request, subFolder)
         if(status==200):
-            # fs = FileSystemStorage()
-            # file_path = os.path.join(fs.base_location, filename)
-            # channels = response["channels"]
-            # nSignal = response["nSignals"]
-            # sampleFrequency = response["sampleFrequency"]
+            fs = FileSystemStorage()
+            channels = response["channels"]
+            nSignal = response["nSignals"]
+            sampleFrequency = response["sampleFrequency"]
 
             seizureStart = request.POST.get("seizureStart", 0)
             seizureEnd = request.POST.get("seizureEnd", 0)
-            response["seizureStart"] = seizureStart
-            response["seizureEnd"] = seizureEnd
+
+            df = pd.DataFrame(data={"filename": [filename], 
+                                    "seizureStart": [seizureStart], 
+                                    "seizureEnd": [seizureEnd],
+                                    "channels": [channels],
+                                    "nSignal": [nSignal],
+                                    "sampleFrequency": [sampleFrequency],
+                                    })
+            file_list = os.path.join(fs.base_location, subFolder, "file_list.csv")
+            with open(file_list,'a') as fd:
+                df.to_csv(fd, header=False, index=False)
+            response.update({"seizureStart": seizureStart, "seizureEnd": seizureEnd})
         return JsonResponse(response, status=status)
     
     def get(self, request):
         response = {"error": "Method not allowed"}
         return JsonResponse(response, status=405)
+
 
 #view per leggere i valori
 @method_decorator(csrf_exempt, name='dispatch')
@@ -186,6 +166,43 @@ class Distribution(View):
         return JsonResponse(response, status=405)
 
 
+class Train(View):
+    def get(self, request):
+        
+        windowSize = request.GET.get("windowSize", 1)
+        stride = request.GET.get("stride", 1)
+
+        fs = FileSystemStorage()
+        file_list = pd.read_csv(os.path.join(fs.base_location, "training", "file_list.csv"), header = 0, sep=",")
+        #crea nuovo dataset (diviso in files pkl)
+        for i in range(file_list.shape[0]):
+            filename = file_list["filename"][i]
+            seizureStart = file_list["seizurestart"][i]
+            seizureEnd = file_list["seizureEnd"][i]
+            channels = file_list["channels"][i]
+            nSignal = file_list["nSignal"][i]
+            sampleFrequency = file_list["sampleFrequency"][i]
+
+            s, n = createDataset(filename, seizureStart, seizureEnd, windowSize, stride, sampleFrequency, nSignal, channels)
+        
+        #allena rete e salva modello
+
+        response = {
+            "seizureWindows": s,
+            "normalWindows": n
+        }
+        return JsonResponse(response, status=200)
+        
+
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
+
+
+
+
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
     def get(self, request):
@@ -222,3 +239,10 @@ def windowsGenerator(file_name, windowSize):
         signals = signals.reshape((-1, windowSize))
         df = pd.DataFrame(data = signals)
         df.to_csv("./"+file_name+'/chn'+channel.__str__()+'.csv', index=False, header=False)
+
+
+def readParams(request):
+    channel = request.GET.get("channel", 0)
+    start = request.GET.get("start", 0)
+    len = request.GET.get("len", 30)
+    return (channel, start, len)
