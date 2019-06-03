@@ -1,18 +1,11 @@
 import os
 from django.shortcuts import redirect
-# import sys
-# sys.path.insert(0, '../newupload')
-# import newupload as newupload
 import pyedflib
 import numpy as np
-# from newupload import views 
 import datetime
 import pandas as pd
-
-
-# def absolute_path(file):
-#     path = os.getcwd() + file
-#     return path
+from django.core.files.storage import FileSystemStorage
+import shutil
 
 
 # [check extension file if .edf, .txt, .pdf]
@@ -45,7 +38,6 @@ def read_edf_file(filePath, channel, start=0, len=None):
         freq = file.samplefrequency(channel)
         second = 1/freq
         startTime = file.getStartdatetime() + datetime.timedelta(seconds=start*second)
-
         timeScale = pd.date_range(startTime, freq = f"{second}S", periods=len).tolist()
     
     valori = file.readSignal(channel, start=start, n=len).tolist()
@@ -61,9 +53,10 @@ def file_info(filePath):
     channels = len(file.getSignalLabels())
     sampleFrequency = file.getSampleFrequency(0)
     channelLabels = np.empty(channels)
-    nSignals = np.empty(channels)
+    # nSignals = np.empty(channels).tolist()
     channelLabels = file.getSignalLabels()
-    nSignals = file.getNSamples().tolist()
+    
+    nSignals = file.getNSamples().tolist()[0]
 
     data = {
         "file": filePath, 
@@ -71,8 +64,39 @@ def file_info(filePath):
         "fileDuration": fileDuration,
         "channels": channels,
         "sampleFrequency": sampleFrequency,
-        "channelLabels": channelLabels,
         "nSignals": nSignals,
-
+        "channelLabels": channelLabels,
     }
     return data
+
+
+
+def handleFile(request, subFolder):
+    if len(request.FILES) == 0:
+            return ("", {"error": "No file uploaded"}, 400)
+    elif request.FILES.get('myfile', False):
+        fs = FileSystemStorage()
+        myfile = request.FILES['myfile']
+        filename = fs.save(os.path.join(subFolder, myfile.name), myfile)
+        filename = os.path.relpath(filename, subFolder)
+        file_path = os.path.join(fs.base_location, subFolder, filename)
+        try:
+            extension_recognise(file_path)
+        except:
+            return ("", {"error": "File not supported"}, 415)
+        response = file_info(file_path)
+        return (filename, response, 200)
+    else:
+        return ("", {"error": "no myfile field"}, 400)
+
+
+def cleanFolder(subFolder):
+    fs = FileSystemStorage()
+    dir = os.path.join(fs.base_location, subFolder)
+    # files = os.listdir(dir)
+    for r, directories, files in os.walk(dir):
+        for f in files:
+            os.remove(os.path.join(dir, f))
+        for d in directories:
+            shutil.rmtree(os.path.join(dir, d), ignore_errors = True)
+    

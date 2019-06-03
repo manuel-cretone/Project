@@ -9,6 +9,7 @@ urlpatterns = [
     path('statistics/', views.Statistics.as_view(), name="getStatistics"),
     path('distribution/', views.Distribution.as_view(), name="distribution"),
     path('predict/', views.Predict.as_view(), name="predict"),
-    path('uptraining/', views.UploadTraining.as_view(), name = "uptraining")
+    path('uptraining/', views.UploadTraining.as_view(), name = "uptraining"),
+    path('train/', views.Train.as_view(), name = "train")
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]
