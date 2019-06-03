@@ -16,34 +16,35 @@ export class ChartComponent implements OnChanges {
   @Input('distribution') distribution: { hist: []; bins: [] };
   public highChartsOptions: Highcharts.Options;
   barChartLabels = new Array<any>();
-  barChartType: string;
-  barChartData = [];
+  chartType: string;
+  barChartData = [1, 2];
+  highcharts = Highcharts;
+  barChartOptions;
+  yAxses;
 
   // barChartOptions = [];
-  barChartOptions = {
-    chart: {
-      type: this.barChartType
-    },
-    title: {
-      text: 'Monthly Average Temperature'
-    },
-    subtitle: {
-      text: 'Source: WorldClimate.com'
-    },
-    xAxis: {
-      categories: []
-    },
-    yAxis: {
+  loadData() {
+    this.barChartOptions = {
+      chart: {
+        type: this.chartType
+      },
       title: {
-        text: 'Temperature °C'
-      }
-    },
-    tooltip: {
-      valueSuffix: ' °C'
-    },
-    series: {}[]
-  };
-  highcharts = new Highcharts.Chart(this.barChartOptions);
+        text: 'Monthly Average Temperature'
+      },
+      subtitle: {
+        text: 'Source: WorldClimate.com'
+      },
+      xAxis: {
+        categories: [],
+        crosshair: true
+      },
+      yAxis: this.yAxses,
+      tooltip: {
+        valueSuffix: ''
+      },
+      series: [{ data: this.barChartData }]
+    };
+  }
   //   scaleShowVerticalLines: false,
   //   responsive: true,
   //   scales: {
@@ -110,6 +111,7 @@ export class ChartComponent implements OnChanges {
     console.log(this.signals);
     // this.chartHigh();
     this.fillLineChart(this.signals);
+    // this.fillAllChart();
     if (this.distribution) {
       console.log('siamo in DISTRIBUTION');
       console.log(this.distribution);
@@ -117,25 +119,56 @@ export class ChartComponent implements OnChanges {
     }
   }
   async fillLineChart(signal: Serverdata) {
-    this.barChartType = 'line';
+    this.chartType = 'line';
     this.barChartData = signal.valori;
-    console.log('FILL LINE CHART');
-    console.log(this.barChartData);
-    this.barChartOptions.xAxis.categories = [];
-    this.barChartOptions.series[0].data.pop();
-    this.barChartOptions.series[0].data.push(this.barChartData);
-    this.highcharts.redraw(true);
-    // this.highcharts.setOptions(this.highChartsOptions);
+    this.barChartOptions.xAxis.categories = signal.timeScale;
+    this.loadData();
   }
 
   // Statistiche sul grafico bar chart
   fillBarChart(distr: { hist: []; bins: [] }) {
-    this.barChartType = 'bar';
-    // this.barChartData = distr.hist;
-    // this.barChartLabels = distr.bins;
-    this.barChartOptions.chart.type = this.barChartType;
+    this.chartType = 'column';
+    this.barChartOptions.chart.type = this.chartType;
     this.barChartOptions.xAxis.categories = distr.bins;
-    this.barChartOptions.series[0].data = distr.hist;
+    this.barChartData = distr.hist;
+    this.loadData();
     // this.barChartOptions.scales.xAxes = [];
+  }
+  fillAllChart() {
+    console.log('ALL CHART');
+    const data = [];
+    let dat = [];
+    const seriesCount = 20;
+    const pointsCount = 100;
+    let axisTop = 50;
+    let range;
+    const axisHeight = 1100 / seriesCount;
+    const yAxis = [];
+
+    for (let i = 0; i < seriesCount; i++) {
+      range = Math.round(Math.random() * 100);
+      dat = [];
+      for (let j = 0; j < pointsCount; j++) {
+        data.push(Math.floor(Math.random() * range));
+      }
+      dat.push({
+        data: dat,
+        yAxis: i
+      });
+      yAxis.push({
+        title: {
+          text: ''
+        },
+        height: axisHeight,
+        top: axisTop,
+        offset: 0
+      });
+
+      axisTop += axisHeight + 12.5;
+    }
+
+    this.barChartData = dat;
+    this.yAxses = yAxis;
+    this.loadData();
   }
 }

@@ -5,6 +5,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ServiceService } from '../service/service.service';
 
 import { Statistics } from '../interface/Statistics.interface';
+import { __await } from 'tslib';
 
 @Component({
   selector: 'app-home',
@@ -43,6 +44,16 @@ export class HomePage implements OnInit {
     this.file = event.target.files[0];
   }
 
+  async allSignals(channel, start, numberSignals) {
+    await this.service
+      .getAllSignals(channel, start, numberSignals)
+      .then((data: any) => {
+        this.signals = data;
+      });
+    console.log('tutti i canali');
+    // console.log(this.signals.chn0);
+    // console.log(this.signals.chn1);
+  }
   async onUpload() {
     const uploadData = new FormData();
     if (this.file != null) {
@@ -69,7 +80,7 @@ export class HomePage implements OnInit {
         this.upload.channelLabels,
         this.selectChannel
       );
-
+      // await this.allSignals(channel, this.selectStart, this.selectNumberSignal);
       await this.signal(channel, this.selectStart, this.selectNumberSignal);
       // this.chart.fillLineChart(this.signals, this.selectChannel);
       await this.getStatistics(

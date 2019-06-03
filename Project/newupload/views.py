@@ -44,6 +44,7 @@ class Upload(View):
             fs = FileSystemStorage()
             global file_path, channels, nSignals
             file_path = os.path.join(fs.base_location, subFolder, filename)
+            print(file_path)
             channels = response["channels"]
             nSignal = response["nSignals"]
         return JsonResponse(response, status=status)

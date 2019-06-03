@@ -59,4 +59,16 @@ export class ServiceService {
 
     return channel;
   }
+  getAllSignals(channel: string, start: string, len: string) {
+    const params = new HttpParams()
+      .set('channel', channel)
+      .set('start', start)
+      .set('len', len);
+
+    return this.http
+      .get('http://127.0.0.1:8000/newupload/complete/', {
+        params
+      })
+      .toPromise();
+  }
 }
