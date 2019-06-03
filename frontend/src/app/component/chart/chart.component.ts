@@ -110,8 +110,8 @@ export class ChartComponent implements OnChanges {
     console.log('siamo in SIGNALS');
     console.log(this.signals);
     // this.chartHigh();
-    this.fillLineChart(this.signals);
-    // this.fillAllChart();
+    // this.fillLineChart(this.signals);
+    this.fillAllChart();
     if (this.distribution) {
       console.log('siamo in DISTRIBUTION');
       console.log(this.distribution);
@@ -131,6 +131,11 @@ export class ChartComponent implements OnChanges {
     this.barChartOptions.chart.type = this.chartType;
     this.barChartOptions.xAxis.categories = distr.bins;
     this.barChartData = distr.hist;
+    this.yAxses = {
+      title: {
+        text: ''
+      }
+    };
     this.loadData();
     // this.barChartOptions.scales.xAxes = [];
   }
@@ -168,6 +173,7 @@ export class ChartComponent implements OnChanges {
     }
 
     this.barChartData = dat;
+    console.log(dat);
     this.yAxses = yAxis;
     this.loadData();
   }

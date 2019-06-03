@@ -21,6 +21,12 @@ export class HomePage implements OnInit {
   @Input() selectStart: number;
   @Input() selectNumberSignal: number;
   signals: Serverdata;
+  allSignalsChannels: {
+    inizio: number;
+    dimensione: number;
+    window: [][];
+    timeScale: [];
+  };
   file: File = null;
   upload: UploadData;
   checkFile = false;
@@ -48,7 +54,7 @@ export class HomePage implements OnInit {
     await this.service
       .getAllSignals(channel, start, numberSignals)
       .then((data: any) => {
-        this.signals = data;
+        this.allSignalsChannels = data;
       });
     console.log('tutti i canali');
     // console.log(this.signals.chn0);
@@ -72,16 +78,17 @@ export class HomePage implements OnInit {
     this.checkButton = true;
     console.log(this.selectChannel);
     console.log(this.Channels);
-    this.onUpload();
-    console.log('DATTTTTAAA');
-    console.log(this.upload);
+    await this.onUpload();
+
     if (this.checkButton) {
       const channel = this.homeService.numberOfList(
         this.upload.channelLabels,
         this.selectChannel
       );
-      // await this.allSignals(channel, this.selectStart, this.selectNumberSignal);
-      await this.signal(channel, this.selectStart, this.selectNumberSignal);
+      await this.allSignals(channel, this.selectStart, this.selectNumberSignal);
+      console.log('ALL SIGNALS');
+      console.log(this.allSignalsChannels.window);
+      // await this.signal(channel, this.selectStart, this.selectNumberSignal);
       // this.chart.fillLineChart(this.signals, this.selectChannel);
       await this.getStatistics(
         channel,
