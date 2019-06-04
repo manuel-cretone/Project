@@ -53,10 +53,17 @@ export class HomePage implements OnInit {
   async allSignals(channel, start, numberSignals) {
     await this.service
       .getAllSignals(channel, start, numberSignals)
-      .then((data: any) => {
-        this.allSignalsChannels = data;
-      });
-    console.log('tutti i canali');
+      .then(
+        (data: {
+          inizio: number;
+          dimensione: number;
+          window: [][];
+          timeScale: [];
+        }) => {
+          this.allSignalsChannels = data;
+        }
+      );
+
     // console.log(this.signals.chn0);
     // console.log(this.signals.chn1);
   }
@@ -76,19 +83,18 @@ export class HomePage implements OnInit {
 
   async draw() {
     this.checkButton = true;
-    console.log(this.selectChannel);
-    console.log(this.Channels);
     await this.onUpload();
-
     if (this.checkButton) {
       const channel = this.homeService.numberOfList(
         this.upload.channelLabels,
         this.selectChannel
       );
+      console.log('SELECT CHANNEL');
+      console.log(this.selectChannel);
       await this.allSignals(channel, this.selectStart, this.selectNumberSignal);
       console.log('ALL SIGNALS');
       console.log(this.allSignalsChannels.window);
-      // await this.signal(channel, this.selectStart, this.selectNumberSignal);
+      await this.signal(channel, this.selectStart, this.selectNumberSignal);
       // this.chart.fillLineChart(this.signals, this.selectChannel);
       await this.getStatistics(
         channel,
