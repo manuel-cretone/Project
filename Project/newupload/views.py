@@ -18,20 +18,24 @@ import shutil
 import sys
 sys.path.insert(0, '../CNN')
 
-# from CNN import 
 
 from .service.file_service import *
-from .service.statisticService import *
-from .service.train import *
-
-from .service.train import ConvNet
+from .service.statistic_service import *
 from .service.dataset_service import *
+from .service.train_service import *
 
 global file_path
 file_path = None
 global channels
 global nSignals
+global model
 
+
+def readParams(request):
+    channel = request.GET.get("channel", 0)
+    start = request.GET.get("start", 0)
+    length = request.GET.get("len", 30)
+    return (channel, start, length)
 
 #view per file upload
 @method_decorator(csrf_exempt, name='dispatch')
@@ -69,6 +73,9 @@ class UploadTraining(View):
 
             seizureStart = request.POST.get("seizureStart", 0)
             seizureEnd = request.POST.get("seizureEnd", 0)
+
+            if(seizureEnd < seizureStart):
+                return JsonResponse(data={"error": "bad seizure parameters"}, status=400)
 
             df = pd.DataFrame(data={"filename": [filename], 
                                     "seizureStart": [seizureStart], 
@@ -171,28 +178,18 @@ class Distribution(View):
 
 class Train(View):
     def get(self, request):
+        num_epochs = int(request.GET.get("epochs",1))
+
+        dataset_list= getDatasetList()
         
-        windowSize = request.GET.get("windowSize", 1)
-        stride = request.GET.get("stride", 1)
+        #specificare tipo di training
+        dataset = ConcatDataset(dataset_list)
+        acc = k_win_train(model, dataset, num_epochs)
 
-        fs = FileSystemStorage()
-        file_list = pd.read_csv(os.path.join(fs.base_location, "training", "file_list.csv"), header = 0, sep=",")
-        #crea nuovo dataset (diviso in files pkl)
-        for i in range(file_list.shape[0]):
-            filename = file_list["filename"][i]
-            seizureStart = file_list["seizurestart"][i]
-            seizureEnd = file_list["seizureEnd"][i]
-            channels = file_list["channels"][i]
-            nSignal = file_list["nSignal"][i]
-            sampleFrequency = file_list["sampleFrequency"][i]
-
-            s, n = createDataset(filename, seizureStart, seizureEnd, windowSize, stride, sampleFrequency, nSignal, channels)
-        
-        #allena rete e salva modello
-
+        #NB ACCURACY DELL'ULTIMA EPOCA!!!!!
         response = {
-            "seizureWindows": s,
-            "normalWindows": n
+            "num_epochs": num_epochs,
+            "accuracy": acc
         }
         return JsonResponse(response, status=200)
         
@@ -202,9 +199,47 @@ class Train(View):
         return JsonResponse(response, status=405)
 
 
+class ConvertDataset(View):
+
+    def get(self, request):
+        windowSec = int(request.GET.get("windowSize", 1))
+        stride = int(request.GET.get("stride", 1))
+        
+        #crea nuovo dataset (diviso in files pkl)
+        fs = FileSystemStorage()
+        file_list = pd.read_csv(os.path.join(fs.base_location, "training", "file_list.csv"), header = 0, sep=",")
+        sf = None
+        ch = None
+        for i in range(file_list.shape[0]):
+            filename = file_list["filename"][i]
+            seizureStart = int(file_list["seizurestart"][i])
+            seizureEnd = int(file_list["seizureEnd"][i])
+            channels = file_list["channels"][i]
+            nSignal = file_list["nSignal"][i]
+            sampleFrequency = int(file_list["sampleFrequency"][i])
+            
+            if((sf != None and sampleFrequency != sf) or (ch!=None and channels != ch)):
+                return JsonResponse(data={"error": "file must have same sample frequency and channels"}, status = 400)
+            sf = sampleFrequency
+            ch = channels
+            
+            if(windowSec > seizureEnd-seizureStart):
+                return JsonResponse(data={"error": "bad window size parameter"}, status = 400)
+            createDataset(filename, seizureStart, seizureEnd, windowSec, stride, sampleFrequency, nSignal, channels)
+
+        #L'ISTANZA DI RETE VIENE CARICATA SU VARIABILE GLOBALE
+        global model
+        model = ConvNet(channels, windowSec*sampleFrequency)
+            
+        return JsonResponse(data={"model": "network model created"}, status = 200)
 
 
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
 
+
+"""
 
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
@@ -244,8 +279,5 @@ def windowsGenerator(file_name, windowSize):
         df.to_csv("./"+file_name+'/chn'+channel.__str__()+'.csv', index=False, header=False)
 
 
-def readParams(request):
-    channel = request.GET.get("channel", 0)
-    start = request.GET.get("start", 0)
-    length = request.GET.get("len", 30)
-    return (channel, start, length)
+
+"""

@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import os
 from .file_service import *
+from .train_service import *
 from django.core.files.storage import FileSystemStorage
 
 global discard
@@ -44,8 +45,8 @@ def myOverlapping(array, window, stride):
 
 
 def getDataset(file_path, channel, seizureStart, seizureEnd, windowSizeSec, stride, sampleFrequency, nSignals):
-    startSeizureSignal, stopSeizureSignal, len,  windowSize = obtainValue(seizureStart , seizureEnd, windowSizeSec, sampleFrequency)
-    seizure, _ = readFile(file_path, channel=channel, start=startSeizureSignal, len=len)
+    startSeizureSignal, stopSeizureSignal, length,  windowSize = obtainValue(seizureStart , seizureEnd, windowSizeSec, sampleFrequency)
+    seizure, _ = readFile(file_path, channel=channel, start=startSeizureSignal, len=length)
     overlapSeizure = myOverlapping(np.array(seizure), windowSize, stride)
     nSeizurewWindows = overlapSeizure.shape[0]
 
@@ -64,13 +65,8 @@ def getDataset(file_path, channel, seizureStart, seizureEnd, windowSizeSec, stri
     windowsPre = np.array(windowsPre)
     windowsPost = np.array(windowsPost)
 
-    len1 = math.floor(windowsPre.shape[0] / windowSize) * windowSize
-    windowsPre = windowsPre[0:len1]
-    len2 = math.floor(windowsPost.shape[0] / windowSize) * windowSize
-    windowsPost = windowsPost[0:len2]
-
-    windowsPre = windowsPre.reshape(-1,windowSize)
-    windowsPost = windowsPost.reshape(-1,windowSize)
+    windowsPre = windowGenerator(windowsPre, windowSize)
+    windowsPost = windowGenerator(windowsPost, windowSize)
     
     if(windowsPre.shape[0] < (nSeizurewWindows/2)):
         nonSeizure = np.concatenate((windowsPre, windowsPost[:(nSeizurewWindows-windowsPre.shape[0])]))
@@ -82,9 +78,18 @@ def getDataset(file_path, channel, seizureStart, seizureEnd, windowSizeSec, stri
     return overlapSeizure, nonSeizure
 
 
+def windowGenerator(signalArray, windowSize):
+    #last seconds discarded
+    length = math.floor(signalArray.shape[0] / windowSize) * windowSize
+    signalArray = signalArray[0:length]
+    signalMatrix = signalArray.reshape(-1,windowSize)
+    return signalMatrix
+
+
 def createDataset(filename, seizureStart, seizureEnd, windowSizeSec, stride, sampleFrequency, nSignals, channels):
     fs = FileSystemStorage()
-    os.mkdir(os.path.join(fs.base_location, "dataset",filename))
+    dataset_location = os.path.join(fs.base_location, "dataset",filename)
+    os.mkdir(dataset_location)
     for channel in range(channels):
         try:
             seizureSignals, normalSignals = getDataset(os.path.join(fs.base_location, "training", filename), channel, seizureStart, seizureEnd, windowSizeSec, stride, sampleFrequency, nSignals)
@@ -101,4 +106,14 @@ def createDataset(filename, seizureStart, seizureEnd, windowSizeSec, stride, sam
     target = np.concatenate((np.ones(seizureSignals.shape[0], dtype=np.int64), np.zeros(normalSignals.shape[0], dtype=np.int64)))
     df_target = pd.DataFrame(data=target)
     df_target.to_pickle(os.path.join(fs.base_location, "dataset", filename,'target.pkl'))
-    return seizureSignals.shape[0], normalSignals.shape[0]
+    return dataset_location
+
+
+def getDatasetList():
+    fs = FileSystemStorage()
+    dataset_list = []
+    for root, folders, _ in os.walk(os.path.join(fs.base_location, "dataset")):
+        for p in folders:
+            d = SignalDataset(os.path.join(root, p))
+            dataset_list.append(d)
+    return dataset_list
