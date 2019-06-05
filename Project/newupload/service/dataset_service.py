@@ -11,8 +11,6 @@ from .file_service import *
 from .train_service import *
 from django.core.files.storage import FileSystemStorage
 
-global discard
-discard = 256 * 60 * 5
 
 
 def obtainValue(timeStart, timeStop, windowSizeSec, sampleFrequency):
@@ -45,6 +43,7 @@ def myOverlapping(array, window, stride):
 
 
 def getDataset(file_path, channel, seizureStart, seizureEnd, windowSizeSec, stride, sampleFrequency, nSignals):
+    discard = sampleFrequency *60*5
     startSeizureSignal, stopSeizureSignal, length,  windowSize = obtainValue(seizureStart , seizureEnd, windowSizeSec, sampleFrequency)
     seizure, _ = readFile(file_path, channel=channel, start=startSeizureSignal, len=length)
     overlapSeizure = myOverlapping(np.array(seizure), windowSize, stride)
@@ -101,7 +100,7 @@ def createDataset(filename, seizureStart, seizureEnd, windowSizeSec, stride, sam
         except Exception as e:
             print(e)
             print("file ignored: ", filename)
-            pass
+            return 
         
     target = np.concatenate((np.ones(seizureSignals.shape[0], dtype=np.int64), np.zeros(normalSignals.shape[0], dtype=np.int64)))
     df_target = pd.DataFrame(data=target)

@@ -14,6 +14,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import shutil
+import itertools
 
 import sys
 sys.path.insert(0, '../CNN')
@@ -26,8 +27,8 @@ from .service.train_service import *
 
 global file_path
 file_path = None
-global channels
-global nSignals
+# global channels
+
 global model
 
 
@@ -46,11 +47,9 @@ class Upload(View):
         filename, response, status = handleFile(request, subFolder)
         if(status==200):
             fs = FileSystemStorage()
-            global file_path, channels, nSignals
+            global file_path
             file_path = os.path.join(fs.base_location, subFolder, filename)
             print(file_path)
-            channels = response["channels"]
-            nSignal = response["nSignals"]
         return JsonResponse(response, status=status)
     
     def get(self, request):
@@ -121,16 +120,17 @@ class Values(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class CompleteWindow(View):
     def get(self, request):
-        global channels
-        channel, start, lenght = readParams(request)
+        _, start, lenght = readParams(request)
         data = {"inizio":start,
                 "dimensione":lenght
                 }
         window = []
-        for i in range(channels):
-            values, timeScale = readFile(file_path, channel, start, lenght)
-            # data["chn"+str(i)] = values
-            window.append(values)
+        for i in itertools.count():
+            try:
+                values, timeScale = readFile(file_path, i, start, lenght)
+                window.append(values)
+            except:
+                break
         nChannels = int(len(window))
         data["nChannels"] = nChannels
         data["window"] = window
@@ -179,16 +179,23 @@ class Distribution(View):
 class Train(View):
     def get(self, request):
         num_epochs = int(request.GET.get("epochs",1))
-
+        train_method = int(request.GET.get("train_method"), 0)
         dataset_list= getDatasetList()
+        if(train_method == 1):
+            #training con mix di file
+            acc = k_fold_train(model, dataset_list, num_epochs)
+            method = "k-fold training"
+        else:
+            #training con mix di windows
+            acc = k_win_train(model, dataset_list, num_epochs)
+            method = "k-window training"
+       
         
-        #specificare tipo di training
-        dataset = ConcatDataset(dataset_list)
-        acc = k_win_train(model, dataset, num_epochs)
 
         #NB ACCURACY DELL'ULTIMA EPOCA!!!!!
         response = {
             "num_epochs": num_epochs,
+            "method": method,
             "accuracy": acc
         }
         return JsonResponse(response, status=200)
@@ -228,6 +235,7 @@ class ConvertDataset(View):
             createDataset(filename, seizureStart, seizureEnd, windowSec, stride, sampleFrequency, nSignal, channels)
 
         #L'ISTANZA DI RETE VIENE CARICATA SU VARIABILE GLOBALE
+        # -> creare file da mettere in cartella cnn
         global model
         model = ConvNet(channels, windowSec*sampleFrequency)
             
@@ -239,45 +247,42 @@ class ConvertDataset(View):
         return JsonResponse(response, status=405)
 
 
-"""
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
     def get(self, request):
-        windowSize = 256*30
-        nomeFile = "provanome/"
-        windowsGenerator(nomeFile, windowSize)
-        
-        model = ConvNet()      
-        model.load_state_dict(torch.load("C:\\Users\\joyod\\Documents\\Uni\\Project\\Project\\CNN\\trained_model_20190525-133930.pth"))
+        windowSec = 30
+        sampleFrequency = 256
+        windowSize = windowSec * sampleFrequency
+        channels = 23
+        fs = FileSystemStorage()
+        model = ConvNet(channels= channels, windowSize = windowSize)      
+        model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190525-133930.pth")))
         model = model.eval()
 
-        dataset = EvalDataset(nomeFile)
-        train_loader = DataLoader(dataset=dataset,
-                                batch_size=1,
-                                shuffle=False)
-        
-        for i, data in enumerate(train_loader):
+        all_signals= []
+        for chn in range(channels):
+            values_array, _ = readFile(file_path, chn)
+            values_array = np.array(values_array)
+            values_matrix = windowGenerator(values_array, windowSize)
+            values_tensor = torch.tensor(values_matrix)
+            all_signals.append(values_tensor)
+        complete_tensor = combineAllTensor(all_signals)
+
+        response = {
+            "dim": str(complete_tensor.shape),
+        }
+        dataset = EvalDataset(complete_tensor)
+        loader = DataLoader(dataset = dataset, 
+                            batch_size=1,
+                            shuffle=False)
+
+        for i, data in enumerate(loader):
             result = model(data)
             _, predicted = torch.max(result.data, 1)
-            print("finestra",i,": ",predicted)
-
-        
-
-#create a folder with one csv file for each channel
-def windowsGenerator(file_name, windowSize):
-    shutil.rmtree('./'+file_name, ignore_errors = True)
-    os.mkdir(file_name)
-    for channel in range(23):
-        signals = getSignals(file_path, channel)
-        #last seconds discarded
-        length = math.floor(signals.size / windowSize) * windowSize
-        signals = signals[:length]
-
-        signals = signals.reshape((-1, windowSize))
-        df = pd.DataFrame(data = signals)
-        df.to_csv("./"+file_name+'/chn'+channel.__str__()+'.csv', index=False, header=False)
+            response["sec"+str(i*windowSec)] = predicted.item()
 
 
 
-"""
+        return JsonResponse(data = response, status=200)
