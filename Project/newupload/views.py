@@ -16,8 +16,6 @@ import torch.nn as nn
 import shutil
 import itertools
 
-import sys
-sys.path.insert(0, '../CNN')
 
 
 from .service.file_service import *
@@ -29,7 +27,7 @@ global file_path
 file_path = None
 # global channels
 
-global model
+global user_model
 
 
 def readParams(request):
@@ -198,11 +196,11 @@ class Train(View):
         try:
             if(train_method == 1):
                 #training con mix di file
-                acc = k_fold_train(model, dataset_list, num_epochs)
+                acc = k_fold_train(user_model, dataset_list, num_epochs)
                 method = "k-fold training"
             else:
                 #training con mix di windows
-                acc = k_win_train(model, dataset_list, num_epochs)
+                acc = k_win_train(user_model, dataset_list, num_epochs)
                 method = "k-window training"
         except Exception as e:
             return JsonResponse(data={"error": str(e)}, status = 400)
@@ -253,9 +251,9 @@ class ConvertDataset(View):
 
         #L'ISTANZA DI RETE VIENE CARICATA SU VARIABILE GLOBALE
         # -> creare file da mettere in cartella cnn
-        global model
+        global user_model
         try:
-            model = ConvNet(channels, windowSec*sampleFrequency)
+            user_model = ConvNet(channels, windowSec*sampleFrequency)
         except Exception as e:
             return JsonResponse(data={"error": str(e)}, status = 400)
             
