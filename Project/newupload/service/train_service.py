@@ -16,7 +16,7 @@ class SignalDataset(Dataset):
         self.x_data = signals
 
         results = pd.read_pickle(os.path.join(directoryPath,"target.pkl"))
-        self.y_data = torch.from_numpy(results.values)
+        self.y_data = torch.from_numpy(results.values).squeeze(1)
 
     def __getitem__(self, index):
         return self.x_data[index], self.y_data[index]
@@ -55,6 +55,8 @@ def combineAllTensor(channels_tensors_list):
 class ConvNet(nn.Module):
     def __init__(self, channels, windowSize):
         super(ConvNet, self).__init__()
+        if(windowSize < 1662):
+            raise Exception("Increase window size")
         self.layer1 = nn.Sequential(
             nn.Conv1d(channels, 10, kernel_size=10, stride=5, padding=10-1),
             nn.ReLU(),
@@ -69,20 +71,22 @@ class ConvNet(nn.Module):
             nn.MaxPool1d(kernel_size=10, stride=5)
         )
 
-        self.layer3 = nn.Sequential(
-            nn.Conv1d(10, 30, kernel_size=2, stride=1),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2, stride=2)
-        )
+        # self.layer3 = nn.Sequential(
+        #     nn.Conv1d(10, 30, kernel_size=2, stride=1),
+        #     nn.ReLU(),
+        #     nn.MaxPool1d(kernel_size=2, stride=2)
+        # )
 
         
         
         outL2 = int(((outL1 - 5 + 4*2)/4 + 1)) #conv
         outL2 = int(((outL2-10)/5) + 1) #pool
     
+        self.linearInput = outL2*5
+
         self.drop_out = nn.Dropout()
-        self.fc1 = nn.Linear(outL2*5, 15)
-        self.fc2 = nn.Linear(100, 10)
+        self.fc1 = nn.Linear(self.linearInput, 15)
+        # self.fc2 = nn.Linear(100, 10)
         self.fc3 = nn.Linear(15, 2)
         #softmax dim=1 -> normalizza riga per riga (?)
         self.soft = nn.Softmax(1)
@@ -92,18 +96,20 @@ class ConvNet(nn.Module):
         x = x.float()
         out = self.layer1(x)
         out = self.layer2(out)
-        out = out.reshape(1,-1)
+        out = out.reshape(-1, self.linearInput)
         out = self.drop_out(out)
         out = self.fc1(out)
         # out = self.fc2(out)
         out = self.fc3(out)
-        # out = self.soft(out)
+        out = self.soft(out)
 
         return out
 
 
 def k_win_train(model, dataset_list, num_epochs):
     dataset = ConcatDataset(dataset_list)
+    if (dataset.__len__() < 2):
+        raise Exception("Dataset is too small")
     learning_rate = 0.001
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
@@ -112,23 +118,19 @@ def k_win_train(model, dataset_list, num_epochs):
     for epoch in range(num_epochs):
         print(f'Epoch [{epoch+1}/{num_epochs}]')
         #split the dataset into train and test
-        if(dataset.__len__() % 0.8 == 0):
-            train_lenght = int(dataset.__len__() * 0.8)
-        else:
-            train_lenght = int(dataset.__len__() * 0.8)+1
         
+        train_lenght = int(dataset.__len__() * 0.8)
         test_lenght = dataset.__len__() - train_lenght
-        
+
         train_dataset, test_dataset = random_split(dataset, (train_lenght, test_lenght))
 
         train_loader = DataLoader(dataset=train_dataset,
-                                batch_size=1,
+                                batch_size=10,
                                 shuffle=True)
         
         test_loader = DataLoader(dataset=test_dataset,
-                                batch_size=1,
+                                batch_size=10,
                                 shuffle=True)
-
         
         #training
         train_step(model, train_loader, learning_rate, criterion, optimizer)
@@ -144,11 +146,12 @@ def k_fold_train(model, dataset_list, num_epochs):
     # Loss and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-
+    if (dataset_list.__len__() < 2):
+        raise Exception("Database is too small")
     train_loader_list = []
     for d in dataset_list:
         train_loader = DataLoader(dataset=d,
-                                batch_size=1,
+                                batch_size=10,
                                 shuffle=True)
         train_loader_list.append(train_loader)
 
@@ -170,9 +173,10 @@ def k_fold_train(model, dataset_list, num_epochs):
 def train_step(model, train_loader, learning_rate, criterion, optimizer):
     model = model.train()
     tot = 0
+    n = 0
     for i, (data, target) in enumerate(train_loader):
         x = data
-        y = target.reshape(1).long()
+        y = target.long()
         outputs = model(x)
         loss = criterion(outputs, y)
         # Backprop and perform Adam optimisation
@@ -181,26 +185,25 @@ def train_step(model, train_loader, learning_rate, criterion, optimizer):
         optimizer.step()
 
         # Track the accuracy
-        # total = y.size(0)
-        _, predicted = torch.max(outputs.data, 1)
-        if(predicted.item() == target.item()):
-            tot = tot+1
-    totP = tot*100/train_loader.__len__()
-    print("accuracy: ", tot, "/", train_loader.__len__(), " (",totP,"%)")
+
+        tot = tot + outputs.argmax(dim=1).eq(target).sum().item()
+        n = n + outputs.__len__()
+    totP = tot*100/n
+    print("accuracy: ", tot, "/", n, " (%.2f"%totP,"%)")
     return totP
 
 
 def validation_step(model, test_loader):
     tot=0
+    n = 0
     model = model.eval()
     for i, (data, target) in enumerate(test_loader):
         x = data
-        result = model(x)
-        _, predicted = torch.max(result, 1)
-        if(predicted.item() == target.item()):
-            tot = tot+1
-    totP = tot*100/test_loader.__len__()
-    print("accuracy TEST: ", tot, "/", test_loader.__len__(), " (",totP,"%)")
+        outputs = model(x)
+        tot = tot + outputs.argmax(dim=1).eq(target).sum().item()
+        n = n + outputs.__len__()
+    totP = tot*100/n
+    print("accuracy TEST: ", tot, "/", n, " (%.2f"%totP,"%)")
     return totP
 
 

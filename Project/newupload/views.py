@@ -98,13 +98,20 @@ class UploadTraining(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class Values(View):
     def get(self, request):
-        channel, start, len = readParams(request)
-        values, timeScale = readFile(file_path, channel, start, len)
+        channel, start, length = readParams(request)
+        info = file_info(file_path)
+        sampleFrequency = info["sampleFrequency"]
+        start = int(start) * sampleFrequency
+        length = int(length) * sampleFrequency
+        print(start, " ", length)
+        values, timeScale = readFile(file_path, channel, start, length)
+        
+        # nSignals = info["nSignals"]
         data = {
             "file": file_path,
             "canale": channel,
             "inizio":start,
-            "dimensione":len,
+            "dimensione":length,
             "valori": values,
             "timeScale": timeScale
         }
@@ -120,19 +127,25 @@ class Values(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class CompleteWindow(View):
     def get(self, request):
-        _, start, lenght = readParams(request)
+        _, start, length = readParams(request)
+        info = file_info(file_path)
+        sampleFrequency = info["sampleFrequency"]
+        start = int(start) * sampleFrequency
+        length = int(length) * sampleFrequency
+        channels = info["channels"]
         data = {"inizio":start,
-                "dimensione":lenght
+                "dimensione":length
                 }
         window = []
-        for i in itertools.count():
+        for i in range(channels):
             try:
-                values, timeScale = readFile(file_path, i, start, lenght)
+                values, timeScale = readFile(file_path, i, start, length)
                 window.append(values)
-            except:
+            except Exception as e:
+                print("err", e)
                 break
-        nChannels = int(len(window))
-        data["nChannels"] = nChannels
+        # nChannels = int(len(window))
+        data["nChannels"] = channels
         data["window"] = window
         data["timeScale"] = timeScale
         response = JsonResponse(data, status = 200)
@@ -179,17 +192,20 @@ class Distribution(View):
 class Train(View):
     def get(self, request):
         num_epochs = int(request.GET.get("epochs",1))
-        train_method = int(request.GET.get("train_method"), 0)
-        dataset_list= getDatasetList()
-        if(train_method == 1):
-            #training con mix di file
-            acc = k_fold_train(model, dataset_list, num_epochs)
-            method = "k-fold training"
-        else:
-            #training con mix di windows
-            acc = k_win_train(model, dataset_list, num_epochs)
-            method = "k-window training"
-       
+        train_method = int(request.GET.get("train_method", 0))
+        fs = FileSystemStorage()
+        dataset_list= getDatasetList(fs.base_location)
+        try:
+            if(train_method == 1):
+                #training con mix di file
+                acc = k_fold_train(model, dataset_list, num_epochs)
+                method = "k-fold training"
+            else:
+                #training con mix di windows
+                acc = k_win_train(model, dataset_list, num_epochs)
+                method = "k-window training"
+        except Exception as e:
+            return JsonResponse(data={"error": str(e)}, status = 400)
         
 
         #NB ACCURACY DELL'ULTIMA EPOCA!!!!!
@@ -214,6 +230,7 @@ class ConvertDataset(View):
         
         #crea nuovo dataset (diviso in files pkl)
         fs = FileSystemStorage()
+        base_location = fs.base_location
         file_list = pd.read_csv(os.path.join(fs.base_location, "training", "file_list.csv"), header = 0, sep=",")
         sf = None
         ch = None
@@ -232,12 +249,15 @@ class ConvertDataset(View):
             
             if(windowSec > seizureEnd-seizureStart):
                 return JsonResponse(data={"error": "bad window size parameter"}, status = 400)
-            createDataset(filename, seizureStart, seizureEnd, windowSec, stride, sampleFrequency, nSignal, channels)
+            createDataset(filename, base_location, seizureStart, seizureEnd, windowSec, stride)
 
         #L'ISTANZA DI RETE VIENE CARICATA SU VARIABILE GLOBALE
         # -> creare file da mettere in cartella cnn
         global model
-        model = ConvNet(channels, windowSec*sampleFrequency)
+        try:
+            model = ConvNet(channels, windowSec*sampleFrequency)
+        except Exception as e:
+            return JsonResponse(data={"error": str(e)}, status = 400)
             
         return JsonResponse(data={"model": "network model created"}, status = 200)
 

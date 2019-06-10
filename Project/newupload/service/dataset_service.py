@@ -85,16 +85,21 @@ def windowGenerator(signalArray, windowSize):
     return signalMatrix
 
 
-def createDataset(filename, seizureStart, seizureEnd, windowSizeSec, stride, sampleFrequency, nSignals, channels):
-    fs = FileSystemStorage()
-    dataset_location = os.path.join(fs.base_location, "dataset",filename)
+def createDataset(filename, base_location, seizureStart, seizureEnd, windowSizeSec, stride):
+    # fs = FileSystemStorage()
+    dataset_location = os.path.join(base_location, "dataset",filename)
+    print(os.path.join(base_location, "training", filename))
+    info = file_info(os.path.join(base_location, "training", filename))
+    sampleFrequency = info["sampleFrequency"]
+    nSignals = info["nSignals"]
+    channels = info["channels"]
     os.mkdir(dataset_location)
     for channel in range(channels):
         try:
-            seizureSignals, normalSignals = getDataset(os.path.join(fs.base_location, "training", filename), channel, seizureStart, seizureEnd, windowSizeSec, stride, sampleFrequency, nSignals)
+            seizureSignals, normalSignals = getDataset(os.path.join(base_location, "training", filename), channel, seizureStart, seizureEnd, windowSizeSec, stride, sampleFrequency, nSignals)
             signals = np.concatenate((seizureSignals, normalSignals))
             df = pd.DataFrame(data = signals)
-            file = os.path.join(fs.base_location, "dataset", filename, "chn"+channel.__str__()+".pkl")
+            file = os.path.join(base_location, "dataset", filename, "chn"+channel.__str__()+".pkl")
             # df.to_csv(file, index=False, header=False)
             df.to_pickle(file)
         except Exception as e:
@@ -104,14 +109,14 @@ def createDataset(filename, seizureStart, seizureEnd, windowSizeSec, stride, sam
         
     target = np.concatenate((np.ones(seizureSignals.shape[0], dtype=np.int64), np.zeros(normalSignals.shape[0], dtype=np.int64)))
     df_target = pd.DataFrame(data=target)
-    df_target.to_pickle(os.path.join(fs.base_location, "dataset", filename,'target.pkl'))
+    df_target.to_pickle(os.path.join(base_location, "dataset", filename,'target.pkl'))
     return dataset_location
 
 
-def getDatasetList():
-    fs = FileSystemStorage()
+def getDatasetList(base_location, folder="dataset"):
+    # fs = FileSystemStorage()
     dataset_list = []
-    for root, folders, _ in os.walk(os.path.join(fs.base_location, "dataset")):
+    for root, folders, _ in os.walk(os.path.join(base_location, folder)):
         for p in folders:
             d = SignalDataset(os.path.join(root, p))
             dataset_list.append(d)
