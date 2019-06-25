@@ -276,7 +276,7 @@ class Predict(View):
         channels = 23
         fs = FileSystemStorage()
         model = ConvNet(channels= channels, windowSize = windowSize)      
-        model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190525-133930.pth")))
+        model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
         model = model.eval()
 
         all_signals= []
@@ -295,11 +295,14 @@ class Predict(View):
         loader = DataLoader(dataset = dataset, 
                             batch_size=1,
                             shuffle=False)
-
+        response["time"] = []
+        response["values"] = []
         for i, data in enumerate(loader):
             result = model(data)
             _, predicted = torch.max(result.data, 1)
-            response["sec"+str(i*windowSec)] = predicted.item()
+            # response["sec"+str(i*windowSec)] = predicted.item()
+            response["time"].append(str(i*windowSec))
+            response["values"].append(predicted.item())
 
 
 
