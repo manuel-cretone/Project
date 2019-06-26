@@ -16,6 +16,8 @@
 }
 ion-input {
   margin-top: 1%;
+  margin-left: 2%;
+  width: 96%;
   color: #000000;
   border: 2px solid rgb(151, 221, 233);
   border-radius: 5px;
@@ -24,10 +26,13 @@ ion-input {
 .input {
   border-style: outset;
 }
-
+ion-card {
+  border: 3px solid #c5dcfc;
+}
 .cardTitle {
   text-align: center;
   padding: 5px;
   border-bottom: 2px solid #c5dcfc;
+  background-color: #c5dcfc;
   width: 100%;
 }

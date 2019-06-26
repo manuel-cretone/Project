@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ServiceService } from '../service/service.service';
 import { UploadData } from '../interface/UploadData.interface';
+import * as Highcharts from 'highcharts/highstock';
+import { LoadingController } from '@ionic/angular';
+import { ListServiceService } from './list-service.service';
 @Component({
   selector: 'app-list',
   templateUrl: 'list.page.html',
@@ -9,8 +12,16 @@ import { UploadData } from '../interface/UploadData.interface';
 export class ListPage implements OnInit {
   upload: UploadData;
   checkFile = false;
+  checkPrediction = false;
+  clicked: boolean;
   file: File = null;
-  constructor(private service: ServiceService) {}
+  allSignalsChannels;
+  predict: { time: []; values: [] };
+  constructor(
+    private service: ServiceService,
+    private loadingController: LoadingController,
+    private listService: ListServiceService
+  ) {}
   ngOnInit() {}
 
   onFileSelected(event) {
@@ -22,12 +33,82 @@ export class ListPage implements OnInit {
     const uploadData = new FormData();
     if (this.file != null) {
       uploadData.append('myfile', this.file, this.file.name);
-      await this.service.UploadFile(uploadData).then((data: UploadData) => {
-        this.upload = data;
-      });
+      await this.service.UploadFile(uploadData);
       this.checkFile = true;
     } else {
       this.checkFile = false;
     }
+  }
+  /**
+   *
+   */
+  async getPrediction() {
+    this.checkPrediction = false;
+    const loader: any = await this.loadingController.create({
+      message: 'Please Wait',
+      cssClass: 'custom-loading',
+      mode: 'ios',
+      spinner: 'bubbles'
+    });
+    loader.present();
+    this.predict = await this.service.getPredict();
+    loader.dismiss();
+
+    this.drawChart(this.clicked, this.listService, this.allSignalsChannels);
+    this.checkPrediction = true;
+    console.log(this.predict);
+  }
+
+  drawChart(clicked: boolean, listService: ListServiceService, signals) {
+    Highcharts.chart('container', {
+      chart: {
+        type: 'column',
+        zoomType: 'x',
+        panning: true,
+        panKey: 'shift'
+      },
+      title: {
+        text: 'Stacked bar chart'
+      },
+      xAxis: {
+        categories: this.predict.time,
+        min: 0,
+
+        scrollbar: {
+          enabled: true
+        }
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Seizure Detected'
+        }
+      },
+      legend: {
+        reversed: true
+      },
+      plotOptions: {
+        series: {
+          stacking: 'normal',
+
+          cursor: 'pointer',
+          point: {
+            events: {
+              click() {
+                clicked = true;
+                signals = listService.drawSeizure(this.category, 30);
+                console.log(clicked);
+                // alert('Category: ' + this.category + ', value: ' + this.y);
+              }
+            }
+          }
+        }
+      },
+      series: [
+        {
+          data: this.predict.values
+        }
+      ]
+    });
   }
 }

@@ -4,7 +4,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      List
+      Prediction
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -14,22 +14,24 @@
   <p *ngIf="!checkFile">Carica il file</p>
   <br />
   <ion-button type="submit" (click)="onUpload()">submit</ion-button>
-  <ion-button type="submit" (click)="onUpload()">Predict</ion-button>
-  <!-- <input type="file" value="Click" (change)="onFileSelected($event)" />
-  <br />
-  <ion-button type="submit" (click)="onUpload()">submit</ion-button>
-  <br />
-  <ion-input type="number" placeholder="Window size"></ion-input>
-  <ion-item>
-    <ion-label>select info prediction</ion-label>
-    <ion-select [(ngModel)]="selectChannel">
-      <ion-select-option>Cross Validation file</ion-select-option>
-      <ion-select-option>Cross Validation window</ion-select-option>
-    </ion-select>
-  </ion-item>
-  <br />
-  <input type="file" value="Click" (change)="onFileSelected($event)" />
-  <br />
-
-  <ion-button type="submit">Prediction</ion-button> -->
+  <ion-button type="submit" (click)="getPrediction()">Predict</ion-button>
+  <!-- ion card predizione con grafico -->
+  <ion-card>
+    <ion-toolbar> Predizione</ion-toolbar>
+    <ion-card-title style="background-color:blanchedalmond"
+      >Predictions</ion-card-title
+    >
+    <div id="container"></div>
+    <!-- parametri della predizione -->
+    <ion-card>
+      <ion-header>Parametri Predizione</ion-header>
+    </ion-card>
+  </ion-card>
+  <ion-card *ngIf="clicked">
+    <ion-title>DEVE APPARIRE IL GRAFICO</ion-title>
+    <!-- <app-chart
+      *ngIf="allSignalsChannels"
+      [allSignalsChannels]="allSignalsChannels"
+    ></app-chart> -->
+  </ion-card>
 </ion-content>

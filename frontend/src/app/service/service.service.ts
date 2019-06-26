@@ -69,7 +69,53 @@ export class ServiceService {
       .toPromise();
   }
 
-  // getPredict() {
-  //   return this.http.get('http://127.0.0.1:8000/newupload/predict').toPromise();
-  // }
+  async getPredict() {
+    return (await this.http
+      .get('http://127.0.0.1:8000/newupload/predict')
+      .toPromise()) as { time: any; values: any };
+  }
+
+  /**
+   *
+   * @param file
+   * @param seizureStart
+   * @param seizureEnd
+   */
+  upTraining(file, seizureStart, seizureEnd) {
+    const params = new HttpParams()
+      .set('myfile', file)
+      .set('seizureStart', seizureStart)
+      .set('seizureEnd', seizureEnd);
+
+    return this.http
+      .post('http://127.0.0.1:8000/newupload/uptraining/', params)
+      .toPromise();
+  }
+
+  /**
+   *
+   * @param windowSize
+   * @param stride
+   */
+  doConvert(windowSize, stride) {
+    const params = new HttpParams()
+      .set('windowSize', windowSize)
+      .set('stride', stride);
+    return this.http
+      .get('http://127.0.0.1:8000/newupload/convert', { params })
+      .toPromise();
+  }
+  /**
+   *
+   * @param epochs
+   * @param trainMethod
+   */
+  getTrain(epochs, trainMethod) {
+    const params = new HttpParams()
+      .set('epochs', epochs)
+      .set('train_method', trainMethod);
+    return this.http
+      .get('http://127.0.0.1:8000/newupload/train', { params })
+      .toPromise();
+  }
 }
