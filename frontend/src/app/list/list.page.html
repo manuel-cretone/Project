@@ -11,6 +11,11 @@
 
 <ion-content>
   <input type="file" value="Click" (change)="onFileSelected($event)" />
+  <p *ngIf="!checkFile">Carica il file</p>
+  <br />
+  <ion-button type="submit" (click)="onUpload()">submit</ion-button>
+  <ion-button type="submit" (click)="onUpload()">Predict</ion-button>
+  <!-- <input type="file" value="Click" (change)="onFileSelected($event)" />
   <br />
   <ion-button type="submit" (click)="onUpload()">submit</ion-button>
   <br />
@@ -18,17 +23,13 @@
   <ion-item>
     <ion-label>select info prediction</ion-label>
     <ion-select [(ngModel)]="selectChannel">
-      <ion-select-option
-        >Prediction with Cross Validation file</ion-select-option
-      >
-      <ion-select-option
-        >Prediction with Cross Validation window</ion-select-option
-      >
+      <ion-select-option>Cross Validation file</ion-select-option>
+      <ion-select-option>Cross Validation window</ion-select-option>
     </ion-select>
   </ion-item>
   <br />
   <input type="file" value="Click" (change)="onFileSelected($event)" />
   <br />
 
-  <ion-button type="submit">Prediction</ion-button>
+  <ion-button type="submit">Prediction</ion-button> -->
 </ion-content>

@@ -5,7 +5,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ServiceService } from '../service/service.service';
 
 import { Statistics } from '../interface/Statistics.interface';
-import { __await } from 'tslib';
 
 @Component({
   selector: 'app-home',
@@ -31,7 +30,7 @@ export class HomePage implements OnInit {
   upload: UploadData;
   checkFile = false;
   checkButton = false;
-  Channels;
+  Channels: string[];
   Statistics: Statistics;
   distribution: { hist: []; bins: [] };
 
@@ -50,9 +49,9 @@ export class HomePage implements OnInit {
     this.file = event.target.files[0];
   }
 
-  async allSignals(channel, start, numberSignals) {
+  async allSignals(start, numberSignals) {
     await this.service
-      .getAllSignals(channel, start, numberSignals)
+      .getAllSignals(start, numberSignals)
       .then(
         (data: {
           inizio: number;
@@ -63,9 +62,6 @@ export class HomePage implements OnInit {
           this.allSignalsChannels = data;
         }
       );
-
-    // console.log(this.signals.chn0);
-    // console.log(this.signals.chn1);
   }
   async onUpload() {
     const uploadData = new FormData();
@@ -89,24 +85,31 @@ export class HomePage implements OnInit {
         this.upload.channelLabels,
         this.selectChannel
       );
+      console.log(channel);
       console.log('SELECT CHANNEL');
       console.log(this.selectChannel);
-      await this.allSignals(channel, this.selectStart, this.selectNumberSignal);
-      console.log('ALL SIGNALS');
-      console.log(this.allSignalsChannels.window);
-      await this.signal(channel, this.selectStart, this.selectNumberSignal);
+      if (channel === undefined) {
+        await this.allSignals(this.selectStart, this.selectNumberSignal);
+        this.distribution = null;
+        this.signals = null;
+        this.Statistics = null;
+      } else {
+        await this.signal(channel, this.selectStart, this.selectNumberSignal);
+        await this.getStatistics(
+          channel,
+          this.selectStart,
+          this.selectNumberSignal
+        );
+        await this.getOccurrency(
+          channel,
+          this.selectStart,
+          this.selectNumberSignal
+        );
+        this.allSignalsChannels = null;
+      }
       // this.chart.fillLineChart(this.signals, this.selectChannel);
-      await this.getStatistics(
-        channel,
-        this.selectStart,
-        this.selectNumberSignal
-      );
-      await this.getOccurrency(
-        channel,
-        this.selectStart,
-        this.selectNumberSignal
-      );
     }
+
     this.upload = null;
     this.selectChannel = null;
     this.selectStart = null;

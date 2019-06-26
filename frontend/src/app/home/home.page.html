@@ -10,7 +10,6 @@
 </ion-header>
 
 <ion-content>
-  <!-- <app-chart></app-chart> -->
   <input type="file" value="Click" (change)="onFileSelected($event)" />
   <p *ngIf="!checkFile">Carica il file</p>
   <br />
@@ -26,6 +25,9 @@
           value="{{ channel }}"
           >{{ channel }}</ion-select-option
         >
+        <ion-select-option>
+          all
+        </ion-select-option>
       </ion-select>
     </ion-item>
     <ion-item>
@@ -60,35 +62,32 @@
     >
       Parametri non corretti
     </p>
-
+    <!-- 
     <div
       *ngIf="checkButton && selectStart < 921599 && selectNumberSignal <= 7680"
-    >
-      <ion-card padding>
-        <!-- *ngIf="signals" -->
-        <app-chart
-          *ngIf="signals && allSignalsChannels"
-          [signals]="signals"
-          [allSignalsChannels]="allSignalsChannels"
-        ></app-chart>
-      </ion-card>
-      <ion-card padding *ngIf="Statistics">
-        <h5>Statistics</h5>
-        <p>Minimun Value: {{ Statistics.min }}</p>
-        <p>Maximum Value: {{ Statistics.max }}</p>
-        <p>Average: {{ Statistics.average }}</p>
-        <p>Variance: {{ Statistics.var }}</p>
-        <p>Standard Deviation: {{ Statistics.stdev }}</p>
-      </ion-card>
-      <ion-card padding>
-        <h5>BARCHART</h5>
-        <div>
-          <app-chart
-            *ngIf="distribution"
-            [distribution]="distribution"
-          ></app-chart>
-        </div>
-      </ion-card>
-    </div>
+    > -->
+    <ion-card padding>
+      <!-- *ngIf="signals" -->
+      <app-chart
+        *ngIf="signals || allSignalsChannels"
+        [signals]="signals"
+        [allSignalsChannels]="allSignalsChannels"
+      ></app-chart>
+    </ion-card>
+    <ion-card padding *ngIf="Statistics">
+      <h5>Statistics</h5>
+      <p>Minimun Value: {{ Statistics.min }}</p>
+      <p>Maximum Value: {{ Statistics.max }}</p>
+      <p>Average: {{ Statistics.average }}</p>
+      <p>Variance: {{ Statistics.var }}</p>
+      <p>Standard Deviation: {{ Statistics.stdev }}</p>
+    </ion-card>
+    <ion-card padding *ngIf="distribution && signals">
+      <h5>BARCHART</h5>
+      <div>
+        <app-chart [distribution]="distribution"></app-chart>
+      </div>
+    </ion-card>
+    <!-- </div> -->
   </div>
 </ion-content>

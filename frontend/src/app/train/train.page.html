@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Train
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<!-- dowloand file con inserimento inizio e fine Seizure -->
+<ion-content class="body">
+  <ion-card class="card">
+    <ion-toolbar>
+      <input
+        class="input"
+        type="file"
+        value="Click"
+        (change)="onFileSelected($event)"
+      />
+    </ion-toolbar>
+    <p *ngIf="!checkFile">Carica il file</p>
+    <br />
+    <ion-input
+      class="inputText"
+      type="number"
+      placeholder="start Seizure"
+    ></ion-input>
+    <br />
+    <ion-input type="number" placeholder="End Seizure"></ion-input>
+    <ion-button type="submit" (click)="onUpload()">Upload</ion-button>
+  </ion-card>
+  <!-- griglia crea dataset e train -->
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card>
+          <ion-card-title class="cardTitle">Create Dataset</ion-card-title>
+
+          <ion-input
+            type="number"
+            placeholder="Dimensione Finestre"
+          ></ion-input>
+
+          <ion-input type="number" placeholder="Stride"></ion-input>
+          <ion-button type="submit" (click)="onUpload()"
+            >Crea Dataset</ion-button
+          >
+        </ion-card>
+      </ion-col>
+      <ion-col>
+        <ion-card>
+          <ion-card-title class="cardTitle">Setting Train</ion-card-title>
+          <ion-input type="number" placeholder="number of epochs"></ion-input>
+          <ion-item>
+            <ion-label>select info prediction</ion-label>
+            <ion-select [(ngModel)]="selectChannel">
+              <ion-select-option>Cross Validation file</ion-select-option>
+              <ion-select-option>Cross Validation window</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-input placeholder="Name of neural network"></ion-input>
+          <br />
+          <ion-button type="submit" (click)="onUpload()">Train</ion-button>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!--  -->
+</ion-content>

@@ -1,0 +1,33 @@
+.body {
+  background-color: #2b5eb1;
+}
+.card {
+  font-family: Verdana, Arial, sans-serif;
+  color: #81a5da;
+  font-size: 12pt;
+  text-align: 10px;
+  font-style: italic;
+  border-radius: 5px;
+}
+
+.button {
+  margin-left: 0.5%;
+  width: 99%;
+}
+ion-input {
+  margin-top: 1%;
+  color: #000000;
+  border: 2px solid rgb(151, 221, 233);
+  border-radius: 5px;
+}
+
+.input {
+  border-style: outset;
+}
+
+.cardTitle {
+  text-align: center;
+  padding: 5px;
+  border-bottom: 2px solid #c5dcfc;
+  width: 100%;
+}

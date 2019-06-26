@@ -1,14 +1,16 @@
+import { StockChart } from 'angular-highcharts';
 import { Serverdata } from './../../interface/Serverdata.interface';
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { ServiceService } from '../../service/service.service';
-import * as Highcharts from 'highcharts';
-import { Chart, StockChart } from 'angular-highcharts';
+import * as Highcharts from 'highcharts/highstock';
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })
 export class ChartComponent implements OnChanges {
+  categories: any;
+  fillSignal: any[];
   constructor(private service: ServiceService) {}
   // tslint:disable-next-line:no-input-rename
   @Input('signals') signals: Serverdata;
@@ -35,22 +37,19 @@ export class ChartComponent implements OnChanges {
       chart: {
         type: this.chartType
       },
-      title: {
-        text: 'Monthly Average Temperature'
-      },
       scrollbar: {
         enabled: true
+      },
+      title: {
+        text: 'Monthly Average Temperature'
       },
       subtitle: {
         text: 'Source: WorldClimate.com'
       },
       xAxis: {
-        categories: [],
+        categories: this.categories,
         crosshair: true,
-        scrollbar: {
-          enabled: true,
-          showFull: false
-        }
+        visible: false
       },
       yAxis: this.yAxses,
       tooltip: {
@@ -66,20 +65,40 @@ export class ChartComponent implements OnChanges {
     // console.log(this.signals);
     // this.chartHigh();
     // this.fillLineChart(this.signals);
-    console.log('siamo in ALL signals');
+    console.log(' ALL signals CHENNEL');
     console.log(this.allSignalsChannels);
     if (this.allSignalsChannels) {
       this.fillAllChart(this.allSignalsChannels);
     }
-
+    if (this.signals) {
+      this.fillLineChart(this.signals);
+    }
     if (this.distribution) {
       this.fillBarChart(this.distribution);
     }
+    this.allSignalsChannels = null;
+    this.signals = null;
+    this.distribution = null;
   }
+
   async fillLineChart(signal: Serverdata) {
     this.chartType = 'line';
-    this.barChartData = signal.valori;
-    this.barChartOptions.xAxis.categories = signal.timeScale;
+    const dat = [];
+    dat.push({
+      data: signal.valori
+    });
+    this.barChartData = [];
+    console.log('barchar DATA in FILL LINE CHART');
+    console.log(this.barChartData);
+
+    this.barChartData = dat;
+    console.log(this.barChartData);
+    this.yAxses = {
+      title: {
+        text: ''
+      }
+    };
+    this.categories = signal.timeScale;
     this.loadData();
   }
 
@@ -87,7 +106,7 @@ export class ChartComponent implements OnChanges {
   fillBarChart(distr: { hist: []; bins: [] }) {
     const dat = [];
     this.chartType = 'column';
-    this.barChartData.push({ data: distr.hist });
+    // this.barChartData.push({ data: distr.hist });
     dat.push({
       data: distr.hist
     });
@@ -109,7 +128,6 @@ export class ChartComponent implements OnChanges {
     window: [][];
     timeScale: [];
   }) {
-    const data = [];
     const dat = [];
     const seriesCount = 20;
     let axisTop = 50;
@@ -130,16 +148,14 @@ export class ChartComponent implements OnChanges {
         },
         height: axisHeight,
         top: axisTop,
-        offset: 0,
-        scrollbar: {
-          enabled: true,
-          showFull: false
-        }
+        offset: 0
       });
       axisTop += axisHeight + 50;
     }
+    this.barChartData = [];
     this.barChartData = dat;
     this.yAxses = yAxis;
+    this.chartType = 'line';
     this.loadData();
   }
 }
