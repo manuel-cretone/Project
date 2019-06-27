@@ -16,6 +16,7 @@ import torch.nn as nn
 import shutil
 import itertools
 import time
+from . import models
 
 
 
@@ -219,6 +220,14 @@ class Train(View):
             with open(models_list,'a') as fd:
                 df.to_csv(fd, header=False, index=False)
 
+            record = models.UserNet(name=mod_name,
+                                    channels=model_chn, 
+                                    windowSize = model_winSize,
+                                    file = user_model.state_dict(),
+                                    link = os.path.join(fs.base_location, "usermodels", mod_name)
+                                    )
+            record.save()
+
         except Exception as e:
             return JsonResponse(data={"error": str(e)}, status = 400)
         
@@ -338,6 +347,9 @@ class UserModels(View):
         model_list = pd.read_csv(os.path.join(fs.base_location, "usermodels", "models.csv"), header = 0, sep=",")
         response = model_list.to_dict(orient="split")
 
+        all_models = models.UserNet.objects.all()
+        for m in all_models:
+            print(m)
         return JsonResponse(response, status=200)
 
     def post(self, request):
