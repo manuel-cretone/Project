@@ -13,5 +13,6 @@ urlpatterns = [
     path('convert/', views.ConvertDataset.as_view(), name="convert"),
     path('train/', views.Train.as_view(), name = "train"),
     path('usermodels/', views.UserModels.as_view(), name = "usermodels"),
+    path('clean/', views.CleanUserModels.as_view(), name = 'clean'),
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]

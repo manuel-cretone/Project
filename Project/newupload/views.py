@@ -89,6 +89,9 @@ class UploadTraining(View):
             with open(file_list,'a') as fd:
                 df.to_csv(fd, header=False, index=False)
             response.update({"seizureStart": seizureStart, "seizureEnd": seizureEnd})
+
+            f_list = pd.read_csv(os.path.join(fs.base_location, subFolder, "file_list.csv"), header = 0, sep=",")
+            response.update({"files": f_list.to_dict(orient="split")})
         return JsonResponse(response, status=status)
     
     def get(self, request):
@@ -108,7 +111,6 @@ class Values(View):
         print(start, " ", length)
         values, timeScale = readFile(file_path, channel, start, length)
         
-        # nSignals = info["nSignals"]
         data = {
             "file": file_path,
             "canale": channel,
@@ -212,18 +214,18 @@ class Train(View):
             mod_name = 'trained_model_'+timestr+".pth"
             torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
             
-            df = pd.DataFrame(data={"modelname": [mod_name],
-                        "channels": [model_chn],
-                        "windowSize": [model_winSize],
-                        })
-            models_list = os.path.join(fs.base_location, "usermodels", "models.csv")
-            with open(models_list,'a') as fd:
-                df.to_csv(fd, header=False, index=False)
+            # df = pd.DataFrame(data={"modelname": [mod_name],
+            #             "channels": [model_chn],
+            #             "windowSize": [model_winSize],
+            #             })
+            # models_list = os.path.join(fs.base_location, "usermodels", "models.csv")
+            # with open(models_list,'a') as fd:
+            #     df.to_csv(fd, header=False, index=False)
 
             record = models.UserNet(name=mod_name,
                                     channels=model_chn, 
                                     windowSize = model_winSize,
-                                    file = user_model.state_dict(),
+                                    # file = user_model.state_dict(),
                                     link = os.path.join(fs.base_location, "usermodels", mod_name)
                                     )
             record.save()
@@ -343,15 +345,27 @@ class Predict(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class UserModels(View):
     def get(self, request):
-        fs = FileSystemStorage()
-        model_list = pd.read_csv(os.path.join(fs.base_location, "usermodels", "models.csv"), header = 0, sep=",")
-        response = model_list.to_dict(orient="split")
-
+        # fs = FileSystemStorage()
+        # model_list = pd.read_csv(os.path.join(fs.base_location, "usermodels", "models.csv"), header = 0, sep=",")
+        # response = model_list.to_dict(orient="split")
+        
+        response= {}
         all_models = models.UserNet.objects.all()
         for m in all_models:
             print(m)
+            response[m.name] = {"channels": m.channels, 
+                                "windowSize" : m.windowSize,
+                                "link": m.link
+                                    }
         return JsonResponse(response, status=200)
 
     def post(self, request):
         response = {"error": "Method not allowed"}
         return JsonResponse(response, status=405)
+
+
+class CleanUserModels(View):
+    def get(self, request):
+        models.UserNet.objects.all().delete()
+        cleanFolder("usermodels")
+        return JsonResponse({"message": "no more models in database"}, status = 200)
