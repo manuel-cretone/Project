@@ -11,6 +11,7 @@ urlpatterns = [
     path('predict/', views.Predict.as_view(), name="predict"),
     path('uptraining/', views.UploadTraining.as_view(), name = "uptraining"),
     path('convert/', views.ConvertDataset.as_view(), name="convert"),
-    path('train/', views.Train.as_view(), name = "train")
+    path('train/', views.Train.as_view(), name = "train"),
+    path('usermodels/', views.UserModels.as_view(), name = "usermodels"),
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]

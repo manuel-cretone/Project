@@ -9,6 +9,7 @@ class NewuploadConfig(AppConfig):
         cleanFolder("training")
         cleanFolder("up")
         cleanFolder("dataset")
+        # cleanFolder("usermodels")
         df = pd.DataFrame(data = None, columns = ["filename", "seizurestart", "seizureEnd", "channels", "nSignal", "sampleFrequency"])
         fs = FileSystemStorage()
         dir = os.path.join(fs.base_location, "training", "file_list.csv")

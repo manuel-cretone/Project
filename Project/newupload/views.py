@@ -15,6 +15,7 @@ import torch
 import torch.nn as nn
 import shutil
 import itertools
+import time
 
 
 
@@ -27,7 +28,9 @@ global file_path
 file_path = None
 # global channels
 
-global user_model
+# global user_model
+global model_chn
+global model_winSize
 
 
 def readParams(request):
@@ -191,6 +194,7 @@ class Train(View):
     def get(self, request):
         num_epochs = int(request.GET.get("epochs",1))
         train_method = int(request.GET.get("train_method", 0))
+        user_model = ConvNet(model_chn, model_winSize)
         fs = FileSystemStorage()
         dataset_list= getDatasetList(fs.base_location)
         try:
@@ -202,6 +206,19 @@ class Train(View):
                 #training con mix di windows
                 acc = k_win_train(user_model, dataset_list, num_epochs)
                 method = "k-window training"
+            
+            timestr = time.strftime("%Y%m%d-%H%M%S")
+            mod_name = 'trained_model_'+timestr+".pth"
+            torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
+            
+            df = pd.DataFrame(data={"modelname": [mod_name],
+                        "channels": [model_chn],
+                        "windowSize": [model_winSize],
+                        })
+            models_list = os.path.join(fs.base_location, "usermodels", "models.csv")
+            with open(models_list,'a') as fd:
+                df.to_csv(fd, header=False, index=False)
+
         except Exception as e:
             return JsonResponse(data={"error": str(e)}, status = 400)
         
@@ -249,15 +266,18 @@ class ConvertDataset(View):
                 return JsonResponse(data={"error": "bad window size parameter"}, status = 400)
             createDataset(filename, base_location, seizureStart, seizureEnd, windowSec, stride)
 
-        #L'ISTANZA DI RETE VIENE CARICATA SU VARIABILE GLOBALE
-        # -> creare file da mettere in cartella cnn
-        global user_model
-        try:
-            user_model = ConvNet(channels, windowSec*sampleFrequency)
-        except Exception as e:
-            return JsonResponse(data={"error": str(e)}, status = 400)
+        #I parametri della rete vengono caricati su variabili globali 
+        # -> possibile allenare rete ripetutamente
+        global model_chn
+        global model_winSize
+        model_chn = channels
+        model_winSize = windowSec*sampleFrequency
+        # try:
+        #     user_model = ConvNet(channels, windowSec*sampleFrequency)
+        # except Exception as e:
+        #     return JsonResponse(data={"error": str(e)}, status = 400)
             
-        return JsonResponse(data={"model": "network model created"}, status = 200)
+        return JsonResponse(data={"data": "database created"}, status = 200)
 
 
     def post(self, request):
@@ -304,6 +324,22 @@ class Predict(View):
             response["time"].append(str(i*windowSec))
             response["values"].append(predicted.item())
 
-
-
         return JsonResponse(data = response, status=200)
+
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UserModels(View):
+    def get(self, request):
+        fs = FileSystemStorage()
+        model_list = pd.read_csv(os.path.join(fs.base_location, "usermodels", "models.csv"), header = 0, sep=",")
+        response = model_list.to_dict(orient="split")
+
+        return JsonResponse(response, status=200)
+
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
