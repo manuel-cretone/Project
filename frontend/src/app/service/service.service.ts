@@ -81,34 +81,53 @@ export class ServiceService {
    * @param seizureStart
    * @param seizureEnd
    */
-  upTraining(file, seizureStart, seizureEnd) {
-    const params = new HttpParams()
-      .set('myfile', file)
-      .set('seizureStart', seizureStart)
-      .set('seizureEnd', seizureEnd);
+  async upTraining(file, start, end) {
+    console.log(file);
+    console.log(start);
+    console.log(end);
+    const httpOptions = {
+      headers: new HttpHeaders({
+        myFile: file,
+        seizureStart: start,
+        seizureEnd: end
+      })
+    };
+    await this.http
+      .post('http://127.0.0.1:8000/newupload/uptraining/', file, httpOptions)
+      .subscribe(response => {
+        console.log(response);
+      });
 
-    return this.http
-      .post('http://127.0.0.1:8000/newupload/uptraining/', params)
-      .toPromise();
+    // return this.http
+    //   .post('http://127.0.0.1:8000/newupload/uptraining/', file, {
+    //     headers: {},
+    //     params: {
+    //       seizureStart,
+    //       seizureEnd
+    //     }
+    //   })
+    //   .toPromise();
   }
 
   /**
    *
-   * @param windowSize
-   * @param stride
+   * @param windowSize d
+   * @param stride d
    */
-  doConvert(windowSize, stride) {
+
+  async doConvert(windowSize, stride) {
     const params = new HttpParams()
       .set('windowSize', windowSize)
       .set('stride', stride);
-    return this.http
+    return await this.http
       .get('http://127.0.0.1:8000/newupload/convert', { params })
       .toPromise();
   }
+
   /**
    *
-   * @param epochs
-   * @param trainMethod
+   * @param epochs s
+   * @param trainMethod s
    */
   getTrain(epochs, trainMethod) {
     const params = new HttpParams()

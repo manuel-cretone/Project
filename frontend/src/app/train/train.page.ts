@@ -1,5 +1,5 @@
 import { ServiceService } from './../service/service.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { UploadData } from '../interface/UploadData.interface';
 
 @Component({
@@ -10,6 +10,10 @@ import { UploadData } from '../interface/UploadData.interface';
 export class TrainPage implements OnInit {
   constructor(private service: ServiceService) {}
 
+  @Input() startSeizure: number;
+  @Input() seizureEnd: number;
+  @Input() windowSize: number;
+  @Input() stride: number;
   file: File = null;
   upload: UploadData;
   checkFile = false;
@@ -26,14 +30,24 @@ export class TrainPage implements OnInit {
   /**
    *
    */
-  async onUpload() {
+  onUploadTrain() {
     const uploadData = new FormData();
     if (this.file != null) {
       uploadData.append('myfile', this.file, this.file.name);
-      await this.service.UploadFile(uploadData);
+      console.log(uploadData);
+      this.service.upTraining(uploadData, this.startSeizure, this.seizureEnd);
+
+      console.log(this.startSeizure);
+      console.log(this.seizureEnd);
       this.checkFile = true;
     } else {
       this.checkFile = false;
     }
+  }
+
+  makeConvert() {
+    const a = this.service.doConvert(this.windowSize, this.stride);
+    console.log('aaaa');
+    console.log(a);
   }
 }

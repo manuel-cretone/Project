@@ -1,4 +1,4 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -7,87 +7,287 @@
       Home
     </ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
+<!-- <app-header> </app-header> -->
 
 <ion-content>
-  <input type="file" value="Click" (change)="onFileSelected($event)" />
-  <p *ngIf="!checkFile">Carica il file</p>
-  <br />
-  <ion-button type="submit" (click)="onUpload()">submit</ion-button>
-  <br />
-
-  <div *ngIf="checkFile">
-    <ion-item>
-      <ion-label>Seleziona Canale</ion-label>
-      <ion-select [(ngModel)]="selectChannel">
-        <ion-select-option
-          *ngFor="let channel of Channels"
-          value="{{ channel }}"
-          >{{ channel }}</ion-select-option
-        >
-        <ion-select-option>
-          all
-        </ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item>
-      <ion-input
-        type="number"
-        [(ngModel)]="selectStart"
-        placeholder="Start Number"
-      ></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input
-        type="number"
-        [(ngModel)]="selectNumberSignal"
-        placeholder="Number of Signal"
-      ></ion-input>
-    </ion-item>
-    <ion-button
-      *ngIf="
-        selectChannel != undefined &&
-        selectStart < 921599 &&
-        selectStart != undefined &&
-        selectNumberSignal != undefined &&
-        selectNumberSignal <= 7681
-      "
-      type="submit"
-      (click)="draw()"
-      >Draw</ion-button
-    >
-    <p
-      *ngIf="selectStart > 921599 || selectNumberSignal > 7680"
-      style="color:crimson"
-    >
-      Parametri non corretti
-    </p>
-    <!-- 
-    <div
-      *ngIf="checkButton && selectStart < 921599 && selectNumberSignal <= 7680"
-    > -->
-    <ion-card padding>
-      <!-- *ngIf="signals" -->
-      <app-chart
-        *ngIf="signals || allSignalsChannels"
-        [signals]="signals"
-        [allSignalsChannels]="allSignalsChannels"
-      ></app-chart>
-    </ion-card>
-    <ion-card padding *ngIf="Statistics">
-      <h5>Statistics</h5>
-      <p>Minimun Value: {{ Statistics.min }}</p>
-      <p>Maximum Value: {{ Statistics.max }}</p>
-      <p>Average: {{ Statistics.average }}</p>
-      <p>Variance: {{ Statistics.var }}</p>
-      <p>Standard Deviation: {{ Statistics.stdev }}</p>
-    </ion-card>
-    <ion-card padding *ngIf="distribution && signals">
-      <h5>BARCHART</h5>
-      <div>
-        <app-chart [distribution]="distribution"></app-chart>
+  <section id="banner" class="banner">
+    <div class="bg-color">
+      <nav class="navbar navbar-default navbar-fixed-top top-nav-collapse">
+        <div class="container">
+          <div class="col-md-12">
+            <div class="navbar-header">
+              <button
+                type="button"
+                class="navbar-toggle"
+                data-toggle="collapse"
+                data-target="#myNavbar"
+              >
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#"
+                ><img
+                  src="./assets/img/logo.png"
+                  class="img-responsive"
+                  style="width: 140px; margin-top: -16px;"
+              /></a>
+            </div>
+            <div class="collapse navbar-collapse navbar-right" id="myNavbar">
+              <ul class="nav navbar-nav">
+                <li class="active">
+                  <a href="home">Home</a>
+                </li>
+                <li class="active">
+                  <a href="page1">Chart</a>
+                </li>
+                <li class="active">
+                  <a href="list">Predict</a>
+                </li>
+                <li class="active">
+                  <a href="train">Train</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <div class="container">
+        <div class="row">
+          <div class="banner-info">
+            <div class="banner-logo text-center">
+              <img src="./assets/img/logo.png" class="img-responsive" />
+            </div>
+            <div class="banner-text text-center">
+              <h1 class="white">Healthcare at your desk!!</h1>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+                eiusmod <br />tempor incididunt ut labore et dolore magna
+                aliqua.
+              </p>
+              <!-- <a href="#contact" class="btn btn-appoint"
+                >Make an Appointment.</a
+              > -->
+            </div>
+            <!-- <div class="overlay-detail text-center">
+              <a href="#service"><i class="fa fa-angle-down"></i></a>
+            </div> -->
+          </div>
+        </div>
       </div>
-    </ion-card>
-    <!-- </div> -->
-  </div>
+    </div>
+  </section>
+
+  <!--/ service-->
+  <!--cta-->
+  <section id="cta-1" class="section-padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 col-sm-4">
+          <h2 class="ser-title">Our Service</h2>
+          <hr class="botm-line" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="schedule-tab">
+          <div class="col-md-4 col-sm-4 bor-left">
+            <div class="mt-boxy-color"></div>
+            <div class="medi-info">
+              <h3>Chart</h3>
+              <p>
+                I am text block. Edit this text from Appearance / Customize /
+                Homepage header columns. Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit.
+              </p>
+              <a
+                href="./page1/page1.module#Page1PageModule"
+                class="medi-info-btn"
+                >READ MORE</a
+              >
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4">
+            <div class="medi-info">
+              <h3>Predict</h3>
+              <p>
+                I am text block. Edit this text from Appearance / Customize /
+                Homepage header columns. Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit.
+              </p>
+              <a href="./list/list.module#ListPageModule" class="medi-info-btn"
+                >READ MORE</a
+              >
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-4">
+            <div class="medi-info">
+              <h3>Training</h3>
+              <p>
+                I am text block. Edit this text from Appearance / Customize /
+                Homepage header columns. Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit.
+              </p>
+              <a href="./list/list.module#ListPageModule" class="medi-info-btn"
+                >READ MORE</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--cta-->
+  <!--about-->
+  <section id="about" class="section-padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 col-sm-4 col-xs-12">
+          <div class="section-title">
+            <h2 class="head-title lg-line">The Medilap <br />Ultimate Dream</h2>
+            <hr class="botm-line" />
+            <p class="sec-para">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua..
+            </p>
+            <a href="" style="color: #0cb8b6; padding-top:10px;">Know more..</a>
+          </div>
+        </div>
+        <div class="col-md-9 col-sm-8 col-xs-12">
+          <div style="visibility: visible;" class="col-sm-9 more-features-box">
+            <div class="more-features-box-text">
+              <div class="more-features-box-text-icon">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </div>
+              <div class="more-features-box-text-description">
+                <h3>It's something important you want to know.</h3>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
+                  minim veniam, quis nostrud.
+                </p>
+              </div>
+            </div>
+            <div class="more-features-box-text">
+              <div class="more-features-box-text-icon">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </div>
+              <div class="more-features-box-text-description">
+                <h3>It's something important you want to know.</h3>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
+                  minim veniam, quis nostrud.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--/ about-->
+  <!--doctor team-->
+  <section id="doctor-team" class="section-padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h2 class="ser-title">Meet Our Staff!</h2>
+          <hr class="botm-line" />
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-6">
+          <div class="thumbnail">
+            <img src="./assets/img/manuel.jpg" alt="..." class="team-img" />
+            <div class="caption">
+              <h3>Manuel Cretone</h3>
+              <p>Student</p>
+              <ul class="list-inline">
+                <li>
+                  <a href="https://www.facebook.com/manuel.cretone"
+                    ><i class="fa fa-facebook"></i
+                  ></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-twitter"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-google-plus"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-6">
+          <div class="thumbnail">
+            <img src="img/doctor2.jpg" alt="..." class="team-img" />
+            <div class="caption">
+              <h3>Iai Donas</h3>
+              <p>Doctor</p>
+              <ul class="list-inline">
+                <li>
+                  <a href="#"><i class="fa fa-facebook"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-twitter"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-google-plus"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-6">
+          <div class="thumbnail">
+            <img src="img/doctor3.jpg" alt="..." class="team-img" />
+            <div class="caption">
+              <h3>Amanda Denyl</h3>
+              <p>Doctor</p>
+              <ul class="list-inline">
+                <li>
+                  <a href="#"><i class="fa fa-facebook"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-twitter"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-google-plus"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-6">
+          <div class="thumbnail">
+            <img src="img/doctor4.jpg" alt="..." class="team-img" />
+            <div class="caption">
+              <h3>Jason Davis</h3>
+              <p>Doctor</p>
+              <ul class="list-inline">
+                <li>
+                  <a href="#"><i class="fa fa-facebook"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-twitter"></i></a>
+                </li>
+                <li>
+                  <a href="#"><i class="fa fa-google-plus"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--/ doctor team-->
+  <!--testimonial-->
+
+  <!--/ testimonial-->
+  <!--cta 2-->
+
+  <!--cta-->
+  <!--contact-->
+
+  <app-footer></app-footer>
 </ion-content>

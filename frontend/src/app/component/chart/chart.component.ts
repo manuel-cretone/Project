@@ -25,7 +25,7 @@ export class ChartComponent implements OnChanges {
   };
   public highChartsOptions: Highcharts.Options;
   barChartLabels = new Array<any>();
-  chartType: string;
+  chartType;
   barChartData = [];
   highcharts = Highcharts;
   barChartOptions;
@@ -34,9 +34,7 @@ export class ChartComponent implements OnChanges {
   // barChartOptions = [];
   loadData() {
     this.barChartOptions = {
-      chart: {
-        type: this.chartType
-      },
+      chart: this.chartType,
       scrollbar: {
         enabled: true
       },
@@ -48,6 +46,9 @@ export class ChartComponent implements OnChanges {
       },
       xAxis: {
         categories: this.categories,
+        min: 0,
+        max: 1000,
+
         crosshair: true,
         visible: false
       },
@@ -57,20 +58,18 @@ export class ChartComponent implements OnChanges {
       },
       series: this.barChartData
     };
+    console.log(this.yAxses);
   }
 
   ////////////////////////////////////////////////////////////////////
   async ngOnChanges() {
-    // console.log('siamo in SIGNALS');
-    // console.log(this.signals);
-    // this.chartHigh();
-    // this.fillLineChart(this.signals);
     console.log(' ALL signals CHENNEL');
     console.log(this.allSignalsChannels);
     if (this.allSignalsChannels) {
       this.fillAllChart(this.allSignalsChannels);
     }
     if (this.signals) {
+      this.allSignalsChannels = null;
       this.fillLineChart(this.signals);
     }
     if (this.distribution) {
@@ -82,7 +81,6 @@ export class ChartComponent implements OnChanges {
   }
 
   async fillLineChart(signal: Serverdata) {
-    this.chartType = 'line';
     const dat = [];
     dat.push({
       data: signal.valori
@@ -90,7 +88,7 @@ export class ChartComponent implements OnChanges {
     this.barChartData = [];
     console.log('barchar DATA in FILL LINE CHART');
     console.log(this.barChartData);
-
+    this.yAxses = [];
     this.barChartData = dat;
     console.log(this.barChartData);
     this.yAxses = {
@@ -99,6 +97,13 @@ export class ChartComponent implements OnChanges {
       }
     };
     this.categories = signal.timeScale;
+    this.chartType = {
+      width: 1000,
+      type: 'line',
+      zoomType: 'x  ',
+      panning: true,
+      panKey: 'shift'
+    };
     this.loadData();
   }
 
@@ -117,6 +122,12 @@ export class ChartComponent implements OnChanges {
         text: ''
       }
     };
+    this.chartType = {
+      type: 'bar',
+      zoomType: 'x  ',
+      panning: true,
+      panKey: 'shift'
+    };
     this.loadData();
     // this.barChartOptions.scales.xAxes = [];
   }
@@ -128,6 +139,7 @@ export class ChartComponent implements OnChanges {
     window: [][];
     timeScale: [];
   }) {
+    this.signals = null;
     const dat = [];
     const seriesCount = 20;
     let axisTop = 50;
@@ -140,7 +152,8 @@ export class ChartComponent implements OnChanges {
       // dat = [];
       dat.push({
         data: signals.window[i],
-        yAxis: i
+        yAxis: i,
+        showInLegend: false
       });
       yAxis.push({
         title: {
@@ -155,7 +168,16 @@ export class ChartComponent implements OnChanges {
     this.barChartData = [];
     this.barChartData = dat;
     this.yAxses = yAxis;
-    this.chartType = 'line';
+    console.log(this.yAxses);
+    this.chartType = {
+      height: 3500,
+      width: 1000,
+      type: 'line',
+      zoomType: 'x  ',
+      panning: true,
+      panKey: 'shift'
+    };
+
     this.loadData();
   }
 }

@@ -24,11 +24,16 @@
     <ion-input
       class="inputText"
       type="number"
+      [(ngModel)]="startSeizure"
       placeholder="start Seizure"
     ></ion-input>
     <br />
-    <ion-input type="number" placeholder="End Seizure"></ion-input>
-    <ion-button type="submit" (click)="onUpload()">Upload</ion-button>
+    <ion-input
+      type="number"
+      placeholder="End Seizure"
+      [(ngModel)]="seizureEnd"
+    ></ion-input>
+    <ion-button type="submit" (click)="onUploadTrain()">Upload</ion-button>
   </ion-card>
   <!-- griglia crea dataset e train -->
   <ion-grid>
@@ -39,11 +44,16 @@
 
           <ion-input
             type="number"
+            [(ngModel)]="windowSize"
             placeholder="Dimensione Finestre"
           ></ion-input>
 
-          <ion-input type="number" placeholder="Stride"></ion-input>
-          <ion-button type="submit" (click)="onUpload()"
+          <ion-input
+            type="number"
+            [(ngModel)]="stride"
+            placeholder="Stride"
+          ></ion-input>
+          <ion-button type="submit" (click)="makeConvert()"
             >Crea Dataset</ion-button
           >
         </ion-card>
