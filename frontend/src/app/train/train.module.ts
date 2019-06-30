@@ -6,6 +6,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { TrainPage } from './train.page';
+import { HeaderComponent } from '../component/header/header.component';
+import { FooterComponent } from '../component/footer/footer.component';
 
 const routes: Routes = [
   {
@@ -21,6 +23,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [TrainPage]
+  declarations: [TrainPage, HeaderComponent, FooterComponent]
 })
 export class TrainPageModule {}

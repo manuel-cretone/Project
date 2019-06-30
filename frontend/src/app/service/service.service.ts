@@ -81,19 +81,23 @@ export class ServiceService {
    * @param seizureStart
    * @param seizureEnd
    */
-  async upTraining(file, start, end) {
+  async upTraining(file: FormData, start, end) {
     console.log(file);
     console.log(start);
     console.log(end);
-    const httpOptions = {
-      headers: new HttpHeaders({
-        myFile: file,
-        seizureStart: start,
-        seizureEnd: end
-      })
-    };
+
+    const httpOptions = new HttpParams()
+      .set('seizureStart', start)
+      .set('seizureEnd', end);
+    // const input = new FormData();
+    // input.append('myfile', file);
+    // input.append('startSeizure', start);
+    // input.append('endSeizure', end);
+
     await this.http
-      .post('http://127.0.0.1:8000/newupload/uptraining/', file, httpOptions)
+      .post('http://127.0.0.1:8000/newupload/uptraining/', file, {
+        params: httpOptions
+      })
       .subscribe(response => {
         console.log(response);
       });
