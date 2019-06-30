@@ -15,6 +15,8 @@ import torch
 import torch.nn as nn
 import shutil
 import itertools
+import time
+from . import models
 
 
 
@@ -27,7 +29,10 @@ global file_path
 file_path = None
 # global channels
 
-global user_model
+# global user_model
+global model_chn
+global model_winSec
+global model_sampleFrequency
 
 
 def readParams(request):
@@ -68,8 +73,8 @@ class UploadTraining(View):
             nSignal = response["nSignals"]
             sampleFrequency = response["sampleFrequency"]
 
-            seizureStart = request.POST.get("seizureStart", 0)
-            seizureEnd = request.POST.get("seizureEnd", 0)
+            seizureStart = request.GET.get("seizureStart", 0)
+            seizureEnd = request.GET.get("seizureEnd", 0)
 
             if(seizureEnd < seizureStart):
                 return JsonResponse(data={"error": "bad seizure parameters"}, status=400)
@@ -85,6 +90,9 @@ class UploadTraining(View):
             with open(file_list,'a') as fd:
                 df.to_csv(fd, header=False, index=False)
             response.update({"seizureStart": seizureStart, "seizureEnd": seizureEnd})
+
+            f_list = pd.read_csv(os.path.join(fs.base_location, subFolder, "file_list.csv"), header = 0, sep=",")
+            response.update({"files": f_list.to_dict(orient="split")})
         return JsonResponse(response, status=status)
     
     def get(self, request):
@@ -104,7 +112,6 @@ class Values(View):
         print(start, " ", length)
         values, timeScale = readFile(file_path, channel, start, length)
         
-        # nSignals = info["nSignals"]
         data = {
             "file": file_path,
             "canale": channel,
@@ -191,6 +198,7 @@ class Train(View):
     def get(self, request):
         num_epochs = int(request.GET.get("epochs",1))
         train_method = int(request.GET.get("train_method", 0))
+        user_model = ConvNet(model_chn, model_winSec*model_sampleFrequency)
         fs = FileSystemStorage()
         dataset_list= getDatasetList(fs.base_location)
         try:
@@ -202,6 +210,28 @@ class Train(View):
                 #training con mix di windows
                 acc = k_win_train(user_model, dataset_list, num_epochs)
                 method = "k-window training"
+            
+            timestr = time.strftime("%Y%m%d-%H%M%S")
+            mod_name = 'trained_model_'+timestr+".pth"
+            torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
+            
+            # df = pd.DataFrame(data={"modelname": [mod_name],
+            #             "channels": [model_chn],
+            #             "windowSize": [model_winSize],
+            #             })
+            # models_list = os.path.join(fs.base_location, "usermodels", "models.csv")
+            # with open(models_list,'a') as fd:
+            #     df.to_csv(fd, header=False, index=False)
+
+            record = models.UserNet(name=mod_name,
+                                    channels=model_chn, 
+                                    windowSec = model_winSec,
+                                    sampleFrequency = model_sampleFrequency,
+                                    # file = user_model.state_dict(),
+                                    link = os.path.join(fs.base_location, "usermodels", mod_name)
+                                    )
+            record.save()
+
         except Exception as e:
             return JsonResponse(data={"error": str(e)}, status = 400)
         
@@ -249,15 +279,20 @@ class ConvertDataset(View):
                 return JsonResponse(data={"error": "bad window size parameter"}, status = 400)
             createDataset(filename, base_location, seizureStart, seizureEnd, windowSec, stride)
 
-        #L'ISTANZA DI RETE VIENE CARICATA SU VARIABILE GLOBALE
-        # -> creare file da mettere in cartella cnn
-        global user_model
-        try:
-            user_model = ConvNet(channels, windowSec*sampleFrequency)
-        except Exception as e:
-            return JsonResponse(data={"error": str(e)}, status = 400)
+        #I parametri della rete vengono caricati su variabili globali 
+        # -> possibile allenare rete ripetutamente
+        global model_chn
+        global model_winSec
+        global model_sampleFrequency
+        model_chn = channels
+        model_winSec = windowSec
+        model_sampleFrequency = sampleFrequency
+        # try:
+        #     user_model = ConvNet(channels, windowSec*sampleFrequency)
+        # except Exception as e:
+        #     return JsonResponse(data={"error": str(e)}, status = 400)
             
-        return JsonResponse(data={"model": "network model created"}, status = 200)
+        return JsonResponse(data={"data": "database created"}, status = 200)
 
 
     def post(self, request):
@@ -270,13 +305,25 @@ class ConvertDataset(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
     def get(self, request):
-        windowSec = 30
-        sampleFrequency = 256
+
+        model_id = request.GET.get("model_id", 0)
+
+        #TODO controllo se non mette niente
+
+        m = models.UserNet.objects.get(id=model_id)
+        
+        # windowSec = 30
+        # sampleFrequency = 256
+        # windowSize = windowSec * sampleFrequency
+        # channels = 23
+        windowSec = int(m.windowSec)
+        sampleFrequency = int(m.sampleFrequency)
         windowSize = windowSec * sampleFrequency
-        channels = 23
+        channels = int(m.channels)
         fs = FileSystemStorage()
         model = ConvNet(channels= channels, windowSize = windowSize)      
-        model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
+        # model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
+        model.load_state_dict(torch.load(m.link))
         model = model.eval()
 
         all_signals= []
@@ -303,7 +350,40 @@ class Predict(View):
             # response["sec"+str(i*windowSec)] = predicted.item()
             response["time"].append(str(i*windowSec))
             response["values"].append(predicted.item())
-
-
-
+        
         return JsonResponse(data = response, status=200)
+
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UserModels(View):
+    def get(self, request):
+        # fs = FileSystemStorage()
+        # model_list = pd.read_csv(os.path.join(fs.base_location, "usermodels", "models.csv"), header = 0, sep=",")
+        # response = model_list.to_dict(orient="split")
+        
+        response= {}
+        all_models = models.UserNet.objects.all()
+        for m in all_models:
+            print(m)
+            response[m.id] = {  "name": m.name,
+                                "channels": m.channels, 
+                                "windowSec" : m.windowSec,
+                                "sampleFrequency": m.sampleFrequency,
+                                "link": m.link
+                                    }
+        return JsonResponse(response, status=200)
+
+    def post(self, request):
+        response = {"error": "Method not allowed"}
+        return JsonResponse(response, status=405)
+
+
+class CleanUserModels(View):
+    def get(self, request):
+        models.UserNet.objects.all().delete()
+        cleanFolder("usermodels")
+        return JsonResponse({"message": "no more models in database"}, status = 200)
