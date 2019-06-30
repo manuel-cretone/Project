@@ -31,7 +31,8 @@ file_path = None
 
 # global user_model
 global model_chn
-global model_winSize
+global model_winSec
+global model_sampleFrequency
 
 
 def readParams(request):
@@ -72,8 +73,8 @@ class UploadTraining(View):
             nSignal = response["nSignals"]
             sampleFrequency = response["sampleFrequency"]
 
-            seizureStart = request.POST.get("seizureStart", 0)
-            seizureEnd = request.POST.get("seizureEnd", 0)
+            seizureStart = request.GET.get("seizureStart", 0)
+            seizureEnd = request.GET.get("seizureEnd", 0)
 
             if(seizureEnd < seizureStart):
                 return JsonResponse(data={"error": "bad seizure parameters"}, status=400)
@@ -197,7 +198,7 @@ class Train(View):
     def get(self, request):
         num_epochs = int(request.GET.get("epochs",1))
         train_method = int(request.GET.get("train_method", 0))
-        user_model = ConvNet(model_chn, model_winSize)
+        user_model = ConvNet(model_chn, model_winSec*model_sampleFrequency)
         fs = FileSystemStorage()
         dataset_list= getDatasetList(fs.base_location)
         try:
@@ -224,7 +225,8 @@ class Train(View):
 
             record = models.UserNet(name=mod_name,
                                     channels=model_chn, 
-                                    windowSize = model_winSize,
+                                    windowSec = model_winSec,
+                                    sampleFrequency = model_sampleFrequency,
                                     # file = user_model.state_dict(),
                                     link = os.path.join(fs.base_location, "usermodels", mod_name)
                                     )
@@ -280,9 +282,11 @@ class ConvertDataset(View):
         #I parametri della rete vengono caricati su variabili globali 
         # -> possibile allenare rete ripetutamente
         global model_chn
-        global model_winSize
+        global model_winSec
+        global model_sampleFrequency
         model_chn = channels
-        model_winSize = windowSec*sampleFrequency
+        model_winSec = windowSec
+        model_sampleFrequency = sampleFrequency
         # try:
         #     user_model = ConvNet(channels, windowSec*sampleFrequency)
         # except Exception as e:
@@ -301,13 +305,25 @@ class ConvertDataset(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
     def get(self, request):
-        windowSec = 30
-        sampleFrequency = 256
+
+        model_id = request.GET.get("model_id", 0)
+
+        #TODO controllo se non mette niente
+
+        m = models.UserNet.objects.get(id=model_id)
+        
+        # windowSec = 30
+        # sampleFrequency = 256
+        # windowSize = windowSec * sampleFrequency
+        # channels = 23
+        windowSec = int(m.windowSec)
+        sampleFrequency = int(m.sampleFrequency)
         windowSize = windowSec * sampleFrequency
-        channels = 23
+        channels = int(m.channels)
         fs = FileSystemStorage()
         model = ConvNet(channels= channels, windowSize = windowSize)      
-        model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
+        # model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
+        model.load_state_dict(torch.load(m.link))
         model = model.eval()
 
         all_signals= []
@@ -334,7 +350,7 @@ class Predict(View):
             # response["sec"+str(i*windowSec)] = predicted.item()
             response["time"].append(str(i*windowSec))
             response["values"].append(predicted.item())
-
+        
         return JsonResponse(data = response, status=200)
 
     def post(self, request):
@@ -353,8 +369,10 @@ class UserModels(View):
         all_models = models.UserNet.objects.all()
         for m in all_models:
             print(m)
-            response[m.name] = {"channels": m.channels, 
-                                "windowSize" : m.windowSize,
+            response[m.id] = {  "name": m.name,
+                                "channels": m.channels, 
+                                "windowSec" : m.windowSec,
+                                "sampleFrequency": m.sampleFrequency,
                                 "link": m.link
                                     }
         return JsonResponse(response, status=200)

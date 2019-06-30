@@ -7,7 +7,8 @@ class UserNet(models.Model):
     # file = models.FileField(upload_to='usermodels')
     link = models.CharField(max_length = 200)
     channels = models.CharField(max_length=10)
-    windowSize = models.CharField(max_length=20)
+    windowSec = models.CharField(max_length=20)
+    sampleFrequency = models.CharField(max_length=20)
 
 def __str__(self):
     return self.name
