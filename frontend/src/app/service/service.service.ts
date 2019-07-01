@@ -69,16 +69,18 @@ export class ServiceService {
       .toPromise();
   }
 
-  async getPredict() {
+  async getPredict(id) {
+    const params = new HttpParams().set('model_id', id);
+
     return (await this.http
-      .get('http://127.0.0.1:8000/newupload/predict')
+      .get('http://127.0.0.1:8000/newupload/predict', { params })
       .toPromise()) as { time: any; values: any };
   }
 
   async getModels() {
-    return await this.http
+    return (await this.http
       .get('http://127.0.0.1:8000/newupload/usermodels')
-      .toPromise();
+      .toPromise()) as { id: any; name: any };
   }
   /**
    *

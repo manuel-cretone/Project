@@ -11,7 +11,7 @@ import { ListServiceService } from './list-service.service';
 })
 export class ListPage implements OnInit {
   @Input() selectNetwork: string;
-  Network: [];
+  Networks: [];
   upload: UploadData;
   checkFile = false;
   checkPrediction = false;
@@ -24,7 +24,9 @@ export class ListPage implements OnInit {
     private loadingController: LoadingController,
     private listService: ListServiceService
   ) {}
-  ngOnInit() {}
+  ngOnInit() {
+    this.getModels();
+  }
 
   onFileSelected(event) {
     this.file = event.target.files[0];
@@ -45,6 +47,10 @@ export class ListPage implements OnInit {
    *
    */
   async getPrediction() {
+    const model = this.listService.numberOfList(
+      this.Networks,
+      this.selectNetwork
+    );
     this.checkPrediction = false;
     const loader: any = await this.loadingController.create({
       message: 'Please Wait',
@@ -53,13 +59,18 @@ export class ListPage implements OnInit {
       spinner: 'bubbles'
     });
     loader.present();
-    this.predict = await this.service.getPredict().then((data)=>{this.Network=});
-     
+    this.predict = await this.service.getPredict(0);
     loader.dismiss();
 
     this.drawChart(this.clicked, this.listService, this.allSignalsChannels);
     this.checkPrediction = true;
     console.log(this.predict);
+  }
+
+  async getModels() {
+    this.service.getModels().then(data => {
+      this.Networks = data.name;
+    });
   }
 
   drawChart(clicked: boolean, listService: ListServiceService, signals) {
@@ -109,6 +120,7 @@ export class ListPage implements OnInit {
       },
       series: [
         {
+          
           data: this.predict.values
         }
       ]

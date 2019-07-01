@@ -54,7 +54,19 @@
               value="Click"
               (change)="onFileSelected($event)"
             />
+
             <p *ngIf="!checkFile">Carica il file</p>
+            <br />
+            <ion-item>
+              <ion-label>seleziona modello</ion-label>
+              <ion-select [(ngModel)]="selectNetwork">
+                <ion-select-option
+                  *ngFor="let network of Networks"
+                  value="{{ network }}"
+                  >{{ network }}</ion-select-option
+                >
+              </ion-select>
+            </ion-item>
             <br />
             <ion-button color="secondary" type="submit" (click)="onUpload()"
               >Submit</ion-button
@@ -66,13 +78,6 @@
               >Predict</ion-button
             >
           </div>
-          <ion-select [(ngModel)]="selectChannel">
-            <ion-select-option
-              *ngFor="let network of Networks"
-              value="{{ network }}"
-              >{{ network }}</ion-select-option
-            >
-          </ion-select>
         </div>
         <div class="col-md-9 col-sm-8 col-xs-12">
           <div style="visibility: visible;" class="col-sm-9 more-features-box">
