@@ -16,7 +16,7 @@ import torch.nn as nn
 import shutil
 import itertools
 import time
-from .models import UserNet
+from .models import UserNet, UserFiles
 
 
 
@@ -86,7 +86,16 @@ class UploadTraining(View):
                                     "nSignal": [nSignal],
                                     "sampleFrequency": [sampleFrequency],
                                     })
-
+            record = UserFiles(
+                name = filename,
+                seizureStart = seizureStart,
+                seizureEnd = seizureEnd,
+                channels = channels,
+                nSignal = nSignal,
+                sampleFrequency = sampleFrequency
+            )
+            record.save()
+            # response["faaaaaail"] = list(UserFiles.objects.values())
             #TODO togliere csv e gestire con db
             file_list = os.path.join(fs.base_location, subFolder, "file_list.csv")
             with open(file_list,'a') as fd:
@@ -96,6 +105,7 @@ class UploadTraining(View):
             f_list = pd.read_csv(os.path.join(fs.base_location, subFolder, "file_list.csv"), header = 0, sep=",")
             #TODO modifica come metto in json lista file caricati ->penosa
             response.update({"files": f_list.to_dict(orient="split")})
+
         return JsonResponse(response, status=status)
     
     def get(self, request):
@@ -322,8 +332,8 @@ class Predict(View):
             m = UserNet.objects.get(id=0)
 
 
-        windowSec = m.windowSec
-        sampleFrequency = m.sampleFrequency
+        windowSec = int(m.windowSec)
+        sampleFrequency = int(m.sampleFrequency)
         windowSize = windowSec * sampleFrequency
         channels = m.channels
         
