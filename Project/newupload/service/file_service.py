@@ -60,7 +60,7 @@ def file_info(filePath):
     nSignals = file.getNSamples().tolist()[0]
 
     data = {
-        "file": filePath, 
+        # "file": filePath, 
         "startDate": startDate,
         "fileDuration": fileDuration,
         "channels": channels,

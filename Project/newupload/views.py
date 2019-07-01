@@ -225,7 +225,6 @@ class Train(View):
             
             timestr = time.strftime("%Y%m%d-%H%M%S")
             mod_name = request.GET.get("name", 'trained_model_'+timestr+".pth")
-            
             torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
             
             # df = pd.DataFrame(data={"modelname": [mod_name],
@@ -243,6 +242,7 @@ class Train(View):
                                     # file = user_model.state_dict(),
                                     link = os.path.join(fs.base_location, "usermodels", mod_name)
                                     )
+            
             addDefaultModel()
             record.save()
 
@@ -304,7 +304,7 @@ class ConvertDataset(View):
             createDataset(filename, base_location, seizureStart, seizureEnd, windowSec, stride)
 
         #I parametri della rete vengono caricati su variabili globali 
-        # -> possibile allenare rete ripetutamente
+        # -> possibile usare dataset per allenare diverse reti 
         global model_chn
         global model_winSec
         global model_sampleFrequency
@@ -312,7 +312,9 @@ class ConvertDataset(View):
         model_winSec = windowSec
         model_sampleFrequency = sampleFrequency
 
-        return JsonResponse(data={"data": "database created"}, status = 200)
+        _ = CleanTrainingFiles.as_view()(self.request)
+
+        return JsonResponse(data={"data": "dataset created"}, status = 200)
 
 
     def post(self, request):
