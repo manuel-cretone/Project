@@ -101,13 +101,11 @@ export class ServiceService {
     // input.append('startSeizure', start);
     // input.append('endSeizure', end);
 
-    await this.http
+    return (await this.http
       .post('http://127.0.0.1:8000/newupload/uptraining/', file, {
         params: httpOptions
       })
-      .subscribe(response => {
-        console.log(response);
-      });
+      .toPromise()) as { uploaded: any };
 
     // return this.http
     //   .post('http://127.0.0.1:8000/newupload/uptraining/', file, {
@@ -146,6 +144,12 @@ export class ServiceService {
       .set('train_method', trainMethod);
     return this.http
       .get('http://127.0.0.1:8000/newupload/train', { params })
+      .toPromise();
+  }
+
+  async makeCleanFiles() {
+    await this.http
+      .get('http://127.0.0.1:8000/newupload/cleanfiles')
       .toPromise();
   }
 }

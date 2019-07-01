@@ -8,6 +8,7 @@ import { UploadData } from '../interface/UploadData.interface';
   styleUrls: ['./train.page.scss']
 })
 export class TrainPage implements OnInit {
+  listOfFile;
   constructor(private service: ServiceService) {}
 
   @Input() startSeizure: number;
@@ -33,15 +34,19 @@ export class TrainPage implements OnInit {
   /**
    *
    */
-  onUploadTrain() {
+  async onUploadTrain() {
     const uploadData = new FormData();
     if (this.file != null) {
       uploadData.append('myfile', this.file, this.file.name);
       console.log(uploadData);
-      this.service.upTraining(uploadData, this.startSeizure, this.seizureEnd);
+      await this.service
+        .upTraining(uploadData, this.startSeizure, this.seizureEnd)
+        .then(data => {
+          this.listOfFile = data.uploaded;
+        });
 
-      console.log(this.startSeizure);
-      console.log(this.seizureEnd);
+      console.log(this.listOfFile);
+
       this.checkFile = true;
     } else {
       this.checkFile = false;
@@ -54,7 +59,13 @@ export class TrainPage implements OnInit {
 
   async makeTrain() {
     console.log(this.selectMethod);
-    const a = await this.service.getTrain(this.epochs, 0);
+    const a = await this.service.getTrain(this.epochs, this.selectMethod);
     console.log(a);
+  }
+
+  makeCleanFile() {
+    this.service.makeCleanFiles();
+    console.log(this.service.makeCleanFiles());
+    this.listOfFile = null;
   }
 }

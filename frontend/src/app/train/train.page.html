@@ -85,6 +85,15 @@
               (click)="onUploadTrain()"
               >Upload</ion-button
             >
+            <div *ngIf="listOfFile !== null">
+              <div *ngFor="let list of listOfFile">
+                <p>{{ list }}</p>
+              </div>
+            </div>
+            <br />
+            <ion-button color="secondary" (click)="makeCleanFile()"
+              >Delete all file</ion-button
+            >
           </div>
         </div>
         <div class="col-md-9 col-sm-8 col-xs-12">
