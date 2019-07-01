@@ -50,29 +50,62 @@ Un convolutional layer è generalmente formato da un set di filtri (chiamati ker
 Il dataset chb mit...
 \todo{Provenienza, composizione, preprocessing}
 
+\section{Structure Application}
+L'applicazione creata è suddivisa in due grandi componenti, da una parte il backend che offre servizi e modella la struttura dei dati, dall'altra il frontend che richiede i servizi e ne implementa l'interfaccia grafica, in modo da garantire un'interazione user friendly con l'utente.
+Questa garantisce anche una più facile manutenzione del codice, visto che ognuna delle due parti è divisa in diversi componenti.
+L' aplicazione è una web app, essa infatti è capace di girare sia nell'ambito web che mobile grazie ai vari framework utilizzati.
+Essa è una single page application, cioè un'applicazione web che è fruibile su una sola pagina web garantendo una fluidità maggiore nell'esperienza dell'utente.
 \section{Backend}
 L'applicazione è strutturata come una web application. La parte di backend è utilizzabile indipendentemente dall'interfaccia fornita. 
 \subsection{Django Framework}
-Per la realizzazione della web app abbiamo fatto uso del framework Django. Si traatta di un web frameworke di alto livello scritto in linguaggio Python, sviluppato dalla Django Software Foundation e distribuito open source. Django fa uso del paradigma Model-Template-View. 
+Django è un server-side web framework Python estremamente popolare. Un web framework è un insieme di componenti che rendono lo sviluppo di siti web più facile e veloce. 
+Django aiuta a eliminare tutte quelle attività che vengono ripetute durante lo sviluppo dell'applicazione, rendendo il processo di sviluppo un'attività facile e rapida. 
+Si tratta di un web framework di alto livello scritto in linguaggio Python, sviluppato dalla Django Software Foundation e distribuito open source. 
+Essendo un framework di sviluppo web, quindi con un interfaccia web, si parla di un pattern alla base chiamato MVC, che corrisponde a tre componenti: Model, View e Controller.
+Anche Django usa questo pattern, però nel suo caso il pattern è chiamato MVT, che corrispondono a tre componenti quali: Model, View, Template.
 \begin{itemize}
-\item Model: è la parte del programma che si occupa del database. Django fornisce una serie di comandi rapidi per la gestione delle operazioni più comuni.
-\item Template: consiste in una serie di documenti per la generazione di codice HTML, combinando l'utilizzo di parti statiche e tag dinamici. In questo progetto non è stato tuttavia utilizzato alcun template, dato che la parte visuale è gestita esternamente dal framework Ionic. 
-\item View: gestisce l'interazione tra utente, sistema e database. Si occupa di ricezione, elaborazione e risposta alle richieste dell'utente.
+\item Model: corrisponde a un insieme di classi python che descrivono il modello dei dati. Esse forniscono una rappresentazione delle tabelle del database, consentendo di sfruttare gli oggetti per effettuare operazioni CRUD sui dati. Le informazioni delle classi sono contenute nel file \textit{models.py}.
+
+
+è la parte del programma che si occupa del database. Django fornisce una serie di comandi rapidi per la gestione delle operazioni più comuni.
+\item Template: corrisponde nella vista dell'applicazione, consente di effettuare l'interazione con l'app web essa descrive tutti i componenti visuali facenti parte della GUI con cui l'utente poi andrà ad interagire.
+Il Template consiste di file html che descrivono la presentazione dei dati implementando la \textit{View} del pattern. 
+
+consiste in una serie di documenti per la generazione di codice HTML, combinando l'utilizzo di parti statiche e tag dinamici. In questo progetto non è stato tuttavia utilizzato alcun template, dato che la parte visuale è gestita esternamente dal framework Ionic. 
+\item View: funzioni python che gestiscono il flusso di esecuzione dell'applicazione, implementando la parte del controller del pattern MVC. Garantisce la possibilità di creare delle pagine e di descriverne il comportamento che esse avranno in funzione dell'iterazione con l'utente.
+La View descrive e modella il comportamento dell'intera applicazione, rispondendo a eventi scaturiti dall'interazione con l'utente e modellando i dati facente parti del modello
+
+
+gestisce l'interazione tra utente, sistema e database. Si occupa di ricezione, elaborazione e risposta alle richieste dell'utente.
 \end{itemize}
 \todo{immagine mtv}
 
 \subsection{Python}
-La sezione di backend del programma è stata scritta in Python, linguaggio di programmazione orientato agli oggetti. Di seguito sono descritte le più importanti librerie utilizzate. 
+La sezione di backend del programma è stata scritta in Python, linguaggio di programmazione interpretato, di alto livello e generico.
+Esso supporta diversi paradgmi di programmazione, come quella procedurale, orientata agli oggetti e funzionale. 
+Di seguito verranno descritte le più importanti librerie utilizzate nel progetto.
 
 \subsection{PyEDFlib}
 Il funzionamento base del sistema prevede la lettura di tracciati EEG. Questi vengono comunemente distribuiti nel formato EDF (European Data Format), ideato per lo scambio di segnali multucanali fisici e biologici. La libreria che si occupa dell'interazione con tali file è PyEDFlib, basata a sua volta su edflib e Numpy. Essa mette a disposizione funzioni per la lettura dei segnali del file e dei suoi metadati, tra cui il numero di canali, la lunghezza e la frequenza del campionamento, l'inizio e la fine della rilevazione. 
 
 \subsection{PyTorch}
+PyTorch è una libreria del linguaggio Python basata sul framework torch.
+Essa contiene diverse funzioni e metodi scientifici per le applicazioni dedicate al machine learning, al deep learning e al natural processing language.
+PyTorch offre  due funzionalità di alto livello:
+\item Tensor Computing(come NumPy) con forte accelerazione attraverso unità di elaborazione grafica(GPU)
+\item Piattaforma di ricerca del deep learning che offre la massima flessibilità e  velocità (DA VEDERE)
 La parte di neural network e deep learning è stata realizzata mediante l'utilizzo del framework PyTorch
 
 \subsection{API}
 L'utente ha la possibilità di interagire con il sistema attraverso richieste HTTP
 \todo{views singolo file, view traininig}
+
+\section{Frontend}
+La parte di frontend è stata implementata per garantire la gestione dell'interfaccia grafica che poi andrà ad interagire con l'utente, essa rappresenta il confine del sistema.
+
+\subsection{Angular}
+
+\subsection{Ionic}
 
 
 

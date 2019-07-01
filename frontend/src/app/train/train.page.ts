@@ -53,6 +53,7 @@ export class TrainPage implements OnInit {
   }
 
   async makeTrain() {
+    console.log(this.selectMethod);
     const a = await this.service.getTrain(this.epochs, 0);
     console.log(a);
   }

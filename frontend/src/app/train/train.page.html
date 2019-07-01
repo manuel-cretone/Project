@@ -58,6 +58,7 @@
             />
             <p *ngIf="!checkFile">Carica il file</p>
             <br />
+            <p>Insert start seizure</p>
             <ion-item>
               <ion-input
                 type="number"
@@ -66,6 +67,7 @@
               ></ion-input>
             </ion-item>
             <br />
+            <p>Insert end seizure</p>
             <ion-item>
               <ion-input
                 type="number"
@@ -73,7 +75,11 @@
                 [(ngModel)]="seizureEnd"
               ></ion-input>
             </ion-item>
+
             <ion-button
+              *ngIf="
+                startSeizure < seizureEnd && seizureEnd - startSeizure >= 7
+              "
               color="secondary"
               type="submit"
               (click)="onUploadTrain()"
@@ -141,7 +147,7 @@
                   ></ion-input>
                   <ion-item>
                     <ion-label>select info prediction</ion-label>
-                    <ion-select [(ngModel)]="selectChannel">
+                    <ion-select [(ngModel)]="selectMethod">
                       <ion-select-option value="0"
                         >Cross Validation window</ion-select-option
                       >

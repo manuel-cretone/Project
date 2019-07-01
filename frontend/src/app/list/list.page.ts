@@ -14,6 +14,7 @@ export class ListPage implements OnInit {
   Networks: [];
   upload: UploadData;
   checkFile = false;
+  checkSubmit = false;
   checkPrediction = false;
   clicked: boolean;
   file: File = null;
@@ -38,9 +39,9 @@ export class ListPage implements OnInit {
     if (this.file != null) {
       uploadData.append('myfile', this.file, this.file.name);
       await this.service.UploadFile(uploadData);
-      this.checkFile = true;
+      this.checkSubmit = true;
     } else {
-      this.checkFile = false;
+      this.checkSubmit = false;
     }
   }
   /**
@@ -59,7 +60,11 @@ export class ListPage implements OnInit {
       spinner: 'bubbles'
     });
     loader.present();
-    this.predict = await this.service.getPredict(0);
+    if (model === undefined) {
+      this.predict = await this.service.getPredict(0);
+    } else {
+      this.predict = await this.service.getPredict(model);
+    }
     loader.dismiss();
 
     this.drawChart(this.clicked, this.listService, this.allSignalsChannels);
@@ -74,7 +79,7 @@ export class ListPage implements OnInit {
   }
 
   drawChart(clicked: boolean, listService: ListServiceService, signals) {
-    Highcharts.chart('container', {
+    Highcharts.chart('chart', {
       chart: {
         type: 'column',
         zoomType: 'x',

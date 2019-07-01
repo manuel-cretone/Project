@@ -41,7 +41,7 @@
   </nav>
 </div>
 <ion-content>
-  <section id="about" class="section-padding" style="height:61%">
+  <section id="about" class="section-padding">
     <div class="container">
       <div class="row">
         <div class="col-md-3 col-sm-4 col-xs-12">
@@ -57,6 +57,12 @@
 
             <p *ngIf="!checkFile">Carica il file</p>
             <br />
+
+            <br />
+            <ion-button color="secondary" type="submit" (click)="onUpload()"
+              >Submit</ion-button
+            >
+            <br />
             <ion-item>
               <ion-label>seleziona modello</ion-label>
               <ion-select [(ngModel)]="selectNetwork">
@@ -68,10 +74,8 @@
               </ion-select>
             </ion-item>
             <br />
-            <ion-button color="secondary" type="submit" (click)="onUpload()"
-              >Submit</ion-button
-            >
             <ion-button
+              *ngIf="checkSubmit"
               color="secondary"
               type="submit"
               (click)="getPrediction()"
@@ -93,13 +97,11 @@
                   minim veniam, quis nostrud.
                 </p>
                 <div *ngIf="checkFile">
-                  <ion-card>
-                    <div id="container"></div>
-                    <!-- parametri della predizione -->
-                    <!-- <ion-card>
-                      <ion-header>Parametri Predizione</ion-header>
-                    </ion-card> -->
-                  </ion-card>
+                  <div id="chart"></div>
+                  <!-- parametri della predizione -->
+                  <!-- <ion-card>
+                            <ion-header>Parametri Predizione</ion-header>
+                          </ion-card> -->
                 </div>
               </div>
             </div>
@@ -121,6 +123,7 @@
       </div>
     </div>
   </section>
+  <!--  -->
 
   <!-- ion card predizione con grafico -->
 

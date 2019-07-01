@@ -335,7 +335,7 @@ class Predict(View):
         windowSec = int(m.windowSec)
         sampleFrequency = int(m.sampleFrequency)
         windowSize = windowSec * sampleFrequency
-        channels = m.channels
+        channels =int(m.channels) 
         
         #controllo channels e sample rate del file coincidono con rete 
         info = file_info(file_path)
