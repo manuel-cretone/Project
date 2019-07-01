@@ -14,6 +14,9 @@ export class TrainPage implements OnInit {
   @Input() seizureEnd: number;
   @Input() windowSize: number;
   @Input() stride: number;
+  @Input() epochs: number;
+  @Input() selectMethod: string;
+  @Input() networkName: string;
   file: File = null;
   upload: UploadData;
   checkFile = false;
@@ -46,8 +49,11 @@ export class TrainPage implements OnInit {
   }
 
   makeConvert() {
-    const a = this.service.doConvert(this.windowSize, this.stride);
-    console.log('aaaa');
+    this.service.doConvert(this.windowSize, this.stride);
+  }
+
+  async makeTrain() {
+    const a = await this.service.getTrain(this.epochs, 0);
     console.log(a);
   }
 }

@@ -5,6 +5,7 @@ import { ServiceService } from '../service/service.service';
 
 import { Statistics } from '../interface/Statistics.interface';
 import { Page1Service } from './page1.service';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-page1',
@@ -14,7 +15,8 @@ import { Page1Service } from './page1.service';
 export class Page1Page implements OnInit {
   constructor(
     private service: ServiceService,
-    private page1service: Page1Service
+    private page1service: Page1Service,
+    private loadingController: LoadingController
   ) {}
 
   @Input() selectChannel: string;
@@ -95,6 +97,13 @@ export class Page1Page implements OnInit {
         this.signals = null;
         this.Statistics = null;
       } else {
+        const loader: any = await this.loadingController.create({
+          message: 'Please Wait',
+          cssClass: 'custom-loading',
+          mode: 'ios',
+          spinner: 'bubbles'
+        });
+        loader.present();
         await this.signal(channel, this.selectStart, this.selectNumberSignal);
         await this.getStatistics(
           channel,
@@ -106,6 +115,8 @@ export class Page1Page implements OnInit {
           this.selectStart,
           this.selectNumberSignal
         );
+        loader.dismiss();
+
         this.allSignalsChannels = null;
       }
       // this.chart.fillLineChart(this.signals, this.selectChannel);

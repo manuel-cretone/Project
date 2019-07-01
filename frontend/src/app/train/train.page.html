@@ -43,70 +43,140 @@
 
 <!-- dowloand file con inserimento inizio e fine Seizure -->
 <ion-content>
-  <ion-card style="margin-top: 5%">
-    <ion-toolbar>
-      <input
-        class="input"
-        type="file"
-        value="Click"
-        (change)="onFileSelected($event)"
-      />
-    </ion-toolbar>
-    <p *ngIf="!checkFile">Carica il file</p>
-    <br />
-    <ion-input
-      class="inputText"
-      type="text"
-      [(ngModel)]="startSeizure"
-      placeholder="start Seizure"
-    ></ion-input>
-    <br />
-    <ion-input
-      type="text"
-      placeholder="End Seizure"
-      [(ngModel)]="seizureEnd"
-    ></ion-input>
-    <ion-button type="submit" (click)="onUploadTrain()">Upload</ion-button>
-  </ion-card>
+  <section id="about" class="section-padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 col-sm-4 col-xs-12">
+          <div class="section-title">
+            <h2 class="head-title lg-line">The Medilap <br />Ultimate Dream</h2>
+            <hr class="botm-line" />
+
+            <input
+              type="file"
+              value="Click"
+              (change)="onFileSelected($event)"
+            />
+            <p *ngIf="!checkFile">Carica il file</p>
+            <br />
+            <ion-item>
+              <ion-input
+                type="number"
+                [(ngModel)]="startSeizure"
+                placeholder="start Seizure"
+              ></ion-input>
+            </ion-item>
+            <br />
+            <ion-item>
+              <ion-input
+                type="number"
+                placeholder="End Seizure"
+                [(ngModel)]="seizureEnd"
+              ></ion-input>
+            </ion-item>
+            <ion-button
+              color="secondary"
+              type="submit"
+              (click)="onUploadTrain()"
+              >Upload</ion-button
+            >
+          </div>
+        </div>
+        <div class="col-md-9 col-sm-8 col-xs-12">
+          <div style="visibility: visible;" class="col-sm-9 more-features-box">
+            <div class="more-features-box-text">
+              <div class="more-features-box-text-icon">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </div>
+              <div class="more-features-box-text-description">
+                <h3>It's something important you want to know.</h3>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
+                  minim veniam, quis nostrud.
+                </p>
+                <ion-card>
+                  <ion-card-title class="cardTitle"
+                    >Create Dataset</ion-card-title
+                  >
+
+                  <ion-input
+                    type="number"
+                    [(ngModel)]="windowSize"
+                    placeholder="Dimensione Finestre"
+                  ></ion-input>
+
+                  <ion-input
+                    type="number"
+                    [(ngModel)]="stride"
+                    placeholder="Stride"
+                  ></ion-input>
+                  <ion-button
+                    color="secondary"
+                    type="submit"
+                    (click)="makeConvert()"
+                    >Crea Dataset</ion-button
+                  >
+                </ion-card>
+              </div>
+            </div>
+            <div class="more-features-box-text">
+              <div class="more-features-box-text-icon">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </div>
+              <div class="more-features-box-text-description">
+                <h3>It's something important you want to know.</h3>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
+                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
+                  minim veniam, quis nostrud.
+                </p>
+                <ion-card>
+                  <ion-card-title class="cardTitle"
+                    >Setting Train</ion-card-title
+                  >
+                  <ion-input
+                    type="number"
+                    [(ngModel)]="epochs"
+                    placeholder="number of epochs"
+                  ></ion-input>
+                  <ion-item>
+                    <ion-label>select info prediction</ion-label>
+                    <ion-select [(ngModel)]="selectChannel">
+                      <ion-select-option value="0"
+                        >Cross Validation window</ion-select-option
+                      >
+                      <ion-select-option value="1"
+                        >Cross Validation file</ion-select-option
+                      >
+                    </ion-select>
+                  </ion-item>
+                  <ion-input
+                    [(ngModel)]="networkName"
+                    placeholder="Name of neural network"
+                  ></ion-input>
+                  <br />
+                  <ion-button
+                    color="secondary"
+                    type="submit"
+                    (click)="makeTrain()"
+                    >Train</ion-button
+                  >
+                </ion-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--  -->
+
   <!-- griglia crea dataset e train -->
   <ion-grid>
     <ion-row>
-      <ion-col>
-        <ion-card>
-          <ion-card-title class="cardTitle">Create Dataset</ion-card-title>
-
-          <ion-input
-            type="number"
-            [(ngModel)]="windowSize"
-            placeholder="Dimensione Finestre"
-          ></ion-input>
-
-          <ion-input
-            type="number"
-            [(ngModel)]="stride"
-            placeholder="Stride"
-          ></ion-input>
-          <ion-button type="submit" (click)="makeConvert()"
-            >Crea Dataset</ion-button
-          >
-        </ion-card>
-      </ion-col>
-      <ion-col>
-        <ion-card>
-          <ion-card-title class="cardTitle">Setting Train</ion-card-title>
-          <ion-input type="number" placeholder="number of epochs"></ion-input>
-          <ion-item>
-            <ion-label>select info prediction</ion-label>
-            <ion-select [(ngModel)]="selectChannel">
-              <ion-select-option>Cross Validation file</ion-select-option>
-              <ion-select-option>Cross Validation window</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-input placeholder="Name of neural network"></ion-input>
-          <br />
-          <ion-button type="submit" (click)="onUpload()">Train</ion-button>
-        </ion-card>
-      </ion-col>
+      <ion-col> </ion-col>
+      <ion-col> </ion-col>
     </ion-row>
   </ion-grid>
 

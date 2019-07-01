@@ -98,7 +98,7 @@ export class ChartComponent implements OnChanges {
     };
     this.categories = signal.timeScale;
     this.chartType = {
-      width: 1000,
+      width: 750,
       type: 'line',
       zoomType: 'x  ',
       panning: true,
@@ -171,7 +171,7 @@ export class ChartComponent implements OnChanges {
     console.log(this.yAxses);
     this.chartType = {
       height: 3500,
-      width: 1000,
+      width: 760,
       type: 'line',
       zoomType: 'x  ',
       panning: true,
