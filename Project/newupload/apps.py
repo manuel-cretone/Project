@@ -5,13 +5,13 @@ import pandas as pd
 class NewuploadConfig(AppConfig):
     name = 'newupload'
     def ready(self):
-        cleanFolder("training")
+        # cleanFolder("training")
         cleanFolder("up")
         cleanFolder("dataset")
         # cleanFolder("usermodels")
         # addDefaultModel()
-        df = pd.DataFrame(data = None, columns = ["filename", "seizurestart", "seizureEnd", "channels", "nSignal", "sampleFrequency"])
-        fs = FileSystemStorage()
-        dir = os.path.join(fs.base_location, "training", "file_list.csv")
-        df.to_csv(dir, header=True, index=False)
+        # df = pd.DataFrame(data = None, columns = ["filename", "seizurestart", "seizureEnd", "channels", "nSignal", "sampleFrequency"])
+        # fs = FileSystemStorage()
+        # dir = os.path.join(fs.base_location, "training", "file_list.csv")
+        # df.to_csv(dir, header=True, index=False)
         print("on startup")
