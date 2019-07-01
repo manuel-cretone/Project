@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ServiceService } from '../service/service.service';
 import { UploadData } from '../interface/UploadData.interface';
 import * as Highcharts from 'highcharts/highstock';
@@ -10,6 +10,8 @@ import { ListServiceService } from './list-service.service';
   styleUrls: ['list.page.scss']
 })
 export class ListPage implements OnInit {
+  @Input() selectNetwork: string;
+  Network: [];
   upload: UploadData;
   checkFile = false;
   checkPrediction = false;
@@ -51,7 +53,8 @@ export class ListPage implements OnInit {
       spinner: 'bubbles'
     });
     loader.present();
-    this.predict = await this.service.getPredict();
+    this.predict = await this.service.getPredict().then((data)=>{this.Network=});
+     
     loader.dismiss();
 
     this.drawChart(this.clicked, this.listService, this.allSignalsChannels);

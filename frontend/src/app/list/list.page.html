@@ -66,6 +66,13 @@
               >Predict</ion-button
             >
           </div>
+          <ion-select [(ngModel)]="selectChannel">
+            <ion-select-option
+              *ngFor="let network of Networks"
+              value="{{ network }}"
+              >{{ network }}</ion-select-option
+            >
+          </ion-select>
         </div>
         <div class="col-md-9 col-sm-8 col-xs-12">
           <div style="visibility: visible;" class="col-sm-9 more-features-box">

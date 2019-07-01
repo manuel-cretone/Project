@@ -75,6 +75,11 @@ export class ServiceService {
       .toPromise()) as { time: any; values: any };
   }
 
+  async getModels() {
+    return await this.http
+      .get('http://127.0.0.1:8000/newupload/usermodels')
+      .toPromise();
+  }
   /**
    *
    * @param file
