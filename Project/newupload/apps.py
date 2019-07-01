@@ -2,7 +2,6 @@ from django.apps import AppConfig
 from .service.file_service import *
 import pandas as pd
 
-
 class NewuploadConfig(AppConfig):
     name = 'newupload'
     def ready(self):
@@ -10,6 +9,7 @@ class NewuploadConfig(AppConfig):
         cleanFolder("up")
         cleanFolder("dataset")
         # cleanFolder("usermodels")
+        # addDefaultModel()
         df = pd.DataFrame(data = None, columns = ["filename", "seizurestart", "seizureEnd", "channels", "nSignal", "sampleFrequency"])
         fs = FileSystemStorage()
         dir = os.path.join(fs.base_location, "training", "file_list.csv")

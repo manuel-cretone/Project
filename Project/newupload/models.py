@@ -6,9 +6,21 @@ class UserNet(models.Model):
     name = models.CharField(max_length = 100)
     # file = models.FileField(upload_to='usermodels')
     link = models.CharField(max_length = 200)
-    channels = models.CharField(max_length=10)
-    windowSec = models.CharField(max_length=20)
-    sampleFrequency = models.CharField(max_length=20)
+    channels = models.IntegerField()
+    windowSec = models.IntegerField()
+    sampleFrequency = models.IntegerField()
 
-def __str__(self):
-    return self.name
+    def __str__(self):
+        return self.name
+
+class UserFiles(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length = 100)
+    seizureStart = models.IntegerField()
+    seizureEnd = models.IntegerField()
+    channels = models.IntegerField()
+    nSignal = models.IntegerField()
+    sampleFrequency = models.IntegerField()
+
+    def __str__(self):
+        return self.name

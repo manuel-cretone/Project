@@ -16,7 +16,7 @@ import torch.nn as nn
 import shutil
 import itertools
 import time
-from . import models
+from .models import UserNet
 
 
 
@@ -86,12 +86,15 @@ class UploadTraining(View):
                                     "nSignal": [nSignal],
                                     "sampleFrequency": [sampleFrequency],
                                     })
+
+            #TODO togliere csv e gestire con db
             file_list = os.path.join(fs.base_location, subFolder, "file_list.csv")
             with open(file_list,'a') as fd:
                 df.to_csv(fd, header=False, index=False)
             response.update({"seizureStart": seizureStart, "seizureEnd": seizureEnd})
 
             f_list = pd.read_csv(os.path.join(fs.base_location, subFolder, "file_list.csv"), header = 0, sep=",")
+            #TODO modifica come metto in json lista file caricati ->penosa
             response.update({"files": f_list.to_dict(orient="split")})
         return JsonResponse(response, status=status)
     
@@ -212,7 +215,8 @@ class Train(View):
                 method = "k-window training"
             
             timestr = time.strftime("%Y%m%d-%H%M%S")
-            mod_name = 'trained_model_'+timestr+".pth"
+            mod_name = request.GET.get("name", 'trained_model_'+timestr+".pth")
+            
             torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
             
             # df = pd.DataFrame(data={"modelname": [mod_name],
@@ -223,13 +227,14 @@ class Train(View):
             # with open(models_list,'a') as fd:
             #     df.to_csv(fd, header=False, index=False)
 
-            record = models.UserNet(name=mod_name,
+            record = UserNet(name=mod_name,
                                     channels=model_chn, 
                                     windowSec = model_winSec,
                                     sampleFrequency = model_sampleFrequency,
                                     # file = user_model.state_dict(),
                                     link = os.path.join(fs.base_location, "usermodels", mod_name)
                                     )
+            addDefaultModel()
             record.save()
 
         except Exception as e:
@@ -256,6 +261,8 @@ class ConvertDataset(View):
         windowSec = int(request.GET.get("windowSize", 1))
         stride = int(request.GET.get("stride", 1))
         
+        cleanFolder("dataset")
+
         #crea nuovo dataset (diviso in files pkl)
         fs = FileSystemStorage()
         base_location = fs.base_location
@@ -270,6 +277,7 @@ class ConvertDataset(View):
             nSignal = file_list["nSignal"][i]
             sampleFrequency = int(file_list["sampleFrequency"][i])
             
+            #TODO questi controlli li farà il db
             if((sf != None and sampleFrequency != sf) or (ch!=None and channels != ch)):
                 return JsonResponse(data={"error": "file must have same sample frequency and channels"}, status = 400)
             sf = sampleFrequency
@@ -305,24 +313,34 @@ class ConvertDataset(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
     def get(self, request):
-
         model_id = request.GET.get("model_id", 0)
 
-        #TODO controllo se non mette niente
+        try:
+            m = UserNet.objects.get(id=model_id)
+        except UserNet.DoesNotExist:
+            addDefaultModel()
+            m = UserNet.objects.get(id=0)
 
-        m = models.UserNet.objects.get(id=model_id)
-        
-        # windowSec = 30
-        # sampleFrequency = 256
-        # windowSize = windowSec * sampleFrequency
-        # channels = 23
-        windowSec = int(m.windowSec)
-        sampleFrequency = int(m.sampleFrequency)
+
+        windowSec = m.windowSec
+        sampleFrequency = m.sampleFrequency
         windowSize = windowSec * sampleFrequency
-        channels = int(m.channels)
-        fs = FileSystemStorage()
+        channels = m.channels
+        
+        #controllo channels e sample rate del file coincidono con rete 
+        info = file_info(file_path)
+        if(info["channels"] != channels or info["sampleFrequency"] != sampleFrequency):
+            return JsonResponse(data={
+                                    "error": "file e rete non compatibili",
+                                    "file_chn": info["channels"],
+                                    "net_chn": channels,
+                                    "file_sample": info["sampleFrequency"],
+                                    "net_sample": sampleFrequency
+                                    }, 
+                                status = 400)
+
+        
         model = ConvNet(channels= channels, windowSize = windowSize)      
-        # model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
         model.load_state_dict(torch.load(m.link))
         model = model.eval()
 
@@ -337,6 +355,7 @@ class Predict(View):
 
         response = {
             "dim": str(complete_tensor.shape),
+            "name": m.name,
         }
         dataset = EvalDataset(complete_tensor)
         loader = DataLoader(dataset = dataset, 
@@ -344,13 +363,17 @@ class Predict(View):
                             shuffle=False)
         response["time"] = []
         response["values"] = []
+        seizureWindows = 0
         for i, data in enumerate(loader):
             result = model(data)
             _, predicted = torch.max(result.data, 1)
-            # response["sec"+str(i*windowSec)] = predicted.item()
+            if(predicted==1):
+                seizureWindows = seizureWindows+1
             response["time"].append(str(i*windowSec))
             response["values"].append(predicted.item())
         
+        response["seizureWindows"] = seizureWindows
+        response["totalWindows"] = complete_tensor.shape[0]
         return JsonResponse(data = response, status=200)
 
     def post(self, request):
@@ -361,20 +384,20 @@ class Predict(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class UserModels(View):
     def get(self, request):
-        # fs = FileSystemStorage()
-        # model_list = pd.read_csv(os.path.join(fs.base_location, "usermodels", "models.csv"), header = 0, sep=",")
-        # response = model_list.to_dict(orient="split")
-        
+
         response= {}
-        all_models = models.UserNet.objects.all()
+        response["id"] = []
+        response["name"] = []
+        all_models = UserNet.objects.all()
         for m in all_models:
-            print(m)
-            response[m.id] = {  "name": m.name,
-                                "channels": m.channels, 
-                                "windowSec" : m.windowSec,
-                                "sampleFrequency": m.sampleFrequency,
-                                "link": m.link
-                                    }
+            # response[m.id] = {  "name": m.name,
+            #                     "channels": m.channels, 
+            #                     "windowSec" : m.windowSec,
+            #                     "sampleFrequency": m.sampleFrequency,
+            #                     "link": m.link
+            #                         }
+            response["name"].append(m.name)
+            response["id"].append(m.id)
         return JsonResponse(response, status=200)
 
     def post(self, request):
@@ -384,6 +407,29 @@ class UserModels(View):
 
 class CleanUserModels(View):
     def get(self, request):
-        models.UserNet.objects.all().delete()
+        UserNet.objects.all().delete()
         cleanFolder("usermodels")
-        return JsonResponse({"message": "no more models in database"}, status = 200)
+        addDefaultModel()
+
+        return JsonResponse({"message": "no user models in database"}, status = 200)
+
+
+def addDefaultModel():
+    fs = FileSystemStorage()
+    record = UserNet(id=0,
+                    name="Default model",
+                    channels="23", 
+                    windowSec = "30",
+                    sampleFrequency = "256",
+                    # file = user_model.state_dict(),
+                    link = os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")
+                    )
+    record.save()
+
+#TODO da finire db 
+class CleanTrainingFiles(View):
+    def get(self, request):
+        UserFiles.objects.all().delete()
+        cleanFolder("training")
+
+        return JsonResponse({"message": "no user training files in database"}, status = 200)
