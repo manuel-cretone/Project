@@ -17,6 +17,7 @@ import shutil
 import itertools
 import time
 from .models import UserNet, UserFiles
+from django.db.models import Max, Min
 
 
 
@@ -68,7 +69,7 @@ class UploadTraining(View):
         subFolder = "training"
         filename, response, status = handleFile(request, subFolder)
         if(status==200):
-            fs = FileSystemStorage()
+            # fs = FileSystemStorage()
             channels = response["channels"]
             nSignal = response["nSignals"]
             sampleFrequency = response["sampleFrequency"]
@@ -79,13 +80,6 @@ class UploadTraining(View):
             if(seizureEnd < seizureStart):
                 return JsonResponse(data={"error": "bad seizure parameters"}, status=400)
 
-            df = pd.DataFrame(data={"filename": [filename], 
-                                    "seizureStart": [seizureStart], 
-                                    "seizureEnd": [seizureEnd],
-                                    "channels": [channels],
-                                    "nSignal": [nSignal],
-                                    "sampleFrequency": [sampleFrequency],
-                                    })
             record = UserFiles(
                 name = filename,
                 seizureStart = seizureStart,
@@ -95,16 +89,21 @@ class UploadTraining(View):
                 sampleFrequency = sampleFrequency
             )
             record.save()
-            # response["faaaaaail"] = list(UserFiles.objects.values())
+            
+            response["uploaded"] = []
+            all_files = UserFiles.objects.all()
+            for f in all_files:
+                response["uploaded"].append(f.name)
+            
             #TODO togliere csv e gestire con db
-            file_list = os.path.join(fs.base_location, subFolder, "file_list.csv")
-            with open(file_list,'a') as fd:
-                df.to_csv(fd, header=False, index=False)
-            response.update({"seizureStart": seizureStart, "seizureEnd": seizureEnd})
+            # file_list = os.path.join(fs.base_location, subFolder, "file_list.csv")
+            # with open(file_list,'a') as fd:
+            #     df.to_csv(fd, header=False, index=False)
+            # response.update({"seizureStart": seizureStart, "seizureEnd": seizureEnd})
 
-            f_list = pd.read_csv(os.path.join(fs.base_location, subFolder, "file_list.csv"), header = 0, sep=",")
-            #TODO modifica come metto in json lista file caricati ->penosa
-            response.update({"files": f_list.to_dict(orient="split")})
+            # f_list = pd.read_csv(os.path.join(fs.base_location, subFolder, "file_list.csv"), header = 0, sep=",")
+            # #TODO modifica come metto in json lista file caricati ->penosa
+            # response.update({"files": f_list.to_dict(orient="split")})
 
         return JsonResponse(response, status=status)
     
@@ -226,7 +225,6 @@ class Train(View):
             
             timestr = time.strftime("%Y%m%d-%H%M%S")
             mod_name = request.GET.get("name", 'trained_model_'+timestr+".pth")
-            
             torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
             
             # df = pd.DataFrame(data={"modelname": [mod_name],
@@ -244,6 +242,7 @@ class Train(View):
                                     # file = user_model.state_dict(),
                                     link = os.path.join(fs.base_location, "usermodels", mod_name)
                                     )
+            
             addDefaultModel()
             record.save()
 
@@ -276,41 +275,46 @@ class ConvertDataset(View):
         #crea nuovo dataset (diviso in files pkl)
         fs = FileSystemStorage()
         base_location = fs.base_location
-        file_list = pd.read_csv(os.path.join(fs.base_location, "training", "file_list.csv"), header = 0, sep=",")
-        sf = None
-        ch = None
+        file_list = pd.DataFrame(list(UserFiles.objects.all().values()))
+
+        sf_max = UserFiles.objects.aggregate(Max("sampleFrequency"))["sampleFrequency__max"]
+        sf_min = UserFiles.objects.aggregate(Min("sampleFrequency"))["sampleFrequency__min"]
+        ch_max = UserFiles.objects.aggregate(Max("channels"))["channels__max"]
+        ch_min = UserFiles.objects.aggregate(Min("channels"))["channels__min"]
+
+        if(ch_max != ch_min or sf_max != sf_min):
+            return JsonResponse(data={"error": "file must have same sample frequency and channels"}, status = 400)
+
+
         for i in range(file_list.shape[0]):
-            filename = file_list["filename"][i]
-            seizureStart = int(file_list["seizurestart"][i])
+            filename = file_list["name"][i]
+            seizureStart = int(file_list["seizureStart"][i])
             seizureEnd = int(file_list["seizureEnd"][i])
             channels = file_list["channels"][i]
             nSignal = file_list["nSignal"][i]
             sampleFrequency = int(file_list["sampleFrequency"][i])
             
-            #TODO questi controlli li farà il db
-            if((sf != None and sampleFrequency != sf) or (ch!=None and channels != ch)):
-                return JsonResponse(data={"error": "file must have same sample frequency and channels"}, status = 400)
-            sf = sampleFrequency
-            ch = channels
+            # if((sf != None and sampleFrequency != sf) or (ch!=None and channels != ch)):
+            #     return JsonResponse(data={"error": "file must have same sample frequency and channels"}, status = 400)
+            # sf = sampleFrequency
+            # ch = channels
             
             if(windowSec > seizureEnd-seizureStart):
                 return JsonResponse(data={"error": "bad window size parameter"}, status = 400)
             createDataset(filename, base_location, seizureStart, seizureEnd, windowSec, stride)
 
         #I parametri della rete vengono caricati su variabili globali 
-        # -> possibile allenare rete ripetutamente
+        # -> possibile usare dataset per allenare diverse reti 
         global model_chn
         global model_winSec
         global model_sampleFrequency
         model_chn = channels
         model_winSec = windowSec
         model_sampleFrequency = sampleFrequency
-        # try:
-        #     user_model = ConvNet(channels, windowSec*sampleFrequency)
-        # except Exception as e:
-        #     return JsonResponse(data={"error": str(e)}, status = 400)
-            
-        return JsonResponse(data={"data": "database created"}, status = 200)
+
+        _ = CleanTrainingFiles.as_view()(self.request)
+
+        return JsonResponse(data={"data": "dataset created"}, status = 200)
 
 
     def post(self, request):
@@ -442,4 +446,4 @@ class CleanTrainingFiles(View):
         UserFiles.objects.all().delete()
         cleanFolder("training")
 
-        return JsonResponse({"message": "no user training files in database"}, status = 200)
+        return JsonResponse({"message": "deleted user training files in database"}, status = 200)
