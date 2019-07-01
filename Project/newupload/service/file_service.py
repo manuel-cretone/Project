@@ -6,6 +6,7 @@ import datetime
 import pandas as pd
 from django.core.files.storage import FileSystemStorage
 import shutil
+# from ..models import UserNet
 
 
 # [check extension file if .edf, .txt, .pdf]
@@ -99,4 +100,4 @@ def cleanFolder(subFolder):
             os.remove(os.path.join(dir, f))
         for d in directories:
             shutil.rmtree(os.path.join(dir, d), ignore_errors = True)
-    
+
