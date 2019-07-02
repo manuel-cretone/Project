@@ -26,7 +26,7 @@
               <a href="home">Home</a>
             </li>
             <li class="active">
-              <a href="page1">Chart</a>
+              <a href="page1">EEG Analysis</a>
             </li>
             <li class="active">
               <a href="list">Predict</a>
@@ -46,8 +46,10 @@
       <div class="row">
         <div class="col-md-3 col-sm-4 col-xs-12">
           <div class="section-title">
-            <h2 class="head-title lg-line">The Medilap <br />Ultimate Dream</h2>
+            <h2 class="head-title lg-line">Seizure Prediction Tool</h2>
             <hr class="botm-line" />
+            <br />
+            <p>Upload your edf file</p>
 
             <input
               type="file"
@@ -55,16 +57,16 @@
               (change)="onFileSelected($event)"
             />
 
-            <p *ngIf="!checkFile">Carica il file</p>
-            <br />
+            <p *ngIf="!checkFile">Upload your file</p>
 
-            <br />
             <ion-button color="secondary" type="submit" (click)="onUpload()"
-              >Submit</ion-button
+              >Upload</ion-button
             >
             <br />
+            <br />
+            <p>Select the network model you want to use for the prediction</p>
             <ion-item>
-              <ion-label>seleziona modello</ion-label>
+              <ion-label>Select model</ion-label>
               <ion-select [(ngModel)]="selectNetwork">
                 <ion-select-option
                   *ngFor="let network of Networks"
@@ -90,11 +92,11 @@
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </div>
               <div class="more-features-box-text-description">
-                <h3>It's something important you want to know.</h3>
+                <h3>Seizure Prediction of your file</h3>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
-                  minim veniam, quis nostrud.
+                  The chart highlights the windows with epileptic seizure. It is
+                  possible to show the EEG trace if you click on the window in
+                  the chart.
                 </p>
                 <div *ngIf="checkFile">
                   <div id="chart"></div>
@@ -110,7 +112,7 @@
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </div>
               <div class="more-features-box-text-description">
-                <h3>It's something important you want to know.</h3>
+                <h3>Seizure statistics</h3>
                 <p>
                   Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
                   do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
@@ -127,12 +129,12 @@
 
   <!-- ion card predizione con grafico -->
 
-  <ion-card *ngIf="clicked">
-    <ion-title>DEVE APPARIRE IL GRAFICO</ion-title>
-    <!-- <app-chart
+  <!-- <ion-card *ngIf="clicked">
+    <ion-title>DEVE APPARIRE IL GRAFICO</ion-title> -->
+  <!-- <app-chart
       *ngIf="allSignalsChannels"
       [allSignalsChannels]="allSignalsChannels"
     ></app-chart> -->
-  </ion-card>
+  <!-- </ion-card> -->
   <app-footer></app-footer>
 </ion-content>

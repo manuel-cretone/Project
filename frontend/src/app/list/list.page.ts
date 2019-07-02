@@ -86,9 +86,9 @@ export class ListPage implements OnInit {
         panning: true,
         panKey: 'shift'
       },
-      title: {
-        text: 'Stacked bar chart'
-      },
+      // title: {
+      //   text: 'Stacked bar chart'
+      // },
       xAxis: {
         categories: this.predict.time,
         min: 0,
@@ -125,7 +125,6 @@ export class ListPage implements OnInit {
       },
       series: [
         {
-          
           data: this.predict.values
         }
       ]

@@ -38,12 +38,12 @@ export class ChartComponent implements OnChanges {
       scrollbar: {
         enabled: true
       },
-      title: {
-        text: 'Monthly Average Temperature'
-      },
-      subtitle: {
-        text: 'Source: WorldClimate.com'
-      },
+      // title: {
+      //   text: 'Monthly Average Temperature'
+      // },
+      // subtitle: {
+      //   text: 'Source: WorldClimate.com'
+      // },
       xAxis: {
         categories: this.categories,
         min: 0,
@@ -110,7 +110,7 @@ export class ChartComponent implements OnChanges {
   // Statistiche sul grafico bar chart
   fillBarChart(distr: { hist: []; bins: [] }) {
     const dat = [];
-    this.chartType = 'column';
+
     // this.barChartData.push({ data: distr.hist });
     dat.push({
       data: distr.hist
@@ -123,7 +123,7 @@ export class ChartComponent implements OnChanges {
       }
     };
     this.chartType = {
-      type: 'bar',
+      type: 'column',
       zoomType: 'x  ',
       panning: true,
       panKey: 'shift'

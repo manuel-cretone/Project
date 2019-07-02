@@ -26,7 +26,7 @@
               <a href="home">Home</a>
             </li>
             <li class="active">
-              <a href="page1">Chart</a>
+              <a href="page1">EEG analysis</a>
             </li>
             <li class="active">
               <a href="list">Predict</a>
@@ -47,23 +47,27 @@
       <div class="row">
         <div class="col-md-3 col-sm-4 col-xs-12">
           <div class="section-title">
-            <h2 class="head-title lg-line">The Medilap <br />Ultimate Dream</h2>
+            <h2 class="head-title lg-line">EEG Analysis</h2>
             <hr class="botm-line" />
+            <p>Upload your edf file</p>
             <input
               type="file"
               value="Click"
               (change)="onFileSelected($event)"
             />
-            <p *ngIf="checkFile">Carica il file</p>
+            <p *ngIf="checkFile">Upload your file</p>
             <br />
 
             <ion-button color="secondary" type="submit" (click)="onUpload()"
-              >Submit</ion-button
+              >Upload</ion-button
             >
-            <br />
+
             <div *ngIf="checkFile">
+              <br />
+              <p>Select the desired channel or all channels</p>
+
               <ion-item>
-                <ion-label>Seleziona Canale</ion-label>
+                <ion-label>Select channel</ion-label>
                 <ion-select [(ngModel)]="selectChannel">
                   <ion-select-option
                     *ngFor="let channel of Channels"
@@ -75,27 +79,37 @@
                   </ion-select-option>
                 </ion-select>
               </ion-item>
+              <br />
+              <p>
+                Insert the start second of the slice you want to visualize
+              </p>
+
               <ion-item>
                 <ion-input
                   type="number"
                   [(ngModel)]="selectStart"
-                  placeholder="Start Number"
+                  placeholder="Start Time"
                 ></ion-input>
               </ion-item>
+              <br />
+              <p>
+                Insert the length (in seconds) of the slice you want to
+                visualize
+              </p>
+
               <ion-item>
                 <ion-input
                   type="number"
                   [(ngModel)]="selectNumberSignal"
-                  placeholder="Number of Signal"
+                  placeholder="Window Dimensions"
                 ></ion-input>
               </ion-item>
               <ion-button
                 *ngIf="
                   selectChannel != undefined &&
-                  selectStart < 921599 &&
+                  selectStart < 3600 &&
                   selectStart != undefined &&
-                  selectNumberSignal != undefined &&
-                  selectNumberSignal <= 7681
+                  selectNumberSignal != undefined
                 "
                 type="submit"
                 (click)="draw()"
@@ -106,7 +120,7 @@
                 *ngIf="selectStart > 921599 || selectNumberSignal > 7680"
                 style="color:crimson"
               >
-                Parametri non corretti
+                Wrong Parameters
               </p>
               <!-- 
                     <div
@@ -126,11 +140,11 @@
               </div>
               <!-- chart -->
               <div class="more-features-box-text-description">
-                <h3>It's something important you want to know.</h3>
+                <h3>EEG visualization with insert parameters</h3>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
-                  minim veniam, quis nostrud.
+                  Visualize your edf file, you can choose single channel or
+                  entire EEG trace. The chart shows the selected slice of the
+                  trace accordin to start and length parameters.
                 </p>
                 <div *ngIf="checkFile">
                   <ion-card padding *ngIf="signals">
@@ -155,19 +169,18 @@
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </div>
               <div class="more-features-box-text-description">
-                <h3>It's something important you want to know.</h3>
+                <h3>EEG Statistics</h3>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
-                  minim veniam, quis nostrud.
+                  Visualize the statistics of uploaded file. Statistics are
+                  calculated on the whole file.
                 </p>
                 <ion-card padding *ngIf="Statistics">
                   <h5>Statistics</h5>
-                  <p>Minimun Value: {{ Statistics.min }}</p>
-                  <p>Maximum Value: {{ Statistics.max }}</p>
-                  <p>Average: {{ Statistics.average }}</p>
-                  <p>Variance: {{ Statistics.var }}</p>
-                  <p>Standard Deviation: {{ Statistics.stdev }}</p>
+                  <p><b>Value:</b> {{ Statistics.min }}</p>
+                  <p><b>Maximum Value:</b> {{ Statistics.max }}</p>
+                  <p><b>Average:</b> {{ Statistics.average }}</p>
+                  <p><b>Variance:</b> {{ Statistics.var }}</p>
+                  <p><b>Standard Deviation: </b> {{ Statistics.stdev }}</p>
                 </ion-card>
               </div>
             </div>
@@ -176,14 +189,12 @@
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </div>
               <div class="more-features-box-text-description">
-                <h3>It's something important you want to know.</h3>
+                <h3>EEG signals distribution</h3>
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-                  do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
-                  minim veniam, quis nostrud.
+                  Given equidistant intervarls, visualize the number of signals
+                  for each interval.
                 </p>
                 <ion-card padding *ngIf="distribution && signals">
-                  <h5>BARCHART</h5>
                   <div>
                     <app-chart [distribution]="distribution"></app-chart>
                   </div>
