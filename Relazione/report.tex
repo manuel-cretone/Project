@@ -11,6 +11,8 @@
 \title{Convolutional Neural Network for epileptic seizure recognition}
 \maketitle
 
+\tableofcontents
+
 \section*{Introduzione}
 Questo progetto è sato realizzato.....\\
 
@@ -31,7 +33,16 @@ La peculiarità delle reti neurali rispetto all'utilizzo di sistemi di risoluzio
 \item Apprendimento semi-supervised: modello ibrido basato sui primi due, in cui solo ad una parte dei dati in input è associato il rispettivo output atteso.
 \end{itemize}
 
-Nelle reti ad apprendimento supervisionato viene tipicamente usato l'algoritmo di retropropagazione dell'errore \todo{feedforwarding e backpropagation}
+L'allenamento supervisionato, quello implementato in questo progetto, prevede diversi passi:
+\begin{itemize}
+\item Inizializzazione: il modello viene inizializzato con valori casuali per bias e pesi. 
+\item Feed-forward: il modello prende i dati in input e restituisce un output, rappresentante la predizione.
+\item Loss function: viene calcolata la differenza tra l'output atteso e quello calcolato dalla rete. Fornisce quindi una metrica sull'accuratezza della rete. \todo{CrossEntropyLoss} Inizialmente la precisione sarà molto bassa. L'obiettivo dell'allenamento è appunto quello di minimizzare il loss per aumentare l'accuratezza della rete. 
+\item Differentiation: \todo{loss.backward() - adam optimizer}
+\item Backpropagation 
+\item Weight update \todo{optimizer??}
+\end{itemize}
+\todo{feedforwarding e backpropagation}
 
 \section{Reti Neurali Convoluzionali}
 Il funzionamento delle reti neurali tradizonali è poco efficiente quando deve essere analizzato un numero molto grande di dati. Ogni neurone prevede una connessione con ogni neurone del layer successivo (per questo sono chiamati fully-connected layers). Ciò implica che al crescere della dimensione della rete, cresce inesorabilmente il numero di parametri di cui tener traccia, portando a casi si sovradattamento della rete.
@@ -47,16 +58,23 @@ Un convolutional layer è generalmente formato da un set di filtri (chiamati ker
 \end{figure}
 
 \section{Dataset}
-Il dataset chb mit...
-\todo{Provenienza, composizione, preprocessing}
+Come descritto nelle sezioni precedenti, l'allenamento delle reti neurali prevede l'utilizzo di un dataset. Si è scelto un allenamento di tipo supervisionato, pertanto il dataset necessita di valori di input e relativi output attesi, da confrontare con i risultati della rete. Il dataset utilizzato è quello del Children's Hospital Boston, che comprende EEG provenienti da 22 diversi pazienti pediatrici. Le misurazioni sono state effettuate con una frequenza di campionamento di 256 Hz e la maggior parte dei files contiene 23 canali. Per l'allenamento della rete è stata utilizzata solo una parte di questi files, in particolare sono stati selezionati files con almeno una crisi e con esattamente 23 segnali EEG provenienti dai pazienti 1 ,2, 3, 5, 7 e 8.
 
+L'allenamento della rete è stato effettuato su finestre di 30 secondi di tempo. Per la creazione del dataset si sono seguiti i seguenti passi per ogni file:
+\begin{itemize}
+\item Isolamento segnali di crisi epilettica, in base ai secondi di inizio e fine crisi riportati nel file \textit{chbNN-summary.txt} di ogni paziente
+\item Suddivisione dei segnali di crisi in finestre da 30 secondi, applicando uno stride di 1 secondo (overlapping 29 secondi tra una finestra e l'altra)
+\item Eliminazione dei segnali pre e post ictali, scelti convenzionalmente 5 minuti prima e dopo la crisi. Questo per evitare di influenzare il dataset con segnali aventi parziali caratteristiche di crisi
+\item Selezione di finestre non di crisi, in numero pari alle finestre di crisi calcolate in precedenza
+\end{itemize}
+\todo{Che altro aggiungere? }
 \section{Structure Application}
 L'applicazione creata è suddivisa in due grandi componenti, da una parte il backend che offre servizi e modella la struttura dei dati, dall'altra il frontend che richiede i servizi e ne implementa l'interfaccia grafica, in modo da garantire un'interazione user friendly con l'utente.
 Questa garantisce anche una più facile manutenzione del codice, visto che ognuna delle due parti è divisa in diversi componenti.
 L' aplicazione è una web app, essa infatti è capace di girare sia nell'ambito web che mobile grazie ai vari framework utilizzati.
 Essa è una single page application, cioè un'applicazione web che è fruibile su una sola pagina web garantendo una fluidità maggiore nell'esperienza dell'utente.
 \section{Backend}
-L'applicazione è strutturata come una web application. La parte di backend è utilizzabile indipendentemente dall'interfaccia fornita. 
+La parte di backend è utilizzabile indipendentemente dall'interfaccia fornita. Di seguito le librerie e i framework utilizzati e una descrizione delle API fornite. 
 \subsection{Django Framework}
 Django è un server-side web framework Python estremamente popolare. Un web framework è un insieme di componenti che rendono lo sviluppo di siti web più facile e veloce. 
 Django aiuta a eliminare tutte quelle attività che vengono ripetute durante lo sviluppo dell'applicazione, rendendo il processo di sviluppo un'attività facile e rapida. 
@@ -78,7 +96,11 @@ La View descrive e modella il comportamento dell'intera applicazione, rispondend
 
 gestisce l'interazione tra utente, sistema e database. Si occupa di ricezione, elaborazione e risposta alle richieste dell'utente.
 \end{itemize}
-\todo{immagine mtv}
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.5]{mtv}
+\caption{Relazioni modello MTV}
+\end{figure}
 
 \subsection{Python}
 La sezione di backend del programma è stata scritta in Python, linguaggio di programmazione interpretato, di alto livello e generico.
@@ -89,18 +111,41 @@ Di seguito verranno descritte le più importanti librerie utilizzate nel progett
 Il funzionamento base del sistema prevede la lettura di tracciati EEG. Questi vengono comunemente distribuiti nel formato EDF (European Data Format), ideato per lo scambio di segnali multucanali fisici e biologici. La libreria che si occupa dell'interazione con tali file è PyEDFlib, basata a sua volta su edflib e Numpy. Essa mette a disposizione funzioni per la lettura dei segnali del file e dei suoi metadati, tra cui il numero di canali, la lunghezza e la frequenza del campionamento, l'inizio e la fine della rilevazione. 
 
 \subsection{PyTorch}
+La parte di neural network e deep learning è stata realizzata mediante l'utilizzo del framework PyTorch
 PyTorch è una libreria del linguaggio Python basata sul framework torch.
 Essa contiene diverse funzioni e metodi scientifici per le applicazioni dedicate al machine learning, al deep learning e al natural processing language.
 PyTorch offre  due funzionalità di alto livello:
 \begin{itemize}
-\item Tensor Computing(come NumPy) con forte accelerazione attraverso unità di elaborazione grafica(GPU)
-\item Piattaforma di ricerca del deep learning che offre la massima flessibilità e  velocità (DA VEDERE)
-La parte di neural network e deep learning è stata realizzata mediante l'utilizzo del framework PyTorch
+\item Tensor Computing(come NumPy) con for vte accelerazione attraverso unità di elaborazione grafica(GPU)
+\item Piattaforma di ricerca del deep learning che offre la massima flessibilità e  velocità \todo {da vedere}
 \end{itemize}
 
 \subsection{API}
-L'utente ha la possibilità di interagire con il sistema attraverso richieste HTTP
-\todo{views singolo file, view traininig}
+L'utente ha la possibilità di interagire con il sistema attraverso richieste HTTP, ricevendo in risposta dei file in formato JSON. Di seguito sono descritte le principali Views messe a disposizione. Nelle successive sezioni verranno invece discusse le scelte riguardanti l'interfaccia grafica, che sfrutta queste views per fornire un'esperienza utente più facile e immediata anche per utenti poco esperti.
+\paragraph{Single File analysis}
+\begin{itemize}
+\item \textit{/} [myfile]: upload del file mediante richiesta POST. Restituisce i parametri del file EDF caricato, come numero di canali, lunghezza, frequenza di campionamento. Solo dopo sver caricato il file è possibile fare richieste GET alle successive views.
+\item \textit{/values} [channel, start, len]: ottiene i valori registrati in un determinato intervallo di tempo, provenienti da uno specifico canale. Restituisce la scala temporale in cui tali valori sono misurati. 
+\item \textit{/complete}[start, len]: restituisce una finestra completa dell'EEG (quindi comprendente segnali di ogni canale) in uno specifico intervallo di tempo. 
+\item \textit{/statistic}[channel]:relativamente ad uno specifico canale, calcola le statistiche dei segnali misurati, quali valore massimo e minimo, media, varianza e deviazione standard. 
+\item \textit{/distribution}[channel]: relativamente ad uno specifico canale, restituisce due liste: una con intervalli di valori, e un'altra con il numero di segnali registrati in ogni intervallo. Con queste misure è possibile costruire un'istogramma che mostri la distribuzione dei valori. 
+\item \textit{/predict}[model\textunderscore id]: effettua la predizione di crisi epilettiche sul file caricato. L'utente ha la possibilità di scegliere il modello da utilizzare, fornendone l'id. I segnali del file vengono suddivisi in finestre della dimensione accettata dal modello scelto. Per ogni finestra la rete restituirà la predizione sotto forma di 1 e 0 rispettivamente per segnale di crisi e non. Vengono inoltre restituiti il numero di finestre con crisi e il numero di finestre totali. 
+\end{itemize}
+\paragraph{Training}
+\begin{itemize}
+\item \textit{/uptraining} [myfile][seizureStart, seizureEnd]: caricamento dei files da utilizzare per l'allenamento della rete. Per ogni file l'utente deve specificare in quale intervallo di tempo si presenta la crisi. Vengono restituite le info sul file caricato e una lista di tutti i file finora caricati.
+\item \textit{/cleanfiles}: cancella tutti i file di training finora caricati. 
+\item \textit{/convert} [windowSize, stride]: converte tutti i file di training finora caricati in un dataset, con finestre della dimensione scelta. L'utente può inoltre scegliere un valore di stride da applicare alle finestre della crisi, in modo da ottenerne in numero maggiore. Questa view è necessaria prima di chiamare la view del training. La chiamata a questa view cancella tutti i files di training. 
+\item \textit{/train} [epochs, train\textunderscore method]: crea una nuova rete e la allena sul dataset precendentemente creato. L'utente deve indicare il numero di epoche e quale metodo di validazione utilizzare. La validazione permette di prevenire l'overfitting dei dati, cioè che l'allenamento permetta alla rete di generalizzare il suo funzionamento. A tale scopo, vengono scelti dei dati da passare alla rete senza effettuare backpropagation. \'E possibile sccegliere il validation seti con diversi metodi. Ne sono stati implementati due:
+\begin{itemize}
+	\item k-fold training: all'interno di ogni epoca i segnali di un file vengono isolati, e passati alla rete dopo l'allenamento senza 	effettuare backpropagation. Nell'epoca successiva questi segnali faranno parte del dataset di allenamento, e verrà selezionato il file successivo per la validazione.
+	\item k-window training: all'inizio di ogni epoca vengono selezionate randomicamente il 20\% delle finestre da utilizzare per la validazione.
+\end{itemize}
+Al termine dell'allenamento la rete viene salvata nel sistema, e sarà possibile utilizzarla per le predizioni. 
+\item \textit{/usermodels]}: restituisce id e nome dei modelli creati attraverso il training. 
+\item \textit{/cleanmodels}: elimina tutti i modelli in memoria. 
+\end{itemize}
+
 
 \section{Frontend}
 La parte di frontend è stata implementata per garantire la gestione dell'interfaccia grafica che poi andrà ad interagire con l'utente, essa rappresenta il confine del sistema.
