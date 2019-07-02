@@ -383,8 +383,11 @@ class Predict(View):
             _, predicted = torch.max(result.data, 1)
             if(predicted==1):
                 seizureWindows = seizureWindows+1
+                res = 1
+            elif(predicted == 0):
+                res = 0.5
             response["time"].append(str(i*windowSec))
-            response["values"].append(predicted.item())
+            response["values"].append(res)
         
         response["seizureWindows"] = seizureWindows
         response["totalWindows"] = complete_tensor.shape[0]
