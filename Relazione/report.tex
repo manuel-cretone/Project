@@ -14,10 +14,40 @@
 \tableofcontents
 
 \section*{Introduzione}
-Il progetto è stato realizzato con lo scopo di attuare delle predizioni su tracciati EEG che registrano le attività del nostro cervello a livello neurale.
-Queste predizioni vengono fatte su file .edf(european data format) i quali permettono la registrazione 
+Il progetto è stato realizzato con lo scopo di attuare delle predizioni di crisi epilettiche su tracciati EEG che registrano le attività del nostro cervello a livello neurale.
+La predizione viene effettuata creando una rete neurale allenata per riconoscere le varie crisi presenti.
+Queste predizioni vengono eseguite su file .edf (European Data Format) i quali permettono un'archiviazione di segnali biologici e fisici multicanale.
+Il tool non solo permette di predirre le crisi presenti in un tracciato EEG, ma dispone di altre funzionalità come la definizione di alcune statistiche che riguardano tutti i segnali e tutti i canali presenti nel tracciato.
+Viene fornita all'utente l'opportunità di creare il proprio dataset di allenamento che poi sarà usato sulla rete neurale che esso stesso potrà definirsi. 
+Il progetto è stato suddiviso in:
+\begin{itemize}
+\item- studio EEG e teoria delle crisi
+\item- studio per la creazione del dataset (segnali ictali, preictali e postictali)
+\item- bilanciamento dataset
+\item- studio teorico cnn
+\item- applicazione CNN con relativo allenamento
+\item- costruzione architettura web con beckend e frontend 
+\end{itemize}
+
+
 \section{Epilessia}
-L'epilessia è un disturbo... \todo{spiegazione EEG}
+L'epilessia è una malattia neurologica che colpisce circa 50 milioni di persone nel mondo. Essa è caratterizzata da specifici eventi clinici, definiti crisi epilettiche, che si ripetono in modo consecutivo e attivano simultaneamente un grane numero di neuroni generalemente posti in un'area particolare dell'encefalo, detta corteccia celebrale. Quindi questi eventi scaturiti dalle crisi che si verificano alterano la normale attività elettrica dell'encefal, con conseguenze sul comportamento del soggetto colpito, come perdita di conoscenza, movimenti involontari, contrazioni della muscolatura che si tramutano in convulsioni.
+Le cause delle crisi epilettiche possono essere diverse, come in caso di patologie, in un trauma cranico, infenzioni SNC (meningite ecc..), ed anche a causa di vari farmaci che possono essere somministrati.
+In base all'area di estensione del cervello che è interessata da scariche elettriche anomale, possono presentarvi due tipi di crisi, crisi parziali e crisi generalizzate.
+\begin{itemize}
+\item Crisi Parziali:  si manifestano convulsioni e alterazioni sensoriali. Esse si suddividono a loro volta da crisi semplici o complesse 
+\begin{itemize}
+\item Semplici: interessa una piccola regione del cervello, come il lobo temporale o l'ippocampo. questo tipo di crisi spesso precede una crisi peggiore, dove l'anomala attività elettrica coinvolge aree più vaste del cervello.
+\begin Complessa: Interessa aree più vaste del cervello e non è concentrata solo su alcune di esse. Questo tipo di crisi è più dannosa perchè scaturisce nel soggetto coinvolto una perdita di coscienza.
+\end{itemize}
+\begin Generalizzate: crisi più frequenti rispetto alle parziali, esse vengono generate a causa di un'alterazione dell'attività neuronale di  entrambi gli emisferi.
+\end{itemize}
+\todo{ quando si può dire di essere affetti da epilessia  }
+\todo{ rimedi per l'epilessia, farmaci e se viene curata del tutto o meno   }
+\todo{spiegazione EEG tecnica per la registrazione, come funziona, cosa registra e come viene applicata allo scalpo}
+https://www.my-personaltrainer.it/salute/epilessia.html
+
+
 \section{Reti Neurali}
 Le reti neurali sono modelli matematici basati su neuroni artificiali ispirati al funzionamento biologico del cervello umano. Inventate intorno alla metà degli anni 80, sono tornate in auge nell'ultimo decennio come strumento di risoluzione in svariati campi, dall'informatica, all'elettronica, alla simulazione. 
 Prendendo spunto dal cervello animale, una rete neurale(ANN) è composta da numerosi neuroni connessi fra loro. Ogni connessione, come le sinapsi cerebrali, trasmette un segnale da un neurone all'altro. Il neurone che riceve un segnale può processarlo e inviarlo ai neuroni a cui è a sua volta connesso. Tradizionalmente, un segnale trasmesso tra due neuroni è rappresentato da un numero reale, moltiplicato per un certo peso che indica la forza della connessione. Ogni neurone esegue una somma di tutti i segnali in ingresso, moltiplicandoli per il suo set di pesi. Tale somma viene poi modellata da una funzione di attivazione, tipicamente la sigmoide
@@ -151,9 +181,9 @@ Al termine dell'allenamento la rete viene salvata nel sistema, e sarà possibile
 La parte di frontend è stata implementata per garantire la gestione dell'interfaccia grafica che poi andrà ad interagire con l'utente, essa rappresenta il confine del sistema.
 
 \subsection{Angular}
-
+\todo{ da descrivere angular  }
 \subsection{Ionic}
-
+\todo{ da descrivere Ionic  }
 
 
 \nocite{*}

@@ -11,6 +11,7 @@ import * as Highcharts from 'highcharts/highstock';
 export class ChartComponent implements OnChanges {
   categories: any;
   fillSignal: any[];
+  name: any;
   constructor(private service: ServiceService) {}
   // tslint:disable-next-line:no-input-rename
   @Input('signals') signals: Serverdata;
@@ -33,24 +34,17 @@ export class ChartComponent implements OnChanges {
 
   // barChartOptions = [];
   loadData() {
+    console.log(this.categories);
     this.barChartOptions = {
       chart: this.chartType,
       scrollbar: {
         enabled: true
       },
-      // title: {
-      //   text: 'Monthly Average Temperature'
-      // },
-      // subtitle: {
-      //   text: 'Source: WorldClimate.com'
-      // },
       xAxis: {
         categories: this.categories,
         min: 0,
         max: 1000,
-
-        crosshair: true,
-        visible: false
+        crosshair: true
       },
       yAxis: this.yAxses,
       tooltip: {
@@ -58,13 +52,10 @@ export class ChartComponent implements OnChanges {
       },
       series: this.barChartData
     };
-    console.log(this.yAxses);
   }
 
   ////////////////////////////////////////////////////////////////////
   async ngOnChanges() {
-    console.log(' ALL signals CHENNEL');
-    console.log(this.allSignalsChannels);
     if (this.allSignalsChannels) {
       this.fillAllChart(this.allSignalsChannels);
     }
@@ -83,14 +74,13 @@ export class ChartComponent implements OnChanges {
   async fillLineChart(signal: Serverdata) {
     const dat = [];
     dat.push({
-      data: signal.valori
+      data: signal.valori,
+      showInLegend: false
     });
-    this.barChartData = [];
-    console.log('barchar DATA in FILL LINE CHART');
-    console.log(this.barChartData);
+    this.name = signal.canale;
     this.yAxses = [];
     this.barChartData = dat;
-    console.log(this.barChartData);
+
     this.yAxses = {
       title: {
         text: ''
@@ -115,7 +105,8 @@ export class ChartComponent implements OnChanges {
     dat.push({
       data: distr.hist
     });
-
+    this.categories = [];
+    this.categories = distr.bins;
     this.barChartData = dat;
     this.yAxses = {
       title: {
@@ -145,11 +136,8 @@ export class ChartComponent implements OnChanges {
     let axisTop = 50;
     const axisHeight = 100;
     const yAxis = [];
-    console.log('siamo in fillALLCHART');
-    console.log(signals.window[0]);
+
     for (let i = 0; i < 23; i++) {
-      // console.log(signals.window[i]);
-      // dat = [];
       dat.push({
         data: signals.window[i],
         yAxis: i,
@@ -168,7 +156,7 @@ export class ChartComponent implements OnChanges {
     this.barChartData = [];
     this.barChartData = dat;
     this.yAxses = yAxis;
-    console.log(this.yAxses);
+
     this.chartType = {
       height: 3500,
       width: 760,

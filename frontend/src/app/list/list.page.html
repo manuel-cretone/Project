@@ -64,25 +64,26 @@
             >
             <br />
             <br />
-            <p>Select the network model you want to use for the prediction</p>
-            <ion-item>
-              <ion-label>Select model</ion-label>
-              <ion-select [(ngModel)]="selectNetwork">
-                <ion-select-option
-                  *ngFor="let network of Networks"
-                  value="{{ network }}"
-                  >{{ network }}</ion-select-option
-                >
-              </ion-select>
-            </ion-item>
-            <br />
-            <ion-button
-              *ngIf="checkSubmit"
-              color="secondary"
-              type="submit"
-              (click)="getPrediction()"
-              >Predict</ion-button
-            >
+            <div *ngIf="checkSubmit">
+              <p>Select the network model you want to use for the prediction</p>
+              <ion-item>
+                <ion-label>Select model</ion-label>
+                <ion-select [(ngModel)]="selectNetwork">
+                  <ion-select-option
+                    *ngFor="let network of Networks"
+                    value="{{ network }}"
+                    >{{ network }}</ion-select-option
+                  >
+                </ion-select>
+              </ion-item>
+              <br />
+              <ion-button
+                color="secondary"
+                type="submit"
+                (click)="getPrediction()"
+                >Predict</ion-button
+              >
+            </div>
           </div>
         </div>
         <div class="col-md-9 col-sm-8 col-xs-12">
@@ -118,6 +119,11 @@
                   do eiusmod tempor incididunt ut labore et. Ut wisi enim ad
                   minim veniam, quis nostrud.
                 </p>
+                <ion-card padding *ngIf="predict">
+                  <h5>Statistics</h5>
+                  <p><b>Seizure Windows:</b> {{ predict.seizureWindows }}</p>
+                  <p><b>Total Windows</b> {{ predict.totalWindows }}</p>
+                </ion-card>
               </div>
             </div>
           </div>
