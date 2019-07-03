@@ -18,6 +18,7 @@ import itertools
 import time
 from .models import UserNet, UserFiles
 from django.db.models import Max, Min
+import matplotlib.pyplot as plt
 
 
 
@@ -144,6 +145,7 @@ class Values(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class CompleteWindow(View):
     def get(self, request):
+        fs = FileSystemStorage()
         _, start, length = readParams(request)
         info = file_info(file_path)
         sampleFrequency = info["sampleFrequency"]
@@ -166,6 +168,12 @@ class CompleteWindow(View):
         data["window"] = window
         data["timeScale"] = timeScale
         response = JsonResponse(data, status = 200)
+
+        plt.plot(timeScale, window)
+        plt.xlabel('Time')
+        plt.ylabel('Signal values')
+        # plt.savefig(os.path.join(fs.base_location,"chart", "chart.png"))
+
         return response
 
     def post(self, request):
