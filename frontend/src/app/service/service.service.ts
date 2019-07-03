@@ -8,6 +8,9 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ServiceService {
+  drawSignalSeizure(start: any, end: any): any {
+    throw new Error('Method not implemented.');
+  }
   constructor(private http: HttpClient) {}
 
   getSignal(channel: string, start: string, len: string) {
@@ -74,7 +77,12 @@ export class ServiceService {
 
     return (await this.http
       .get('http://127.0.0.1:8000/newupload/predict', { params })
-      .toPromise()) as { time: any; values: any };
+      .toPromise()) as {
+      time: any;
+      values: any;
+      seizureWindows: any;
+      totalWindows: any;
+    };
   }
 
   async getModels() {

@@ -19,7 +19,7 @@ export class ListPage implements OnInit {
   clicked: boolean;
   file: File = null;
   allSignalsChannels;
-  predict: { time: []; values: [] };
+  predict: { time: []; values: []; seizureWindows: any; totalWindows: any };
   constructor(
     private service: ServiceService,
     private loadingController: LoadingController,
@@ -61,10 +61,15 @@ export class ListPage implements OnInit {
     });
     loader.present();
     if (model === undefined) {
-      this.predict = await this.service.getPredict(0);
+      await this.service.getPredict(0).then(data => {
+        this.predict = data;
+      });
     } else {
-      this.predict = await this.service.getPredict(model);
+      await this.service.getPredict(model).then(data => {
+        this.predict = data;
+      });
     }
+
     loader.dismiss();
 
     this.drawChart(this.clicked, this.listService, this.allSignalsChannels);
@@ -86,9 +91,7 @@ export class ListPage implements OnInit {
         panning: true,
         panKey: 'shift'
       },
-      // title: {
-      //   text: 'Stacked bar chart'
-      // },
+
       xAxis: {
         categories: this.predict.time,
         min: 0,
@@ -123,6 +126,41 @@ export class ListPage implements OnInit {
           }
         }
       },
+      series: [
+        {
+          data: this.predict.values
+        }
+      ]
+    });
+  }
+
+  drawSignals(start, len) {
+    this.service.drawSignalSeizure(start, len);
+    Highcharts.chart('chart', {
+      chart: {
+        type: 'column',
+        zoomType: 'x',
+        panning: true,
+        panKey: 'shift'
+      },
+      xAxis: {
+        categories: this.predict.time,
+        min: 0,
+
+        scrollbar: {
+          enabled: true
+        }
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Seizure Detected'
+        }
+      },
+      legend: {
+        reversed: true
+      },
+
       series: [
         {
           data: this.predict.values
