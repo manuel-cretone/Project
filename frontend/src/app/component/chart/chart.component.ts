@@ -31,6 +31,7 @@ export class ChartComponent implements OnChanges {
   highcharts = Highcharts;
   barChartOptions;
   yAxses;
+  optionsPlot;
 
   // barChartOptions = [];
   loadData() {
@@ -46,6 +47,7 @@ export class ChartComponent implements OnChanges {
         max: 1000,
         crosshair: true
       },
+      plotOptions: this.optionsPlot,
       yAxis: this.yAxses,
       tooltip: {
         valueSuffix: ''
@@ -137,6 +139,11 @@ export class ChartComponent implements OnChanges {
     const axisHeight = 100;
     const yAxis = [];
 
+    this.optionsPlot = {
+      series: {
+        lineWidth: 1
+      }
+    };
     for (let i = 0; i < 23; i++) {
       dat.push({
         data: signals.window[i],
@@ -151,7 +158,7 @@ export class ChartComponent implements OnChanges {
         top: axisTop,
         offset: 0
       });
-      axisTop += axisHeight + 50;
+      axisTop += 20;
     }
     this.barChartData = [];
     this.barChartData = dat;

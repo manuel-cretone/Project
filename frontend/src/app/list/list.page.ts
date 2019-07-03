@@ -20,6 +20,8 @@ export class ListPage implements OnInit {
   file: File = null;
   allSignalsChannels;
   predict: { time: []; values: []; seizureWindows: any; totalWindows: any };
+
+  a: { window: []; timeScale: [] };
   constructor(
     private service: ServiceService,
     private loadingController: LoadingController,
@@ -44,6 +46,7 @@ export class ListPage implements OnInit {
       this.checkSubmit = false;
     }
   }
+
   /**
    *
    */
@@ -72,7 +75,13 @@ export class ListPage implements OnInit {
 
     loader.dismiss();
 
-    this.drawChart(this.clicked, this.listService, this.allSignalsChannels);
+    this.drawChart(
+      this.a,
+      this.listService,
+      this.allSignalsChannels,
+      this.service
+    );
+
     this.checkPrediction = true;
     console.log(this.predict);
   }
@@ -83,7 +92,7 @@ export class ListPage implements OnInit {
     });
   }
 
-  drawChart(clicked: boolean, listService: ListServiceService, signals) {
+  drawChart(clicked: any, listService: ListServiceService, signals, service) {
     Highcharts.chart('chart', {
       chart: {
         type: 'column',
@@ -116,10 +125,48 @@ export class ListPage implements OnInit {
           cursor: 'pointer',
           point: {
             events: {
-              click() {
-                clicked = true;
-                signals = listService.drawSeizure(this.category, 30);
+              async click() {
+                console.log(this.category);
+                clicked = await service.getAllSignals(this.category, 30);
                 console.log(clicked);
+                const series = [];
+                const data = [];
+                const seriesCount = 23,
+                  pointsCount = 100;
+                let axisTop = 50;
+
+                const axisHeight = 1100 / seriesCount;
+                const yAxis = [];
+
+                for (let i = 0; i < seriesCount; i++) {
+                  data.push({
+                    data: clicked.window[i],
+                    yAxis: i,
+                    showInLegend: false
+                  });
+
+                  yAxis.push({
+                    title: {
+                      text: ''
+                    },
+                    height: axisHeight,
+                    top: axisTop,
+                    offset: 0
+                  });
+
+                  axisTop += axisHeight + 12.5;
+                }
+
+                Highcharts.chart('signalsChart', {
+                  chart: {
+                    height: 1500
+                  },
+                  series: data,
+                  yAxis
+                });
+
+                // signals = listService.drawSeizure(this.category, 30);
+                // console.log(clicked);
                 // alert('Category: ' + this.category + ', value: ' + this.y);
               }
             }
@@ -134,38 +181,5 @@ export class ListPage implements OnInit {
     });
   }
 
-  drawSignals(start, len) {
-    this.service.drawSignalSeizure(start, len);
-    Highcharts.chart('chart', {
-      chart: {
-        type: 'column',
-        zoomType: 'x',
-        panning: true,
-        panKey: 'shift'
-      },
-      xAxis: {
-        categories: this.predict.time,
-        min: 0,
-
-        scrollbar: {
-          enabled: true
-        }
-      },
-      yAxis: {
-        min: 0,
-        title: {
-          text: 'Seizure Detected'
-        }
-      },
-      legend: {
-        reversed: true
-      },
-
-      series: [
-        {
-          data: this.predict.values
-        }
-      ]
-    });
-  }
+  DrawSignals(start: any, len: any) {}
 }

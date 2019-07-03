@@ -8,9 +8,6 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ServiceService {
-  drawSignalSeizure(start: any, end: any): any {
-    throw new Error('Method not implemented.');
-  }
   constructor(private http: HttpClient) {}
 
   getSignal(channel: string, start: string, len: string) {
