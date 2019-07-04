@@ -39,9 +39,9 @@ def read_edf_file(filePath, channel, start=0, len=None):
         freq = file.samplefrequency(channel)
         second = 1/freq
         startTime = file.getStartdatetime() + datetime.timedelta(seconds=start*second)
-        timeScale = pd.date_range(startTime, freq = f"{second}S", periods=len).tolist()
+        timeScale = pd.date_range(startTime, freq = f"{second}S", periods=len)
     
-    valori = file.readSignal(channel, start=start, n=len).tolist()
+    valori = file.readSignal(channel, start=start, n=len)
     file._close
     return valori, timeScale
 

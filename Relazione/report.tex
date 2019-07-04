@@ -15,19 +15,19 @@
 \tableofcontents
 
 \section*{Introduzione}
-Il progetto è stato realizzato con lo scopo di attuare delle predizioni di crisi epilettiche su tracciati EEG che registrano le attività del nostro cervello a livello neurale.
+Il progetto è stato realizzato con lo scopo di attuare delle predizioni di crisi epilettiche su tracciati EEG che registrano le attività del  cervello umano a livello neurale.
 La predizione viene effettuata creando una rete neurale allenata per riconoscere le varie crisi presenti.
 Queste predizioni vengono eseguite su file .edf (European Data Format) i quali permettono un'archiviazione di segnali biologici e fisici multicanale.
 Il tool non solo permette di predirre le crisi presenti in un tracciato EEG, ma dispone di altre funzionalità come la definizione di alcune statistiche che riguardano tutti i segnali e tutti i canali presenti nel tracciato.
 Viene fornita all'utente l'opportunità di creare il proprio dataset di allenamento che poi sarà usato sulla rete neurale che esso stesso potrà definirsi. 
 Il progetto è stato suddiviso in:
 \begin{itemize}
-\item- studio EEG e teoria delle crisi
-\item- studio per la creazione del dataset (segnali ictali, preictali e postictali)
-\item- bilanciamento dataset
-\item- studio teorico cnn
-\item- applicazione CNN con relativo allenamento
-\item- costruzione architettura web con beckend e frontend 
+\item studio EEG e teoria delle crisi
+\item studio per la creazione del dataset (segnali ictali, preictali e postictali)
+\item bilanciamento dataset
+\item studio teorico cnn
+\item applicazione CNN con relativo allenamento
+\item costruzione architettura web con beckend e frontend 
 \end{itemize}
 
 
@@ -39,9 +39,9 @@ In base all'area di estensione del cervello che è interessata da scariche elett
 \item Crisi Parziali:  si manifestano convulsioni e alterazioni sensoriali. Esse si suddividono a loro volta da crisi semplici o complesse 
 \begin{itemize}
 \item Semplici: interessa una piccola regione del cervello, come il lobo temporale o l'ippocampo. questo tipo di crisi spesso precede una crisi peggiore, dove l'anomala attività elettrica coinvolge aree più vaste del cervello.
-\begin Complessa: Interessa aree più vaste del cervello e non è concentrata solo su alcune di esse. Questo tipo di crisi è più dannosa perchè scaturisce nel soggetto coinvolto una perdita di coscienza.
+\item Complessa: Interessa aree più vaste del cervello e non è concentrata solo su alcune di esse. Questo tipo di crisi è più dannosa perchè scaturisce nel soggetto coinvolto una perdita di coscienza.
 \end{itemize}
-\begin Generalizzate: crisi più frequenti rispetto alle parziali, esse vengono generate a causa di un'alterazione dell'attività neuronale di  entrambi gli emisferi.
+\item Generalizzate: crisi più frequenti rispetto alle parziali, esse vengono generate a causa di un'alterazione dell'attività neuronale di  entrambi gli emisferi.
 \end{itemize}
 \todo{ quando si può dire di essere affetti da epilessia  }
 \todo{ rimedi per l'epilessia, farmaci e se viene curata del tutto o meno   }
@@ -70,7 +70,7 @@ L'allenamento supervisionato, quello implementato in questo progetto, prevede di
 \item Feed-forward: il modello prende i dati in input e restituisce un output, rappresentante la predizione.
 \item Loss function: viene calcolata la differenza tra l'output atteso e quello calcolato dalla rete. Fornisce quindi una metrica sull'accuratezza della rete. \todo{CrossEntropyLoss} Inizialmente la precisione sarà molto bassa. L'obiettivo dell'allenamento è appunto quello di minimizzare il loss per aumentare la precisione della rete. 
 \item Differentiation: calcolando la derivata della funzione di loss, vengono identificate le modifiche da applicare ai pesi per diminuire l'errore sul risultato. Lo standard de facto per effettuare tale ottimizzazione è lo \textit{stochastic gradient descent}. Tale metodo prevede che per il calcolo del gradiente (il vettore contenente le derivate perziali della funzione di loss) venga preso solo un sottoinsieme dei valori, in modo da ridurre la complessità del calcolo.  \todo{adam optimizer}
-\item Backpropagation: i valori dei pesi vengono aggiornati, a partire dal layer di output fino ad arrivare al primo layer, per far sì che il loss venga minimizzato. La retropropagazione dell'errore prevede la selezione di una costante rappresentata da un numero decimale molto piccolo, che viene moltiplicato per l'incremento. Facendo questo, i pesi vengono modificati più lentamente in modo da centrare il minimo della funzione di loss.
+\item Backpropagation and weights update: i valori dei pesi vengono aggiornati, a partire dal layer di output fino ad arrivare al primo layer, per far sì che il loss venga minimizzato. La retropropagazione dell'errore prevede la selezione di una costante rappresentata da un numero decimale molto piccolo, che viene moltiplicato per l'incremento. Facendo questo, i pesi vengono modificati più lentamente in modo da centrare il minimo della funzione di loss.
 \end{itemize}
 
 \section{Reti Neurali Convoluzionali}

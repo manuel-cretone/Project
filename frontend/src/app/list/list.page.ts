@@ -181,5 +181,43 @@ export class ListPage implements OnInit {
     });
   }
 
+<<<<<<< HEAD
   DrawSignals(start: any, len: any) {}
+=======
+  drawSignals(start, len) {
+    this.service.drawSignalSeizure(start, len);
+    Highcharts.chart('chart', {
+      chart: {
+        type: 'column',
+        zoomType: 'x',
+        panning: true,
+        panKey: 'shift'
+      },
+      xAxis: {
+        categories: this.predict.time,
+        min: 0,
+
+        scrollbar: {
+          enabled: true
+        }
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Seizure Detected'
+        }
+      },
+      legend: {
+        reversed: true
+      },
+
+      series: [
+        {
+          
+          data: this.predict.values
+        }
+      ]
+    });
+  }
+>>>>>>> silvestri
 }
