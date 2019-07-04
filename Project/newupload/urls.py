@@ -15,5 +15,8 @@ urlpatterns = [
     path('train/', views.Train.as_view(), name = "train"),
     path('usermodels/', views.UserModels.as_view(), name = "usermodels"),
     path('cleanmodels/', views.CleanUserModels.as_view(), name = 'cleanfiles'),
+
+    path('addconv/', views.AddConvolutionalLayer.as_view(), name="addconv"),
+    path('cleanlayers/', views.cleanLayers.as_view(), name="cleanlayers"),
     # re_path(r'^getparam/$', views.manageParam, name="manageParam")
 ]

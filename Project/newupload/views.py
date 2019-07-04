@@ -16,9 +16,10 @@ import torch.nn as nn
 import shutil
 import itertools
 import time
-from .models import UserNet, UserFiles
+from .models import UserNet, UserFiles, Layer
 from django.db.models import Max, Min
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 
 
 
@@ -35,6 +36,10 @@ file_path = None
 global model_chn
 global model_winSec
 global model_sampleFrequency
+
+model_chn = 23
+model_winSec = 30
+model_sampleFrequency = 256
 
 
 def readParams(request):
@@ -130,8 +135,8 @@ class Values(View):
             "canale": channel,
             "inizio":start,
             "dimensione":length,
-            "valori": values,
-            "timeScale": timeScale
+            "valori": values.tolist(),
+            "timeScale": timeScale.tolist()
         }
         response = JsonResponse(data, status = 200)
         return response
@@ -159,21 +164,25 @@ class CompleteWindow(View):
         for i in range(channels):
             try:
                 values, timeScale = readFile(file_path, i, start, length)
-                window.append(values)
+                window.append(values.tolist())
             except Exception as e:
                 print("err", e)
                 break
         # nChannels = int(len(window))
         data["nChannels"] = channels
         data["window"] = window
-        data["timeScale"] = timeScale
+        data["timeScale"] = timeScale.tolist()
+        
+        # window = np.array(window)
+        # timeScale = np.array(timeScale)
+        # gs = gridspec.GridSpec(channels, 1) 
+        # for i in range(channels):
+        #     ax0 = plt.subplot(gs[i])
+        #     line0, = ax0.plot(timeScale, window[i], linewidth=1)
+        # plt.setp(ax0.get_xticklabels(), visible=False)
+        # plt.subplots_adjust(hspace=.0)
+        # plt.savefig(os.path.join(fs.base_location, "chart", "prova.png"))
         response = JsonResponse(data, status = 200)
-
-        plt.plot(timeScale, window)
-        plt.xlabel('Time')
-        plt.ylabel('Signal values')
-        # plt.savefig(os.path.join(fs.base_location,"chart", "chart.png"))
-
         return response
 
     def post(self, request):
@@ -185,9 +194,9 @@ class CompleteWindow(View):
 class Statistics(View):
     def get(self, request):
         channel, start, length = readParams(request)
-        values, timeScale = readFile(file_path, channel, start=0, len=None)
+        values, _ = readFile(file_path, channel, start=0, len=None)
         
-        data = getStatistic(values)
+        data = getStatistic(values.tolist())
         response = JsonResponse(data, status = 200)
         return response
 
@@ -200,8 +209,8 @@ class Statistics(View):
 class Distribution(View):
     def get(self, request):
         channel, start, length = readParams(request)
-        values, timeScale = readFile(file_path, channel, start=0, len=None)
-        hist, bins = count_occurrences(values, 20) #esempio con parametro 2 
+        values, _ = readFile(file_path, channel, start=0, len=None)
+        hist, bins = count_occurrences(values.tolist(), 20) #esempio con parametro 2 
         data = {
             "hist": hist,
             "bins": bins
@@ -369,7 +378,7 @@ class Predict(View):
         all_signals= []
         for chn in range(channels):
             values_array, _ = readFile(file_path, chn)
-            values_array = np.array(values_array)
+            # values_array = np.array(values_array)
             values_matrix = windowGenerator(values_array, windowSize)
             values_tensor = torch.tensor(values_matrix)
             all_signals.append(values_tensor)
@@ -399,6 +408,7 @@ class Predict(View):
         
         response["seizureWindows"] = seizureWindows
         response["totalWindows"] = complete_tensor.shape[0]
+        response["windowSize"] = windowSize
         return JsonResponse(data = response, status=200)
 
     def post(self, request):
@@ -458,3 +468,94 @@ class CleanTrainingFiles(View):
         cleanFolder("training")
 
         return JsonResponse({"message": "deleted user training files in database"}, status = 200)
+
+class AddConvolutionalLayer(View):
+    def get(self, request):
+        latest = Layer.objects.order_by('-id').values()
+        if (latest):
+            input = latest[0]['output']
+            print("non primo", input)
+            last_out = latest[0]['out_dim']
+        else:
+            input = model_chn
+            print("primo!", input)
+            last_out = model_winSec*model_sampleFrequency
+        
+        output = int(request.GET.get("output",10))
+        kernel = int(request.GET.get("kernel",10))
+        stride = int(request.GET.get("stride",1))
+        padding = int(request.GET.get("padding",10))
+        pool_kernel = int(request.GET.get("pool_kernel",10))
+        pool_stride = int(request.GET.get("pool_stride",1))
+        out_dim_conv = ((last_out - kernel + 2*padding) / stride) + 1
+        out_dim_max = ((out_dim_conv - pool_kernel ) / pool_stride) + 1
+        
+        if(kernel > last_out+padding or stride > last_out+padding or pool_kernel>out_dim_conv):
+            return JsonResponse({"error": "bad parameters"}, status = 400)
+        
+        record = Layer(
+            input = input,
+            output = output,
+            kernel = kernel,
+            stride = stride,
+            padding = padding,
+            pool_kernel = pool_kernel,
+            pool_stride = pool_stride,
+            out_dim = out_dim_max
+        )
+        record.save()
+
+        data = {"message": list(Layer.objects.all().values())}
+        return JsonResponse(data = data, status = 200)
+
+
+def initializeNet():
+    layers = Layer.objects.order_by('id')
+    layer_list = nn.ModuleList()
+    out_dim = None
+    for layer in layers:
+        seq = nn.Sequential(
+            nn.Conv1d(in_channels= layer.input, out_channels = layer.output, kernel_size=layer.kernel, stride=layer.stride, padding=layer.padding),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=layer.pool_kernel, stride=layer.pool_stride)
+        )
+        out_dim = layer.out_dim
+        layer_list.append(seq)
+    print("parametri in lista: ", layer_list)
+    model = ModularConv(layer_list)
+    print("valori nella rete", model.modules)
+    # print("out dim", out_dim)
+
+
+class ModularConv(nn.Module):
+    def __init__(self, layer_list):
+        # self.layer_list = []
+        super(ModularConv, self).__init__()
+        # for i, layer in enumerate(layer_list):
+        #     self.i = layer
+        #     self.layer_list.append(self.i)
+        self.layers = layer_list
+        #roba layer lineare
+
+        self.soft = nn.Softmax(1)
+
+
+    def forward(self, x):
+        x = x.float()
+        # for i, layer in self.layer_list:
+        #     x = layer(x)
+        x = self.layers(x)
+        #roba layer lineare
+
+        x = self.soft(x)
+        
+
+
+        
+
+class cleanLayers(View):
+    def get(self, request):
+        initializeNet()
+        Layer.objects.all().delete()
+        return JsonResponse(data = {"message": "layer deleted"}, status = 200)
+

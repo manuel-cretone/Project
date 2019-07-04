@@ -46,7 +46,7 @@ def getDataset(file_path, channel, seizureStart, seizureEnd, windowSizeSec, stri
     discard = sampleFrequency *60*5
     startSeizureSignal, stopSeizureSignal, length,  windowSize = obtainValue(seizureStart , seizureEnd, windowSizeSec, sampleFrequency)
     seizure, _ = readFile(file_path, channel=channel, start=startSeizureSignal, len=length)
-    overlapSeizure = myOverlapping(np.array(seizure), windowSize, stride)
+    overlapSeizure = myOverlapping(seizure, windowSize, stride)
     nSeizurewWindows = overlapSeizure.shape[0]
 
     newStart = startSeizureSignal - discard
@@ -61,8 +61,8 @@ def getDataset(file_path, channel, seizureStart, seizureEnd, windowSizeSec, stri
     # print("st", newStart,"\nen", newEnd)
     windowsPre, _ = readFile(file_path, channel = channel, start = 0, len=newStart)
     windowsPost, _ = readFile(file_path, channel = channel, start= newEnd, len = None)
-    windowsPre = np.array(windowsPre)
-    windowsPost = np.array(windowsPost)
+    # windowsPre = np.array(windowsPre)
+    # windowsPost = np.array(windowsPost)
 
     windowsPre = windowGenerator(windowsPre, windowSize)
     windowsPost = windowGenerator(windowsPost, windowSize)

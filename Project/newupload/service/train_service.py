@@ -178,10 +178,13 @@ def train_step(model, train_loader, learning_rate, criterion, optimizer):
         x = data
         y = target.long()
         outputs = model(x)
+        #calculate the loss
         loss = criterion(outputs, y)
-        # Backprop and perform Adam optimisation
+        # set old gradients to zero
         optimizer.zero_grad()
+        # calculate new gradients (backpropagation) and add to the .grad attribute 
         loss.backward()
+        # update weights
         optimizer.step()
 
         # Track the accuracy
