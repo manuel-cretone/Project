@@ -222,3 +222,30 @@ class EvalDataset(Dataset):
 
     def __len__(self):
         return self.len
+
+
+class ModularConv(nn.Module):
+    def __init__(self, conv_list, linear_input, linear_list):
+        # self.layer_list = []
+        super(ModularConv, self).__init__()
+ 
+        self.conv = nn.Sequential(*conv_list)
+
+        self.drop_out = nn.Dropout()
+        #roba layer lineare
+        self.linear_input = linear_input
+        self.linear = nn.Sequential(*linear_list)
+
+        self.soft = nn.Softmax(1)
+
+    def forward(self, x):
+        x = x.float()
+        x = self.conv(x)
+        
+        #roba layer lineare
+        x = x.reshape(-1, self.linear_input)
+        x = self.drop_out(x)
+        x = self.linear(x)
+
+        x = self.soft(x)
+        return x
