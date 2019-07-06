@@ -110,7 +110,7 @@ def createDataset(filename, base_location, seizureStart, seizureEnd, windowSizeS
     target = np.concatenate((np.ones(seizureSignals.shape[0], dtype=np.int64), np.zeros(normalSignals.shape[0], dtype=np.int64)))
     df_target = pd.DataFrame(data=target)
     df_target.to_pickle(os.path.join(base_location, "dataset", filename,'target.pkl'))
-    return dataset_location
+    return dataset_location, target.shape[0]
 
 
 def getDatasetList(base_location, folder="dataset"):

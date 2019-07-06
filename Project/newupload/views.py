@@ -36,7 +36,9 @@ file_path = None
 global model_chn
 global model_winSec
 global model_sampleFrequency
+global model_modular
 
+#TODO da inizializzare None
 model_chn = 23
 model_winSec = 30
 model_sampleFrequency = 256
@@ -227,7 +229,8 @@ class Train(View):
     def get(self, request):
         num_epochs = int(request.GET.get("epochs",1))
         train_method = int(request.GET.get("train_method", 0))
-        user_model = ConvNet(model_chn, model_winSec*model_sampleFrequency)
+        # user_model = ConvNet(model_chn, model_winSec*model_sampleFrequency)
+        user_model = model_modular
         fs = FileSystemStorage()
         dataset_list= getDatasetList(fs.base_location)
         try:
@@ -242,15 +245,8 @@ class Train(View):
             
             timestr = time.strftime("%Y%m%d-%H%M%S")
             mod_name = request.GET.get("name", 'trained_model_'+timestr+".pth")
-            torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
-            
-            # df = pd.DataFrame(data={"modelname": [mod_name],
-            #             "channels": [model_chn],
-            #             "windowSize": [model_winSize],
-            #             })
-            # models_list = os.path.join(fs.base_location, "usermodels", "models.csv")
-            # with open(models_list,'a') as fd:
-            #     df.to_csv(fd, header=False, index=False)
+            # torch.save(user_model.state_dict(), os.path.join(fs.base_location, "usermodels", mod_name))
+            torch.save(user_model, os.path.join(fs.base_location, "usermodels", mod_name))
 
             record = UserNet(name=mod_name,
                                     channels=model_chn, 
@@ -260,7 +256,7 @@ class Train(View):
                                     link = os.path.join(fs.base_location, "usermodels", mod_name)
                                     )
             
-            addDefaultModel()
+            # addDefaultModel()
             record.save()
 
         except Exception as e:
@@ -317,8 +313,8 @@ class ConvertDataset(View):
             # ch = channels
             
             if(windowSec > seizureEnd-seizureStart):
-                return JsonResponse(data={"error": "bad window size parameter"}, status = 400)
-            createDataset(filename, base_location, seizureStart, seizureEnd, windowSec, stride)
+                return JsonResponse(data={"error": f"bad window size parameter in {filename}"}, status = 400)
+            _, dim = createDataset(filename, base_location, seizureStart, seizureEnd, windowSec, stride)
 
         #I parametri della rete vengono caricati su variabili globali 
         # -> possibile usare dataset per allenare diverse reti 
@@ -330,8 +326,13 @@ class ConvertDataset(View):
         model_sampleFrequency = sampleFrequency
 
         _ = CleanTrainingFiles.as_view()(self.request)
-
-        return JsonResponse(data={"data": "dataset created"}, status = 200)
+        response= {
+            "channels": int(channels),
+            "windowSec": int(windowSec),
+            "sampleFrequency": int(sampleFrequency),
+            "numberOfWindows": int(dim) 
+        }
+        return JsonResponse(data=response, status = 200)
 
 
     def post(self, request):
@@ -344,19 +345,35 @@ class ConvertDataset(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
     def get(self, request):
-        model_id = request.GET.get("model_id", 0)
+        model_id = request.GET.get("model_id", None)
+        fs = FileSystemStorage()
+        # try:
+        #     m = UserNet.objects.get(id=model_id)
+        # except UserNet.DoesNotExist:
+        #     addDefaultModel()
+        #     m = UserNet.objects.get(id=0)
 
         try:
             m = UserNet.objects.get(id=model_id)
+
+            windowSec = int(m.windowSec)
+            sampleFrequency = int(m.sampleFrequency)
+            windowSize = windowSec * sampleFrequency
+            channels =int(m.channels) 
+            name = m.name
+            model = torch.load(m.link)
         except UserNet.DoesNotExist:
-            addDefaultModel()
-            m = UserNet.objects.get(id=0)
+            # addDefaultModel()
+            # m = UserNet.objects.get(id=0)
+            windowSec = 30
+            sampleFrequency = 256
+            windowSize = windowSec * sampleFrequency
+            channels = 23
+            name = "Default"
+            model = ConvNet(channels= channels, windowSize = windowSize)      
+            model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
 
 
-        windowSec = int(m.windowSec)
-        sampleFrequency = int(m.sampleFrequency)
-        windowSize = windowSec * sampleFrequency
-        channels =int(m.channels) 
         
         #controllo channels e sample rate del file coincidono con rete 
         info = file_info(file_path)
@@ -368,11 +385,8 @@ class Predict(View):
                                     "file_sample": info["sampleFrequency"],
                                     "net_sample": sampleFrequency
                                     }, 
-                                status = 400)
+                                status = 400) 
 
-        
-        model = ConvNet(channels= channels, windowSize = windowSize)      
-        model.load_state_dict(torch.load(m.link))
         model = model.eval()
 
         all_signals= []
@@ -386,7 +400,7 @@ class Predict(View):
 
         response = {
             "dim": str(complete_tensor.shape),
-            "name": m.name,
+            "name": name,
         }
         dataset = EvalDataset(complete_tensor)
         loader = DataLoader(dataset = dataset, 
@@ -444,30 +458,31 @@ class CleanUserModels(View):
     def get(self, request):
         UserNet.objects.all().delete()
         cleanFolder("usermodels")
-        addDefaultModel()
+        # addDefaultModel()
 
         return JsonResponse({"message": "no user models in database"}, status = 200)
 
 
-def addDefaultModel():
-    fs = FileSystemStorage()
-    record = UserNet(id=0,
-                    name="Default model",
-                    channels="23", 
-                    windowSec = "30",
-                    sampleFrequency = "256",
-                    # file = user_model.state_dict(),
-                    link = os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")
-                    )
-    record.save()
+# def addDefaultModel():
+#     fs = FileSystemStorage()
+#     record = UserNet(id=0,
+#                     name="Default model",
+#                     channels="23", 
+#                     windowSec = "30",
+#                     sampleFrequency = "256",
+#                     # file = user_model.state_dict(),
+#                     link = os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")
+#                     )
+#     record.save()
 
-#TODO da finire db 
+
 class CleanTrainingFiles(View):
     def get(self, request):
         UserFiles.objects.all().delete()
         cleanFolder("training")
 
         return JsonResponse({"message": "deleted user training files in database"}, status = 200)
+
 
 class AddConvolutionalLayer(View):
     def get(self, request):
@@ -477,6 +492,7 @@ class AddConvolutionalLayer(View):
             print("non primo", input)
             last_out = latest[0]['out_dim']
         else:
+            #TODO se model_chn è None, non è stato creato il dataset! interrompi
             input = model_chn
             print("primo!", input)
             last_out = model_winSec*model_sampleFrequency
@@ -508,54 +524,62 @@ class AddConvolutionalLayer(View):
         data = {"message": list(Layer.objects.all().values())}
         return JsonResponse(data = data, status = 200)
 
+#if you set "linear", one more linear layer is added before the final one
+class InitializeNet(View):
+    def get(self, request):
+        linear = request.GET.get("linear", None)
+        global model_modular
+        model_modular = initializeNet(linear)
+        response = {}
+        response["modules"] = []
+        for param_tensor in model_modular.state_dict():
+            response["modules"].append(f"{param_tensor}, {model_modular.state_dict()[param_tensor].size()}")
 
-def initializeNet():
+        _ = CleanLayers.as_view()(self.request)
+        return JsonResponse(response, status = 200)
+
+
+def initializeNet(linear = None):
     layers = Layer.objects.order_by('id')
-    layer_list = nn.ModuleList()
-    out_dim = None
-    for layer in layers:
+    conv_list = nn.ModuleList()
+    linear_list = nn.ModuleList()
+    # conv_dict = nn.ModuleDict()
+    # linear_dict = nn.ModuleDict()
+    conv_out_dim = None
+    
+    for i, layer in enumerate(layers):
         seq = nn.Sequential(
             nn.Conv1d(in_channels= layer.input, out_channels = layer.output, kernel_size=layer.kernel, stride=layer.stride, padding=layer.padding),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=layer.pool_kernel, stride=layer.pool_stride)
         )
-        out_dim = layer.out_dim
-        layer_list.append(seq)
-    print("parametri in lista: ", layer_list)
-    model = ModularConv(layer_list)
+        conv_out_dim = layer.out_dim
+        conv_out_r = layer.output
+        conv_list.append(seq)
+        # conv_dict.update({str(i): seq})
+    linear_input = conv_out_dim * conv_out_r
+    if(linear):
+        linear = int(linear)
+        linear_list.append(nn.Linear(in_features = linear_input, out_features = linear))
+        linear_list.append(nn.Linear(in_features = linear, out_features=2))
+        # linear_dict.update({"1": nn.Linear(in_features = linear_input, out_features = linear)})
+        # linear_dict.update({"2": nn.Linear(in_features = linear, out_features=2)})
+    else:
+        linear_list.append(nn.Linear(in_features = linear_input, out_features=2))
+        # linear_dict.update(("1", nn.Linear(in_features = linear_input, out_features=2)))
+    print("parametri in lista: ", conv_list, linear_list)
+
+    model = ModularConv(conv_list, linear_input, linear_list)
     print("valori nella rete", model.modules)
-    # print("out dim", out_dim)
 
-
-class ModularConv(nn.Module):
-    def __init__(self, layer_list):
-        # self.layer_list = []
-        super(ModularConv, self).__init__()
-        # for i, layer in enumerate(layer_list):
-        #     self.i = layer
-        #     self.layer_list.append(self.i)
-        self.layers = layer_list
-        #roba layer lineare
-
-        self.soft = nn.Softmax(1)
-
-
-    def forward(self, x):
-        x = x.float()
-        # for i, layer in self.layer_list:
-        #     x = layer(x)
-        x = self.layers(x)
-        #roba layer lineare
-
-        x = self.soft(x)
-        
+    return model     
 
 
         
 
-class cleanLayers(View):
+class CleanLayers(View):
     def get(self, request):
-        initializeNet()
         Layer.objects.all().delete()
-        return JsonResponse(data = {"message": "layer deleted"}, status = 200)
+        return JsonResponse(data = {"message": "all layers deleted"}, status = 200)
+
 
