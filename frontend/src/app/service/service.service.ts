@@ -69,7 +69,7 @@ export class ServiceService {
       .toPromise();
   }
 
-  async getPredict(id) {
+  async getPredict(id?) {
     const params = new HttpParams().set('model_id', id);
 
     return (await this.http
@@ -156,5 +156,40 @@ export class ServiceService {
     await this.http
       .get('http://127.0.0.1:8000/newupload/cleanfiles')
       .toPromise();
+  }
+
+  async makeCleanModels() {
+    await this.http
+      .get('http://127.0.0.1:8000/newupload/cleanmodels/')
+      .toPromise();
+  }
+
+  async makeConvolutional() {
+    return (await this.http
+      .get('http://127.0.0.1:8000/newupload/addconv/')
+      .toPromise()) as {
+      message: {
+        input: any;
+        output: any;
+        kernel: any;
+        stride: any;
+        padding: any;
+        pool_kernel: any;
+        pool_stride: any;
+        out_dim: any;
+      };
+    };
+  }
+
+  async initializeNetwork(linear) {
+    const params = new HttpParams().set('linear', linear);
+    return (await this.http
+      .get('http://127.0.0.1:8000/newupload/initializenet/')
+      .toPromise()) as { modules: any };
+  }
+
+  // cancella tutti i layer convoluzionali inseriti fino a quel momento
+  async makeCleanLayers() {
+    await this.http.get('http://127.0.0.1:8000/newupload/cleanlayers/');
   }
 }

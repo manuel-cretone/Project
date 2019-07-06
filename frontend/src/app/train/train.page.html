@@ -26,7 +26,7 @@
               <a href="home">Home</a>
             </li>
             <li class="active">
-              <a href="page1">Chart</a>
+              <a href="page1">EEG Analysis</a>
             </li>
             <li class="active">
               <a href="list">Predict</a>
@@ -97,7 +97,10 @@
           </div>
         </div>
         <div class="col-md-9 col-sm-8 col-xs-12">
-          <div style="visibility: visible;" class="col-sm-9 more-features-box">
+          <div
+            style="visibility: visible; width: 110%"
+            class="col-sm-9 more-features-box"
+          >
             <div class="more-features-box-text">
               <div class="more-features-box-text-icon">
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -131,7 +134,107 @@
                 </ion-card>
               </div>
             </div>
-            <div class="more-features-box-text">
+
+            <!--  -->
+            <div
+              class="more-features-box-text"
+              style="visibility: visible; width: 110%"
+            >
+              <div class="more-features-box-text-icon">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </div>
+              <div class="more-features-box-text-description">
+                <h3>Setting your Network</h3>
+                <p>
+                  adding your convolutional
+                </p>
+
+                <ion-card>
+                  <p>
+                    output convolutional
+                  </p>
+                  <ion-input
+                    type="number"
+                    [(ngModel)]="outputConv"
+                    placeholder="number of output"
+                  ></ion-input>
+                  <p>
+                    Kernel
+                  </p>
+                  <ion-input
+                    [(ngModel)]="kernel"
+                    placeholder="Kernel of neural network"
+                  ></ion-input>
+                  <p>
+                    Stride
+                  </p>
+                  <ion-input
+                    [(ngModel)]="stride"
+                    placeholder="Stride of neural network"
+                  ></ion-input>
+                  <p>
+                    padding
+                  </p>
+                  <ion-input
+                    [(ngModel)]="padding"
+                    placeholder="Padding of neural network"
+                  ></ion-input>
+                  <p>
+                    pool_kernel
+                  </p>
+                  <ion-input
+                    [(ngModel)]="pool_kernel"
+                    placeholder="pool kernel of neural network"
+                  ></ion-input>
+                  <p>
+                    pool_stride
+                  </p>
+
+                  <ion-input
+                    [(ngModel)]="pool_stride"
+                    placeholder="pool stride of neural network"
+                  ></ion-input>
+                  <ion-button
+                    color="secondary"
+                    type="submit"
+                    (click)="makeTrain()"
+                    >Create convolutional level</ion-button
+                  >
+                </ion-card>
+              </div>
+            </div>
+            <!--  -->
+            <div
+              class="more-features-box-text"
+              style="visibility: visible; width: 110%"
+            >
+              <div class="more-features-box-text-icon">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </div>
+              <div class="more-features-box-text-description">
+                <h3>Linear Level</h3>
+                <p>
+                  Lianer Level
+                </p>
+                <ion-card>
+                  <ion-input
+                    type="number"
+                    [(ngModel)]="linear"
+                    placeholder="number of linear"
+                  ></ion-input>
+                  <ion-button
+                    color="secondary"
+                    type="submit"
+                    (click)="makeTrain()"
+                    >Create Linear Level</ion-button
+                  >
+                </ion-card>
+              </div>
+            </div>
+            <div
+              class="more-features-box-text"
+              style="visibility: visible; width: 110%"
+            >
               <div class="more-features-box-text-icon">
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </div>

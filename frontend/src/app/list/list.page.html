@@ -69,6 +69,9 @@
               <ion-item>
                 <ion-label>Select model</ion-label>
                 <ion-select [(ngModel)]="selectNetwork">
+                  <ion-select-option value="undefined"
+                    >Default Model</ion-select-option
+                  >
                   <ion-select-option
                     *ngFor="let network of Networks"
                     value="{{ network }}"
@@ -84,11 +87,21 @@
                 (click)="getPrediction()"
                 >Predict</ion-button
               >
+              <ion-button
+                color="secondary"
+                type="submit"
+                (click)="cleanModels()"
+              >
+                Delete all Models</ion-button
+              >
             </div>
           </div>
         </div>
         <div class="col-md-9 col-sm-8 col-xs-12">
-          <div style="visibility: visible;" class="col-sm-9 more-features-box">
+          <div
+            style="visibility: visible; width: 110%"
+            class="col-sm-9 more-features-box"
+          >
             <div class="more-features-box-text">
               <div class="more-features-box-text-icon">
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -101,7 +114,7 @@
                   the chart.
                 </p>
                 <div *ngIf="checkFile">
-                  <div id="chart"></div>
+                  <div id="chart" style=" width: 110%"></div>
                   <!-- parametri della predizione -->
                   <!-- <ion-card>
                             <ion-header>Parametri Predizione</ion-header>
@@ -109,7 +122,10 @@
                 </div>
               </div>
             </div>
-            <div class="more-features-box-text">
+            <div
+              class="more-features-box-text"
+              style="visibility: visible; width: 110%"
+            >
               <div class="more-features-box-text-icon">
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </div>
@@ -127,11 +143,30 @@
                 </ion-card>
               </div>
             </div>
+            <div class="more-features-box-text">
+              <div class="more-features-box-text-icon">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </div>
+              <div class="more-features-box-text-description">
+                <h3>Seizure Prediction of your file</h3>
+                <p>
+                  The chart highlights the windows with epileptic seizure. It is
+                  possible to show the EEG trace if you click on the window in
+                  the chart.
+                </p>
+                <div *ngIf="checkFile">
+                  <div style="width: 110%" id="signalsChart"></div>
+                  <!-- parametri della predizione -->
+                  <!-- <ion-card>
+                            <ion-header>Parametri Predizione</ion-header>
+                          </ion-card> -->
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div id="signalsChart"></div>
   </section>
   <!--  -->
 

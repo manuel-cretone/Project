@@ -24,7 +24,7 @@ export class ChartComponent implements OnChanges {
     window: [][];
     timeScale: [];
   };
-  public highChartsOptions: Highcharts.Options;
+
   barChartLabels = new Array<any>();
   chartType;
   barChartData = [];
@@ -33,9 +33,8 @@ export class ChartComponent implements OnChanges {
   yAxses;
   optionsPlot;
 
-  // barChartOptions = [];
   loadData() {
-    console.log(this.categories);
+    // console.log(this.categories);
     this.barChartOptions = {
       chart: this.chartType,
       scrollbar: {
@@ -80,7 +79,7 @@ export class ChartComponent implements OnChanges {
       showInLegend: false
     });
     this.name = signal.canale;
-    this.yAxses = [];
+
     this.barChartData = dat;
 
     this.yAxses = {
@@ -88,7 +87,18 @@ export class ChartComponent implements OnChanges {
         text: ''
       }
     };
+    this.optionsPlot = {
+      line: {
+        marker: {
+          enabled: false
+        }
+      },
+      series: {
+        lineWidth: 1
+      }
+    };
     this.categories = signal.timeScale;
+
     this.chartType = {
       width: 750,
       type: 'line',
@@ -96,7 +106,7 @@ export class ChartComponent implements OnChanges {
       panning: true,
       panKey: 'shift'
     };
-    this.loadData();
+    await this.loadData();
   }
 
   // Statistiche sul grafico bar chart
@@ -121,6 +131,7 @@ export class ChartComponent implements OnChanges {
       panning: true,
       panKey: 'shift'
     };
+
     this.loadData();
     // this.barChartOptions.scales.xAxes = [];
   }
@@ -140,6 +151,11 @@ export class ChartComponent implements OnChanges {
     const yAxis = [];
 
     this.optionsPlot = {
+      line: {
+        marker: {
+          enabled: false
+        }
+      },
       series: {
         lineWidth: 1
       }

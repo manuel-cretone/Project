@@ -64,7 +64,7 @@ export class ListPage implements OnInit {
     });
     loader.present();
     if (model === undefined) {
-      await this.service.getPredict(0).then(data => {
+      await this.service.getPredict().then(data => {
         this.predict = data;
       });
     } else {
@@ -92,6 +92,10 @@ export class ListPage implements OnInit {
     });
   }
 
+  async cleanModels() {
+    this.service.makeCleanModels();
+  }
+
   drawChart(clicked: any, listService: ListServiceService, signals, service) {
     Highcharts.chart('chart', {
       chart: {
@@ -104,7 +108,6 @@ export class ListPage implements OnInit {
       xAxis: {
         categories: this.predict.time,
         min: 0,
-
         scrollbar: {
           enabled: true
         }
@@ -121,24 +124,20 @@ export class ListPage implements OnInit {
       plotOptions: {
         series: {
           stacking: 'normal',
-
           cursor: 'pointer',
           point: {
             events: {
               async click() {
-                console.log(this.category);
                 clicked = await service.getAllSignals(this.category, 30);
-                console.log(clicked);
                 const series = [];
                 const data = [];
-                const seriesCount = 23,
-                  pointsCount = 100;
-                let axisTop = 50;
+                const seriesCount = 23;
+                let axisTop = 10;
 
                 const axisHeight = 1100 / seriesCount;
                 const yAxis = [];
 
-                for (let i = 0; i < seriesCount; i++) {
+                for (let i = 0; i < seriesCount - 1; i++) {
                   data.push({
                     data: clicked.window[i],
                     yAxis: i,
@@ -147,27 +146,38 @@ export class ListPage implements OnInit {
 
                   yAxis.push({
                     title: {
-                      text: ''
+                      text: 'da inserire canale'
                     },
+                    visible: false,
                     height: axisHeight,
                     top: axisTop,
                     offset: 0
                   });
-
-                  axisTop += axisHeight + 12.5;
+                  axisTop += 40;
+                  // axisTop += axisHeight + 12.5;
                 }
-
                 Highcharts.chart('signalsChart', {
                   chart: {
-                    height: 1500
+                    height: 970,
+                    type: 'line',
+                    zoomType: 'x',
+                    panning: true,
+                    panKey: 'shift'
+                  },
+                  scrollbar: { enabled: true },
+                  plotOptions: {
+                    line: {
+                      marker: {
+                        enabled: false
+                      }
+                    },
+                    series: {
+                      lineWidth: 1
+                    }
                   },
                   series: data,
                   yAxis
                 });
-
-                // signals = listService.drawSeizure(this.category, 30);
-                // console.log(clicked);
-                // alert('Category: ' + this.category + ', value: ' + this.y);
               }
             }
           }
