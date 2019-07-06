@@ -256,7 +256,7 @@ class Train(View):
                                     link = os.path.join(fs.base_location, "usermodels", mod_name)
                                     )
             
-            addDefaultModel()
+            # addDefaultModel()
             record.save()
 
         except Exception as e:
@@ -345,19 +345,35 @@ class ConvertDataset(View):
 @method_decorator(csrf_exempt, name='dispatch')
 class Predict(View):
     def get(self, request):
-        model_id = request.GET.get("model_id", 0)
+        model_id = request.GET.get("model_id", None)
+        fs = FileSystemStorage()
+        # try:
+        #     m = UserNet.objects.get(id=model_id)
+        # except UserNet.DoesNotExist:
+        #     addDefaultModel()
+        #     m = UserNet.objects.get(id=0)
 
         try:
             m = UserNet.objects.get(id=model_id)
+
+            windowSec = int(m.windowSec)
+            sampleFrequency = int(m.sampleFrequency)
+            windowSize = windowSec * sampleFrequency
+            channels =int(m.channels) 
+            name = m.name
+            model = torch.load(m.link)
         except UserNet.DoesNotExist:
-            addDefaultModel()
-            m = UserNet.objects.get(id=0)
+            # addDefaultModel()
+            # m = UserNet.objects.get(id=0)
+            windowSec = 30
+            sampleFrequency = 256
+            windowSize = windowSec * sampleFrequency
+            channels = 23
+            name = "Default"
+            model = ConvNet(channels= channels, windowSize = windowSize)      
+            model.load_state_dict(torch.load(os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")))
 
 
-        windowSec = int(m.windowSec)
-        sampleFrequency = int(m.sampleFrequency)
-        windowSize = windowSec * sampleFrequency
-        channels =int(m.channels) 
         
         #controllo channels e sample rate del file coincidono con rete 
         info = file_info(file_path)
@@ -369,11 +385,8 @@ class Predict(View):
                                     "file_sample": info["sampleFrequency"],
                                     "net_sample": sampleFrequency
                                     }, 
-                                status = 400)
+                                status = 400) 
 
-        
-        model = ConvNet(channels= channels, windowSize = windowSize)      
-        model.load_state_dict(torch.load(m.link))
         model = model.eval()
 
         all_signals= []
@@ -387,7 +400,7 @@ class Predict(View):
 
         response = {
             "dim": str(complete_tensor.shape),
-            "name": m.name,
+            "name": name,
         }
         dataset = EvalDataset(complete_tensor)
         loader = DataLoader(dataset = dataset, 
@@ -445,22 +458,22 @@ class CleanUserModels(View):
     def get(self, request):
         UserNet.objects.all().delete()
         cleanFolder("usermodels")
-        addDefaultModel()
+        # addDefaultModel()
 
         return JsonResponse({"message": "no user models in database"}, status = 200)
 
 
-def addDefaultModel():
-    fs = FileSystemStorage()
-    record = UserNet(id=0,
-                    name="Default model",
-                    channels="23", 
-                    windowSec = "30",
-                    sampleFrequency = "256",
-                    # file = user_model.state_dict(),
-                    link = os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")
-                    )
-    record.save()
+# def addDefaultModel():
+#     fs = FileSystemStorage()
+#     record = UserNet(id=0,
+#                     name="Default model",
+#                     channels="23", 
+#                     windowSec = "30",
+#                     sampleFrequency = "256",
+#                     # file = user_model.state_dict(),
+#                     link = os.path.join(fs.base_location, "cnn", "trained_model_20190610-005842.pth")
+#                     )
+#     record.save()
 
 
 class CleanTrainingFiles(View):
