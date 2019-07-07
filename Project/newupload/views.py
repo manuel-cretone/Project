@@ -362,7 +362,7 @@ class Predict(View):
             channels =int(m.channels) 
             name = m.name
             model = torch.load(m.link)
-        except UserNet.DoesNotExist:
+        except:
             # addDefaultModel()
             # m = UserNet.objects.get(id=0)
             windowSec = 30
