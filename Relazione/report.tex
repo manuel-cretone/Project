@@ -80,12 +80,19 @@ L'allenamento supervisionato, quello implementato in questo progetto, prevede di
 \section{Reti Neurali Convoluzionali}
 Il funzionamento delle reti neurali tradizonali è poco efficiente quando deve essere analizzato un numero molto grande di dati. Ogni neurone prevede una connessione con ogni neurone del layer successivo (per questo sono chiamati fully-connected layers). Ciò implica che al crescere della dimensione della rete, cresce inesorabilmente il numero di parametri di cui tener traccia, portando a casi si sovradattamento della rete.
 
-Già dalla fine degli anni 90 i progettisti di reti neurali hanno iniziato ad introdurre dei modelli di reti convoluzionali, che permettono di ridurre di molto la grandezza della rete. Queste sono molto simili alle reti tradizionali: sono anch'esse formate da neuroni e tengono traccia di parametri come funzioni di attivazione e pesi che vengono modificati durante l'apprendimento. La caratteristica differente risiede nei layer convoluzionali di queste reti. Essi sono particolarmente indicati per il riconoscimento di proprietà nell'architettura dei dati in ingresso, che sono trattati come fossero immagini. La convoluzione prende infatti spunto dal funzionamento della corteccia visiva animale. Intuitivamente, un layer convoluzionale ha il compito di riconoscere alcune caratteristiche visive dell'immagine, come contorni, linee, colori ecc.. concentrandosi su piccole porzioni dell'immagine, e non prendendola nel suo complesso come accade neille reti fully-connected. Una volta individuata una caratteristica in una certa sezione dell'immagine, la rete sarà in grado di riconoscerla se dovesse presentarsi in altri punti. In una successione di layer convoluzionali, inoltre, un layer più imparare a riconoscere combinazioni di caratteristiche base individuate nei precedenti strati. Ciò le rende particolarmente adatte alla comprensione di pattern complessi.
+Già dalla fine degli anni `90 i progettisti di reti neurali hanno iniziato ad introdurre dei modelli di reti convoluzionali, che permettono di ridurre di molto la grandezza della rete. Queste sono molto simili alle reti tradizionali: sono anch'esse formate da neuroni e tengono traccia di parametri come funzioni di attivazione e pesi che vengono modificati durante l'apprendimento. La caratteristica differente risiede nei layer convoluzionali di queste reti. Essi sono particolarmente indicati per il riconoscimento di proprietà nell'architettura dei dati in ingresso, che sono trattati come fossero immagini. La convoluzione prende infatti spunto dal funzionamento della corteccia visiva animale. Intuitivamente, un layer convoluzionale ha il compito di riconoscere alcune caratteristiche visive dell'immagine, come contorni, linee, colori ecc.. concentrandosi su piccole porzioni dell'immagine, e non prendendola nel suo complesso come accade neille reti fully-connected. Una volta individuata una caratteristica in una certa sezione dell'immagine, la rete sarà in grado di riconoscerla se dovesse presentarsi in altri punti. In una successione di layer convoluzionali, inoltre, un layer più imparare a riconoscere combinazioni di caratteristiche base individuate nei precedenti strati. Ciò le rende particolarmente adatte alla comprensione di pattern complessi.
 
 Un convolutional layer è generalmente formato da un set di filtri (kernel) della stessa dimensione. Durante la computazione tali filtri vengono applicati ai dati in ingresso, attraverso una moltiplicazione element-wise. I valori della matrice di ogni moltiplicazione element-wise vengono sommati fra loro e restituiti in output.
+La \textit{Figura 1} mostra graficamente un'operazione di convoluzione. In verde, la matrice di output.
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.7]{convolution}
+\caption{Convoluzione con kernel 3x3 applicato a dati 4x4}
+\end{figure}
+
 Un layer convoluzionale è governato da tre parametri:
 \begin{itemize}
-\item profondità (K): numero di filtri da applicare durante la convoluzione. Questo determinerà infatti la profondità dell'output.
+\item profondità (K): numero di filtri da applicare durante la convoluzione. Questo determinerà infatti la profondità dell'output. Per avere un'idea visuale, l'output di una convoluzione sarà il risultato dell'operazione in \textit{Figura 1} per ogni kernel. Il risultato saranno più matrici di colore verde impilate, una per ogni filtro. 
 \item stride (S): indica il numero di segnali per cui si vuole traslare il filtro ad ogni spostamento. Uno stride piccolo genera molti più spostamenti, aumentando la dimensione dell'output. 
 \item zero-padding (P): segnali settati a zero, aggiunti ai bordi dei segnali di input. Serve spesso per adattare la dimensione dell'input con quella dell'output. Uno strato aggiuntivo di zeri infatti aumenterà la dimensione del vettore di output. 
 \end{itemize}
@@ -97,20 +104,44 @@ O={\frac{(I - K - 2P)}{S} +1}
 
 Tipicamente tra un layer convoluzionale e l'altro viene inserito uno strato di Pooling, che ha la funzione di diminuire la dimensione dell'input, riducendo il numero di parametri e controllando il sovradattamento. A differenza dei convolutional, il Pooling Layer non tiene traccia di alcun peso, dato che applica agli input una certa operazione deterministica, solitamente il massimo o la media.
 Anche il layer di pooling è caratterizzato dai parametri di dimensione del kernel, stride e padding. La dimensione del suo output è pertanto calcolabile come l'output del layer convoluzionale.
-\todo {immagine convoluzione + spiegazione}
+
 L'architettura CNN può anche prevedere uno o più strati Fully-Connected, solitamente aggiunti alla fine della struttura. Il loro compito è quello di raggruppare le informazioni degli strati precedenti, esprimendole attraverso un numero da utilizzare nei calcoli successivi per la classificazione finale. 
 
 \subsection{Convoluzione 1D}
+Le reti di convoluzione più diffuse sono senza dubbio quelle bidimensionali. Esse sono particolarmente adatte per l'analisi e il riconoscimento di immagini. Le convoluzioni scelte per il nostro progetto sono invece monodimensionali. Queste sono utili quando ci si aspetta di derivare le caratteristiche di un segmento dei dati totali, e quando la posizione di tale segmento all'interno dell'insieme di input non è rilevante. Sono quindi utili per l'analisi di segnali e per il natural language processing (NLP), in cui il segmento analizzato corrisponde ad un insieme di parole contigue di una frase o, nel nostro caso, ad un a finestra di segnali.
+
+Tutte le CNN condividono le stesse caratteristiche e seguono lo stesso approccio. Ciò che distingue una convoluzione 1D, 2D o 3D è la dimensione dell'input e come i filtri (feature detector) scorrono lungo i dati. La \textit{Figura 2} mostra graficamente la differenza tra una convoluzione mono e una bidimensionale. Nella rete monodimensionale, l'input è in due dimensioni $C, W$. Nel caso di un elettroencefalogramma, W rappresenta il numero di segnali per una finestra e C il numero di canali campionati. Possiamo notare come il filtro ricopra completamente la prima dimensione e scorra lungo l'altra. Sempre nel nostro caso, un filtro verrà applicato ad un certo numero di segnali di tutti i canali, per poi essere traslato lungo la dimensione W fino a considerare tutta la finestra.\\
+Graficamente possiamo invece notare come la convoluzione 2D si applichi facilmente alle immagini. I dati di input sono infatti in tre dimensioni $C, H, W$, dove H e W rappresentano rispettivamente il numero di pixel in altezza e larghezza, mentre C indica il numero dei canali di colore, solitamente i 3 canali RGB. La figura mostra come il filtro prenda una porzione dell'immagine considerando tutta la dimensione C (quindi tutti i canali di cui è composta) e scorra lungo le altre due dimensioni. \\
+Lo stesso procedimento, con una dimensione in più, si applica alle convoluzioni 3D. 
 \begin{figure}[!h]
 \centering
 \includegraphics[scale=0.2]{conv1d}
 \caption{Differenza convoluzione 1D e 2D}
 \end{figure}
 
+Per completezza, è bene specificare che a tutte le grandezze di input sopra indicate, va aggiunta un'ulteriore dimensione $N$. Essa rappresenta la \textit{batch size}, cioè il numero di campioni (sample) di input passati alla rete in fase di training. Con dataset molto grandi, infatti, è possibile passare ad una rete un certo numero di input contemporaneamente, in modo da velocizzare l'allenamento e ridurre la memoria. Le operazioni di calcolo del gradiente e backpropagation verranno effettuate a partire da ogni batch e non sul singolo input. 
+
+
 \subsection{Modello CNN proposto}
-\todo{screen modello}
+Una funzionalità offerta dal programma è quella di predizione delle crisi su un file di segnali attraverso una rete pre allenata. Il dataset su cui è stato effettuato il training è descritto nel successivo capitolo. In questo paragrafo verranno illustrati i vari layer della rete.
+
+La \textit{Figura 3} mostra l'architettura della CNN proposta. I primi due layer sono sequenziali, cioè sono un gruppo di layer che processa i dati in maniera progressiva. Essi comprendono un primo livello convoluzionale, una livello ReLu e uno di MaxPooling 1D. Il livello ReLu (Rectified Linear Unit) viene utilizzato come funzione di attivazione, in sostituzione della classica sigmoide. Consiste nell'applicazione della funzioe $f(x) = max(0,x)$ che permette di scartare tutti i valori negativi in output da un livello. 
+A seguire questi livelli sequenziali troviamo un livello di Dropout, che entra in funzione solo in fase di training. Dropout setta come nulli una percentuale $p$ di valori scelti in modo casuale ad ogni operazione di forward. Questa tecnica è utilizzata per prevenire il fenomeno di sovradattamento della rete ai dati di training.
+In coda la rete prevede due livelli lineari (o fully-connected) per il raggruppamento dei dati e un livello finale di Softmax per normalizzare l'output nell'intervallo $[0,1]$.
+
+La rete è capace di analizzare file suddividendoli in finestre temporali di 30 secondi ciascuna. Dato che il numero di segnali per ogni finestra deve essere fisso, la frequenza di campionamento dei file deve coincidere con quella dei file utilizzati per il training, quindi 256 Hz.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.7]{ourcnn}
+\caption{Modello CNN proposto}
+\end{figure}
 
 \subsection{CNN modulare}
+Il programma offre all'utente anche la possibilità di costruire una propria rete, per allenarla con un dataset e successivamente utilizzarla nelle predizioni di crisi epilettiche. Benché il numero di livelli e i parametri di ogni livello sono a discrezione dell'utente, alcune scelte architetturali sono fissate a priori. In particolare l'utente può scegliere un numero arbitrario di livelli convoluzionali 1D, per ognuno dei quali verrà automaticamente creato un livello ReLu e uno di MaxPool1D. La dimensione del kernel, dello stride il numero di filtri e i parametri del livello di pooling sono scelti dall'utente, verificando che i parametri scelti abbiano consistenza.
+Il modello prevede un layer di Dropout e un layer fully connected finale, che generi un output di dimensione 2 normalizzato dalla funzione di Softmax. Al layer lineare è possibile far precedere un ulteriore layer fully connected, di dimensione scelta dall'utente. 
+
+Un possibile sviluppo futuro del progetto potrebbe prevedere ulteriori libertà di scelta dell'utente, per offrire una maggiore personalizzazione del modello. 
 
 
 \section{Dataset}

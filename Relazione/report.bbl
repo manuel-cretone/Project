@@ -19,6 +19,33 @@
 
 \refsection{0}
   \datalist[entry]{nty/global//global/global}
+    \entry{goodaudience:conv1d}{online}{}
+      \name{author}{1}{}{%
+        {{hash=7c8429ec274912f03816e2d468ce456b}{%
+           family={Ackermann},
+           familyi={A\bibinitperiod},
+           given={Nils},
+           giveni={N\bibinitperiod}}}%
+      }
+      \strng{namehash}{7c8429ec274912f03816e2d468ce456b}
+      \strng{fullhash}{7c8429ec274912f03816e2d468ce456b}
+      \strng{bibnamehash}{7c8429ec274912f03816e2d468ce456b}
+      \strng{authorbibnamehash}{7c8429ec274912f03816e2d468ce456b}
+      \strng{authornamehash}{7c8429ec274912f03816e2d468ce456b}
+      \strng{authorfullhash}{7c8429ec274912f03816e2d468ce456b}
+      \field{sortinit}{A}
+      \field{sortinithash}{d77c7cdd82ff690d4c3ef13216f92f0b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Introduction to 1D Convolutional Neural Networks in Keras for Time Sequences}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://blog.goodaudience.com/introduction-to-1d-convolutional-neural-networks-in-keras-for-time-sequences-3a7ff801a2cf
+      \endverb
+      \verb{url}
+      \verb https://blog.goodaudience.com/introduction-to-1d-convolutional-neural-networks-in-keras-for-time-sequences-3a7ff801a2cf
+      \endverb
+    \endentry
     \entry{boldrini:neuralnetwork}{online}{}
       \name{author}{1}{}{%
         {{hash=2a9e8efeefe479c957ed2d3c02c209ee}{%
@@ -46,6 +73,33 @@
       \endverb
       \verb{url}
       \verb https://www.ai4business.it/intelligenza-artificiale/deep-learning/reti-neurali/
+      \endverb
+    \endentry
+    \entry{medium:train}{online}{}
+      \name{author}{1}{}{%
+        {{hash=f4b45ad5bcdad3cd9a3d94558ecc1062}{%
+           family={Moawad},
+           familyi={M\bibinitperiod},
+           given={Assaad},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{f4b45ad5bcdad3cd9a3d94558ecc1062}
+      \strng{fullhash}{f4b45ad5bcdad3cd9a3d94558ecc1062}
+      \strng{bibnamehash}{f4b45ad5bcdad3cd9a3d94558ecc1062}
+      \strng{authorbibnamehash}{f4b45ad5bcdad3cd9a3d94558ecc1062}
+      \strng{authornamehash}{f4b45ad5bcdad3cd9a3d94558ecc1062}
+      \strng{authorfullhash}{f4b45ad5bcdad3cd9a3d94558ecc1062}
+      \field{sortinit}{M}
+      \field{sortinithash}{cfd219b90152c06204fab207bc6c7cab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Neural networks and back-propagation explained in a simple way}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://medium.com/datathings/neural-networks-and-backpropagation-explained-in-a-simple-way-f540a3611f5e
+      \endverb
+      \verb{url}
+      \verb https://medium.com/datathings/neural-networks-and-backpropagation-explained-in-a-simple-way-f540a3611f5e
       \endverb
     \endentry
     \entry{toward:convolutional}{online}{}

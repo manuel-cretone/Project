@@ -1,0 +1,20 @@
+\BOOKMARK [1][-]{section.1}{Epilessia}{}% 1
+\BOOKMARK [1][-]{section.2}{Reti Neurali}{}% 2
+\BOOKMARK [1][-]{section.3}{Reti Neurali Convoluzionali}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Convoluzione 1D}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Modello CNN proposto}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{CNN modulare}{section.3}% 6
+\BOOKMARK [1][-]{section.4}{Dataset}{}% 7
+\BOOKMARK [1][-]{section.5}{Structure Application}{}% 8
+\BOOKMARK [2][-]{subsection.5.1}{Funzionalit\340 offerte}{section.5}% 9
+\BOOKMARK [1][-]{section.6}{Backend}{}% 10
+\BOOKMARK [2][-]{subsection.6.1}{Django Framework}{section.6}% 11
+\BOOKMARK [2][-]{subsection.6.2}{Python}{section.6}% 12
+\BOOKMARK [2][-]{subsection.6.3}{PyEDFlib}{section.6}% 13
+\BOOKMARK [2][-]{subsection.6.4}{PyTorch}{section.6}% 14
+\BOOKMARK [2][-]{subsection.6.5}{API}{section.6}% 15
+\BOOKMARK [1][-]{section.7}{Frontend}{}% 16
+\BOOKMARK [2][-]{subsection.7.1}{Angular}{section.7}% 17
+\BOOKMARK [2][-]{subsection.7.2}{Ionic}{section.7}% 18
+\BOOKMARK [2][-]{subsection.7.3}{HIghChart}{section.7}% 19
+\BOOKMARK [1][-]{section*.17}{Riferimenti bibliografici}{}% 20

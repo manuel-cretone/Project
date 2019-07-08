@@ -1,0 +1,47 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\babel@toc {italian}{}
+\babel@toc {italian}{}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1}Epilessia}{2}{section.1}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2}Reti Neurali}{3}{section.2}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3}Reti Neurali Convoluzionali}{5}{section.3}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1}Convoluzione 1D}{6}{subsection.3.1}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.2}Modello CNN proposto}{6}{subsection.3.2}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.3}CNN modulare}{6}{subsection.3.3}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4}Dataset}{6}{section.4}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5}Structure Application}{7}{section.5}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.1}Funzionalit\IeC {\`a} offerte}{8}{subsection.5.1}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {6}Backend}{8}{section.6}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.1}Django Framework}{8}{subsection.6.1}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.2}Python}{9}{subsection.6.2}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.3}PyEDFlib}{9}{subsection.6.3}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.4}PyTorch}{10}{subsection.6.4}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.5}API}{10}{subsection.6.5}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Single File analysis}{10}{section*.14}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Training}{11}{section*.15}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7}Frontend}{12}{section.7}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1}Angular}{12}{subsection.7.1}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2}Ionic}{12}{subsection.7.2}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.3}HIghChart}{13}{subsection.7.3}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Riferimenti bibliografici}{13}{section*.17}% 
