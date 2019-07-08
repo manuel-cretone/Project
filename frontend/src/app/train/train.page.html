@@ -151,11 +151,19 @@
 
                 <ion-card>
                   <p>
+                    input convolutional
+                  </p>
+                  <ion-input
+                    type="number"
+                    [(ngModel)]="input"
+                    placeholder="number of input"
+                  ></ion-input>
+                  <p>
                     output convolutional
                   </p>
                   <ion-input
                     type="number"
-                    [(ngModel)]="outputConv"
+                    [(ngModel)]="output"
                     placeholder="number of output"
                   ></ion-input>
                   <p>
@@ -169,7 +177,7 @@
                     Stride
                   </p>
                   <ion-input
-                    [(ngModel)]="stride"
+                    [(ngModel)]="strideConv"
                     placeholder="Stride of neural network"
                   ></ion-input>
                   <p>
@@ -183,7 +191,8 @@
                     pool_kernel
                   </p>
                   <ion-input
-                    [(ngModel)]="pool_kernel"
+                    value=""
+                    [(ngModel)]="poolkernel"
                     placeholder="pool kernel of neural network"
                   ></ion-input>
                   <p>
@@ -191,15 +200,28 @@
                   </p>
 
                   <ion-input
-                    [(ngModel)]="pool_stride"
+                    [(ngModel)]="poolstride"
                     placeholder="pool stride of neural network"
                   ></ion-input>
-                  <ion-button
-                    color="secondary"
-                    type="submit"
-                    (click)="makeTrain()"
-                    >Create convolutional level</ion-button
-                  >
+                  <div>
+                    <p *ngIf="!checked">Inserire tutti i parametri</p>
+                    <ion-button
+                      color="secondary"
+                      type="submit"
+                      (click)="makeConvolutionalNet()"
+                      >Create convolutional level</ion-button
+                    >
+                    <ion-button
+                      color="secondary"
+                      type="submit"
+                      (click)="cleanLayers()"
+                      >Delete all network level</ion-button
+                    >
+                  </div>
+                </ion-card>
+
+                <ion-card>
+                  <p>{{ paramsConv }}</p>
                 </ion-card>
               </div>
             </div>
@@ -225,8 +247,8 @@
                   <ion-button
                     color="secondary"
                     type="submit"
-                    (click)="makeTrain()"
-                    >Create Linear Level</ion-button
+                    (click)="createNetwork()"
+                    >Create Your Network</ion-button
                   >
                 </ion-card>
               </div>

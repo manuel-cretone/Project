@@ -122,10 +122,10 @@ export class Page1Page implements OnInit {
       // this.chart.fillLineChart(this.signals, this.selectChannel);
     }
 
-    this.upload = null;
-    this.selectChannel = null;
-    this.selectStart = null;
-    this.selectNumberSignal = null;
+    // this.upload = null;
+    // this.selectChannel = null;
+    // this.selectStart = null;
+    // this.selectNumberSignal = null;
   }
 
   async getStatistics(channel, start, numberSignals) {

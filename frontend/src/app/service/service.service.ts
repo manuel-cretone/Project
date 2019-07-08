@@ -101,26 +101,12 @@ export class ServiceService {
     const httpOptions = new HttpParams()
       .set('seizureStart', start)
       .set('seizureEnd', end);
-    // const input = new FormData();
-    // input.append('myfile', file);
-    // input.append('startSeizure', start);
-    // input.append('endSeizure', end);
 
     return (await this.http
       .post('http://127.0.0.1:8000/newupload/uptraining/', file, {
         params: httpOptions
       })
       .toPromise()) as { uploaded: any };
-
-    // return this.http
-    //   .post('http://127.0.0.1:8000/newupload/uptraining/', file, {
-    //     headers: {},
-    //     params: {
-    //       seizureStart,
-    //       seizureEnd
-    //     }
-    //   })
-    //   .toPromise();
   }
 
   /**
@@ -164,9 +150,25 @@ export class ServiceService {
       .toPromise();
   }
 
-  async makeConvolutional() {
+  async makeConvolutional(
+    input,
+    output,
+    kernel,
+    stride,
+    padding,
+    poolkernel,
+    poolstride
+  ) {
+    const params = new HttpParams()
+      .set('input', input)
+      .set('output', output)
+      .set('kernel', kernel)
+      .set('stride', stride)
+      .set('padding', padding)
+      .set('pool_kernel', poolkernel)
+      .set('pool_stride', poolstride);
     return (await this.http
-      .get('http://127.0.0.1:8000/newupload/addconv/')
+      .get('http://127.0.0.1:8000/newupload/addconv/', { params })
       .toPromise()) as {
       message: {
         input: any;
@@ -184,12 +186,14 @@ export class ServiceService {
   async initializeNetwork(linear) {
     const params = new HttpParams().set('linear', linear);
     return (await this.http
-      .get('http://127.0.0.1:8000/newupload/initializenet/')
+      .get('http://127.0.0.1:8000/newupload/initializenet', { params })
       .toPromise()) as { modules: any };
   }
 
   // cancella tutti i layer convoluzionali inseriti fino a quel momento
   async makeCleanLayers() {
-    await this.http.get('http://127.0.0.1:8000/newupload/cleanlayers/');
+    await this.http
+      .get('http://127.0.0.1:8000/newupload/cleanlayers/')
+      .toPromise();
   }
 }

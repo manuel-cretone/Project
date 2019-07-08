@@ -34,7 +34,8 @@ export class ChartComponent implements OnChanges {
   optionsPlot;
 
   loadData() {
-    // console.log(this.categories);
+    console.log(this.barChartData);
+    console.log(this.categories);
     this.barChartOptions = {
       chart: this.chartType,
       scrollbar: {
@@ -49,7 +50,7 @@ export class ChartComponent implements OnChanges {
       plotOptions: this.optionsPlot,
       yAxis: this.yAxses,
       tooltip: {
-        valueSuffix: ''
+        valueSuffix: 'd'
       },
       series: this.barChartData
     };
@@ -65,6 +66,8 @@ export class ChartComponent implements OnChanges {
       this.fillLineChart(this.signals);
     }
     if (this.distribution) {
+      console.log('DISTRIBUTION');
+      console.log(this.distribution);
       this.fillBarChart(this.distribution);
     }
     this.allSignalsChannels = null;
@@ -112,12 +115,15 @@ export class ChartComponent implements OnChanges {
   // Statistiche sul grafico bar chart
   fillBarChart(distr: { hist: []; bins: [] }) {
     const dat = [];
-
+    console.log('DISTRIBUTION IN FUNCTION');
+    console.log(distr);
     // this.barChartData.push({ data: distr.hist });
+    this.barChartData = [];
     dat.push({
       data: distr.hist
     });
-    this.categories = [];
+    this.optionsPlot = [];
+
     this.categories = distr.bins;
     this.barChartData = dat;
     this.yAxses = {
@@ -131,7 +137,8 @@ export class ChartComponent implements OnChanges {
       panning: true,
       panKey: 'shift'
     };
-
+    console.log(this.barChartData);
+    console.log(this.categories);
     this.loadData();
     // this.barChartOptions.scales.xAxes = [];
   }
