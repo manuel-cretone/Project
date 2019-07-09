@@ -6,11 +6,10 @@ Queste predizioni vengono eseguite su file .edf (European Data Format) i quali p
 Il tool non solo permette di predirre le crisi presenti in un tracciato EEG, ma dispone di altre funzionalità come la definizione di alcune statistiche che riguardano tutti i segnali e tutti i canali presenti nel tracciato.
 Viene fornita all'utente l'opportunità di creare il proprio dataset di allenamento che poi sarà usato sulla rete neurale che esso stesso potrà definirsi. 
 Il progetto è stato suddiviso in:
-\begin{itemize}
-\item studio EEG e teoria delle crisi
-\item studio per la creazione del dataset (segnali ictali, preictali e postictali)
-\item bilanciamento dataset
-\item studio teorico cnn
-\item applicazione CNN con relativo allenamento
-\item costruzione architettura web con beckend e frontend 
-\end{itemize}
+
+- studio EEG e teoria delle crisi
+- studio per la creazione del dataset (segnali ictali, preictali e postictali)
+- bilanciamento dataset
+- studio teorico cnn
+- applicazione CNN con relativo allenamento
+- costruzione architettura web con beckend e frontend 
