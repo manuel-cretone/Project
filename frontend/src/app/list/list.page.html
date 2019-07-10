@@ -73,9 +73,9 @@
                     >Default Model</ion-select-option
                   >
                   <ion-select-option
-                    *ngFor="let network of Networks"
-                    value="{{ network }}"
-                    >{{ network }}</ion-select-option
+                    *ngFor="let list of listNetworks.name"
+                    value="{{ list }}"
+                    >{{ list }}</ion-select-option
                   >
                 </ion-select>
               </ion-item>

@@ -131,7 +131,7 @@
                     (click)="makeConvert()"
                     >Create Dataset</ion-button
                   >
-                  <p> {{ error }}</p>
+                  <p>{{ error }}</p>
                 </ion-card>
               </div>
             </div>
@@ -151,14 +151,6 @@
                 </p>
 
                 <ion-card>
-                  <p>
-                    input convolutional
-                  </p>
-                  <ion-input
-                    type="number"
-                    [(ngModel)]="input"
-                    placeholder="number of input"
-                  ></ion-input>
                   <p>
                     output convolutional
                   </p>
@@ -212,6 +204,7 @@
                       (click)="makeConvolutionalNet()"
                       >Create convolutional level</ion-button
                     >
+                    <p>{{ error }}</p>
                     <ion-button
                       color="secondary"
                       type="submit"
@@ -222,7 +215,19 @@
                 </ion-card>
 
                 <ion-card>
-                  <p>{{ paramsConv }}</p>
+                  <div *ngIf="paramsConv !== undefined">
+                    <div *ngFor="let item of paramsConv.message">
+                      <p>livello item</p>
+                      <p>id {{ item.id }}</p>
+                      <p>input {{ item.input }}</p>
+                      <p>out_dim {{ item.out_dim }}</p>
+                      <p>output {{ item.output }}</p>
+                      <p>padding {{ item.padding }}</p>
+                      <p>pool_kernel {{ item.pool_kernel }}</p>
+                      <p>pool_stride {{ item.pool_stride }}</p>
+                      <p>stride {{ item.stride }}</p>
+                    </div>
+                  </div>
                 </ion-card>
               </div>
             </div>
@@ -251,6 +256,7 @@
                     (click)="createNetwork()"
                     >Create Your Network</ion-button
                   >
+                  <p>{{ error }}</p>
                 </ion-card>
               </div>
             </div>
@@ -296,6 +302,11 @@
                     (click)="makeTrain()"
                     >Train</ion-button
                   >
+                  <div *ngIf="trainParameters !== undefined">
+                    <p>num_epochs: {{ trainParameters.num_epochs }}</p>
+                    <p>method: {{ trainParameters.method }}</p>
+                    <p>accuracy: {{ trainParameters.accuracy }}</p>
+                  </div>
                 </ion-card>
               </div>
             </div>

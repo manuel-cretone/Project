@@ -23,6 +23,7 @@ export class TrainPage implements OnInit, OnChanges {
       out_dim: any;
     };
   };
+  paramsConvolutional;
   checked: boolean;
   error: any;
   constructor(
@@ -39,7 +40,7 @@ export class TrainPage implements OnInit, OnChanges {
   @Input() networkName: string;
 
   // params for creaing convolutional network
-  @Input() input: number;
+
   @Input() output: number;
   @Input() kernel: number;
   @Input() strideConv: number;
@@ -47,11 +48,12 @@ export class TrainPage implements OnInit, OnChanges {
   @Input() poolkernel: number;
   @Input() poolstride: number;
   @Input() linear: number;
+  @Input() name: string;
 
   file: File = null;
   upload: UploadData;
   checkFile = false;
-
+  trainParameters;
   ngOnInit() {}
 
   ngOnChanges() {
@@ -81,39 +83,64 @@ export class TrainPage implements OnInit, OnChanges {
     const uploadData = new FormData();
     if (this.file != null) {
       uploadData.append('myfile', this.file, this.file.name);
-      console.log(uploadData);
-      const loader: any = await this.loadingController.create({
-        message: 'Please Wait',
-        cssClass: 'custom-loading',
-        mode: 'ios',
-        spinner: 'bubbles'
-      });
-      loader.present();
+
       await this.service
         .upTraining(uploadData, this.startSeizure, this.seizureEnd)
-        .then(data => {
-          this.listOfFile = data.uploaded;
-        });
-      loader.dismiss();
-      console.log(this.listOfFile);
+        .then(
+          data => {
+            this.listOfFile = data.uploaded;
+          },
+          (error: HttpErrorResponse) => (this.error = error)
+        );
 
+      console.log(this.listOfFile);
+      this.startSeizure = null;
+      this.seizureEnd = null;
       this.checkFile = true;
     } else {
       this.checkFile = false;
     }
   }
 
-  makeConvert() {
-    this.service.doConvert(this.windowSize, this.stride).then(
-      // data => {},
-      (errors: HttpErrorResponse) => (this.error = errors.statusText)
+  async makeConvert() {
+    const loader: any = await this.loadingController.create({
+      message: 'Please Wait, dataset creating...',
+      cssClass: 'custom-loading',
+      mode: 'ios',
+      spinner: 'bubbles'
+    });
+    loader.present();
+    await this.service.doConvert(this.windowSize, this.stride).then(
+      data => {
+        console.log(data);
+      },
+      (errors: HttpErrorResponse) => {
+        this.error = errors.statusText;
+      }
     );
+    console.log(this.error);
+    loader.dismiss();
   }
 
   async makeTrain() {
-    console.log(this.selectMethod);
-    const a = await this.service.getTrain(this.epochs, this.selectMethod);
-    console.log(a);
+    const loader: any = await this.loadingController.create({
+      message: 'Please Wait, dataset creating...',
+      cssClass: 'custom-loading',
+      mode: 'ios',
+      spinner: 'bubbles'
+    });
+    loader.present();
+    await this.service
+      .getTrain(this.epochs, this.selectMethod, this.networkName)
+      .then(
+        data => {
+          this.trainParameters = data;
+        },
+        (error: HttpErrorResponse) => {
+          this.error = error;
+        }
+      );
+    loader.dismiss();
   }
 
   makeCleanFile() {
@@ -124,7 +151,6 @@ export class TrainPage implements OnInit, OnChanges {
 
   async makeConvolutionalNet() {
     if (
-      this.input !== undefined &&
       this.output !== undefined &&
       this.kernel !== undefined &&
       this.strideConv !== undefined &&
@@ -134,7 +160,6 @@ export class TrainPage implements OnInit, OnChanges {
     ) {
       this.checked = true;
       this.Convolutional();
-      this.input = null;
       this.output = null;
       this.kernel = null;
       this.strideConv = null;
@@ -145,9 +170,8 @@ export class TrainPage implements OnInit, OnChanges {
   }
 
   async Convolutional() {
-    return await this.service
+    await this.service
       .makeConvolutional(
-        this.input,
         this.output,
         this.kernel,
         this.strideConv,
@@ -155,18 +179,27 @@ export class TrainPage implements OnInit, OnChanges {
         this.poolkernel,
         this.poolstride
       )
-      .then(data => {
-        console.log(data);
-        this.paramsConv = data;
-        console.log(this.paramsConv);
-      });
+      .then(
+        data => {
+          console.log(data);
+          this.paramsConv = data;
+          console.log(this.paramsConv);
+        },
+        (error: HttpErrorResponse) => (this.error = error)
+      );
+    this.paramsConvolutional = Object.keys(this.paramsConv);
+    console.log(this.paramsConvolutional);
   }
 
   async createNetwork() {
-    await this.service.initializeNetwork(this.linear);
+    await this.service.initializeNetwork(this.linear).then(
+      data => {},
+      (error: HttpErrorResponse) => {
+        this.error = error;
+      }
+    );
   }
   cleanLayers() {
-    console.log('yftguyhuj');
     this.service.makeCleanLayers();
   }
 }

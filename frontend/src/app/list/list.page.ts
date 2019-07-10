@@ -11,7 +11,8 @@ import { ListServiceService } from './list-service.service';
 })
 export class ListPage implements OnInit {
   @Input() selectNetwork: string;
-  Networks: [];
+
+  listNetworks: { id: any; name: any };
   upload: UploadData;
   checkFile = false;
   checkSubmit = false;
@@ -52,9 +53,10 @@ export class ListPage implements OnInit {
    */
   async getPrediction() {
     const model = this.listService.numberOfList(
-      this.Networks,
+      this.listNetworks.name,
       this.selectNetwork
     );
+    const choseNet = this.listNetworks.id[model];
     this.checkPrediction = false;
     const loader: any = await this.loadingController.create({
       message: 'Please Wait',
@@ -68,28 +70,26 @@ export class ListPage implements OnInit {
         this.predict = data;
       });
     } else {
-      await this.service.getPredict(model).then(data => {
+      await this.service.getPredict(choseNet).then(data => {
         this.predict = data;
       });
     }
-
     loader.dismiss();
-
     this.drawChart(
       this.a,
       this.listService,
       this.allSignalsChannels,
       this.service
     );
-
     this.checkPrediction = true;
-    console.log(this.predict);
   }
 
   async getModels() {
-    this.service.getModels().then(data => {
-      this.Networks = data.name;
+    await this.service.getModels().then(data => {
+      console.log(data);
+      this.listNetworks = data;
     });
+    console.log(this.listNetworks);
   }
 
   async cleanModels() {

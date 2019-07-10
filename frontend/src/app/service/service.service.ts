@@ -129,8 +129,9 @@ export class ServiceService {
    * @param epochs s
    * @param trainMethod s
    */
-  getTrain(epochs, trainMethod) {
+  getTrain(epochs, trainMethod, name) {
     const params = new HttpParams()
+      .set('name', name)
       .set('epochs', epochs)
       .set('train_method', trainMethod);
     return this.http
@@ -151,7 +152,6 @@ export class ServiceService {
   }
 
   async makeConvolutional(
-    input,
     output,
     kernel,
     stride,
@@ -160,7 +160,6 @@ export class ServiceService {
     poolstride
   ) {
     const params = new HttpParams()
-      .set('input', input)
       .set('output', output)
       .set('kernel', kernel)
       .set('stride', stride)
