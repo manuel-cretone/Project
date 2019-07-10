@@ -260,6 +260,7 @@ class Train(View):
             record.save()
 
         except Exception as e:
+            print(str(e))
             return JsonResponse(data={"error": str(e)}, status = 400)
         
 
@@ -567,10 +568,10 @@ def initializeNet(linear = None):
     else:
         linear_list.append(nn.Linear(in_features = linear_input, out_features=2))
         # linear_dict.update(("1", nn.Linear(in_features = linear_input, out_features=2)))
-    print("parametri in lista: ", conv_list, linear_list)
+    # print("parametri in lista: ", conv_list, linear_list)
 
     model = ModularConv(conv_list, linear_input, linear_list)
-    print("valori nella rete", model.modules)
+    # print("valori nella rete", model.modules)
 
     return model     
 
