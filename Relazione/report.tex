@@ -9,33 +9,59 @@
 \addbibresource{bibliography.bib}
 
 \begin{document}
-\title{Convolutional Neural Network for epileptic seizure recognition}
-\maketitle
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+        \Huge
+        \title \textbf{Tool CNN per analisi e predizione di crisi epilettiche}
+ 
+        \vspace{2cm} 
+ 	\Large
+ 	\textit{Progetto di gruppo} \\
+        \textbf{Studenti:} Cretone Manuel, Silvestri Emilio\\
+        \textbf{Tutor:} Piangerelli Marco
+        \vfill
+ 
+        \vspace{0.4cm}
+ 
+        \includegraphics[width=0.3\textwidth]{unicam}
+	\vfill
+        \Large
+        Unversità degli Studi di Camerino\\
+        Scuola di Scienze e tecnologie\\
+        Corso di laurea in Informatica L-31\\
+        Anno Accademico 2018-2019
+    \end{center}
+\end{titlepage}
+
 
 \tableofcontents
-
+\newpage
 \section*{Introduzione}
-Il progetto è stato realizzato con lo scopo di attuare delle predizioni di crisi epilettiche su tracciati EEG che registrano le attività del  cervello umano a livello neurale.
-La predizione viene effettuata attraverso una rete neurale allenata per riconoscere le varie crisi presenti.
-Queste predizioni vengono eseguite su file .edf (European Data Format) i quali permettono un'archiviazione di segnali biologici e fisici multicanale.
-Il tool non solo permette di predirre le crisi presenti in un tracciato EEG, ma dispone di altre funzionalità come la definizione di alcune statistiche che riguardano tutti i segnali e tutti i canali presenti nel tracciato.
-Viene fornita all'utente l'opportunità di creare il proprio dataset di allenamento che poi sarà usato sulla rete neurale che esso stesso potrà definirsi. 
-Il progetto è stato suddiviso in:
+Il progetto è stato realizzato nell'ambito del group progect finale previsto dal piano di studi della laurea in Informatica dell'Università di Camerino.
+Lo scopo principale è quello di attuare delle predizioni di crisi epilettiche su tracciati EEG che registrano le attività del cervello umano a livello neurale.
+Le predizioni vengono effettuate  con l'ausilio di una rete neurale allenata per riconoscere le varie crisi presenti.
+Queste predizioni vengono eseguite su file in formato \textit{edf} (European Data Format) i quali permettono l'archiviazione di segnali biologici e fisici multicanale.
+Il tool non solo permette di predirre le crisi presenti in un tracciato EEG, ma dispone di altre funzionalità come il calcolo di alcune statistiche che riguardano tutti i segnali e tutti i canali presenti nel tracciato e la visualizzazione del tracciato stesso.
+Viene inoltre fornita all'utente l'opportunità di creare un proprio dataset di allenamento, da utilizzare per il training di reti neurali personalizzate. 
+Il workflow del progetto è stato suddiviso in:
 \begin{itemize}
 \item studio EEG e teoria delle crisi
 \item studio per la creazione del dataset (segnali ictali, preictali e postictali)
-\item bilanciamento dataset
-\item studio teorico cnn
+\item creazione di dataset bilanciati
+\item studio teorico CNN
 \item applicazione CNN con relativo allenamento
-\item costruzione architettura web con beckend e frontend 
+\item costruzione architettura web suddivisa in backend e frontend 
 \end{itemize}
 
+\newpage
 
 \section{Epilessia}
 L'epilessia è una malattia neurologica che colpisce circa 50 milioni di persone nel mondo. Essa è caratterizzata da specifici eventi clinici, definiti crisi epilettiche, che si ripetono in modo consecutivo e attivano simultaneamente un grande numero di neuroni generalemente posti in un'area particolare dell'encefalo, detta corteccia celebrale. Le crisi alterano la normale attività elettrica dell'encefalo, con conseguenze sul comportamento del soggetto colpito, come perdita di conoscenza, movimenti involontari, contrazioni della muscolatura che si tramutano in convulsioni.
 Le cause delle crisi epilettiche possono essere diverse, come patologie, traumi cranici, infenzioni SNC (meningite ecc..) e perfino alcuni farmaci.
 
-In base all'area di estensione del cervello che è interessata da scariche elettriche anomale, possono presentarvi due tipi di crisi:
+In base all'area di estensione del cervello che è interessata da scariche elettriche anomale, possono presentarsi due tipi di crisi:
 \begin{itemize}
 \item Crisi Parziali:  si manifestano convulsioni e alterazioni sensoriali. Esse si suddividono a loro volta da crisi semplici o complesse 
 \begin{itemize}
@@ -48,18 +74,18 @@ In base all'area di estensione del cervello che è interessata da scariche elett
 \todo{ rimedi per l'epilessia, farmaci e se viene curata del tutto o meno   }
 \todo{spiegazione EEG tecnica per la registrazione, come funziona, cosa registra e come viene applicata allo scalpo}
  In alcuni casi dopo uno o più episodi di crisi epilettiche il fenomeno può tendere a scomparire per cause naturali senza l'apporto di farmaci per la sua cura. In molti casi però c'è bisogno di una cura effettuata attraverso farmaci, se questi ultimi non dovrebbero essere efficaci c'è bisogno di ricorre a operazioni chirurgiche.
-I farmaci risultano efficaci nel 60-70 per cento dei casi, questi non curano l'epilessia ma permettono al soggetto affetto di convivere con questa patologia.
- La diagnosi dell'epilessia viene fatta attraverso diversi strumenti, uno su tutti è l'elettroencefalogramma (EEG). Questo strumento registra le attività elettriche dell'encefalo, poi riprodotte su dei tracciati grafici che contengono diversi tracciati,  che mostrano delle onde, corrispondenti agli elettrodi applicati sullo scalpo del soggetto.
+I farmaci risultano efficaci nel 60-70 per cento dei casi; questi non curano l'epilessia ma permettono al soggetto affetto di convivere con questa patologia.
+ La diagnosi dell'epilessia viene fatta attraverso diversi strumenti, uno su tutti è l'elettroencefalogramma (EEG). Questo strumento registra le attività elettriche dell'encefalo, poi riprodotte su dei tracciati grafici che contengono diversi canali,  che mostrano delle onde corrispondenti agli elettrodi applicati sullo scalpo del soggetto.
  Attraverso questo strumento è possibile individuare le cause di una crisi epilettica e le alterazioni  elettriche che avvengono all'interno del cervello sia in condizioni normali, di riposo, sia in situazioni di crisi. In base alle caratteristiche del tracciato risultante i medici possono dedurre di che tipo di epilessia si tratta e quale cura è meglio prescrivere. 
-https://www.my-personaltrainer.it/salute/epilessia.html
+\todo{https://www.my-personaltrainer.it/salute/epilessia.html}
 
 
 \section{Reti Neurali}
 Le reti neurali sono modelli matematici basati su neuroni artificiali ispirati al funzionamento biologico del cervello umano. Inventate intorno alla metà degli anni `80, sono tornate in auge nell'ultimo decennio come strumento di risoluzione in svariati campi, dall'informatica, all'elettronica, alla simulazione. 
-Prendendo spunto dal cervello animale, una rete neurale(ANN) è composta da numerosi neuroni connessi fra loro. Ogni connessione, come le sinapsi cerebrali, trasmette un segnale da un neurone all'altro. Il neurone che riceve un segnale può processarlo e inviarlo ai neuroni a cui è a sua volta connesso. Tradizionalmente, un segnale trasmesso tra due neuroni è rappresentato da un numero reale, moltiplicato per un certo peso che indica la forza della connessione. Ogni neurone esegue una somma di tutti i segnali in ingresso, moltiplicandoli per il suo set di pesi. Tale somma viene poi modellata da una funzione di attivazione, tipicamente la sigmoide
-$\sigma(x) = {1 \over 1+e^-x}$. Un altro parametro associato ai neuroni è il \textit{bias}, un ulteriore perso che si considera collegato ad un input fittizio con valore sempre 1, che viene sommato ai valori di input moltiplicati per i pesi. Questo peso + utile per tarare il punto di lavoro ottimale del neurone.
+Prendendo spunto dal cervello animale, una rete neurale (ANN, Artificial Neural Network) è composta da numerosi neuroni connessi fra loro. Ogni connessione, come le sinapsi cerebrali, trasmette un segnale da un neurone all'altro. Il neurone che riceve un segnale può processarlo e inviarlo ai neuroni a cui è a sua volta connesso. Tradizionalmente, un segnale trasmesso tra due neuroni è rappresentato da un numero reale, moltiplicato per un certo peso che indica la forza della connessione. Ogni neurone esegue una somma di tutti i segnali in ingresso, moltiplicandoli per il suo set di pesi. Tale somma viene poi modellata da una funzione di attivazione, tipicamente la sigmoide
+$\sigma(x) = {1 \over 1+e^-x}$. Un altro parametro associato ai neuroni è il \textit{bias}, un ulteriore peso che si considera collegato ad un input fittizio con valore sempre 1, che viene sommato ai valori di input moltiplicati per i pesi. Questo peso è utile per tarare il punto di lavoro ottimale del neurone.
 
-In una rete neurale i neuroni sono solitamente distribuiti su più layer, che applicano diverse trasformazioni agli input. I segnali in ingresso viaggiano sequenzialmente dal primo layer (Input layer) all'ultimo (Output layer), attraversando un numero n di layer intermedi (Hidden layer). Questo tipo di rete è detta feedforward, ed è senza dubbio la più diffusa. Modelli più complessi sono quelli di tipo recurrent, che prevedono connessioni di feedback verso neuroni dello stesso livello o anche all'indietro, ma non saranno trattate in questa istanza.
+In una rete neurale i neuroni sono solitamente raggruppati in più layer, che applicano diverse trasformazioni agli input. I segnali in ingresso viaggiano sequenzialmente dal primo layer (Input layer) all'ultimo (Output layer), attraversando un numero n di layer intermedi (Hidden layer). Questo tipo di rete è detta feedforward, ed è senza dubbio la più diffusa. Modelli più complessi sono quelli di tipo recurrent, che prevedono connessioni di feedback verso neuroni dello stesso livello o anche all'indietro, ma non saranno trattate in questa istanza.
 
 La peculiarità delle reti neurali rispetto all'utilizzo di sistemi di risoluzione tradizionali è l'apprendimento. Le ANN vengono addestrate per capire come dovranno comportarsi nel momento in cui andranno a risolvere un problema ingegneristico. L'approccio orientato all'apprendimento si basa sui principi del Machine Learning, la disciplina che studia i diversi metodi matematico-computazionali per apprendere informazioni dall'esperienza. Possiamo distinguere quattro principali metodologie di apprendimento:
 
@@ -76,13 +102,13 @@ L'allenamento supervisionato, quello implementato in questo progetto, prevede di
 \item Feed-forward: il modello prende i dati in input e restituisce un output, rappresentante la predizione.
 \item Loss function: viene calcolata la differenza tra l'output atteso e quello calcolato dalla rete. Fornisce quindi una metrica sull'accuratezza della rete. \todo{CrossEntropyLoss} Inizialmente la precisione sarà molto bassa. L'obiettivo dell'allenamento è appunto quello di minimizzare il loss per aumentare la precisione della rete. 
 \item Differentiation: calcolando la derivata della funzione di loss, vengono identificate le modifiche da applicare ai pesi per diminuire l'errore sul risultato. Lo standard de facto per effettuare tale ottimizzazione è lo \textit{stochastic gradient descent}. Tale metodo prevede che per il calcolo del gradiente (il vettore contenente le derivate perziali della funzione di loss) venga preso solo un sottoinsieme dei valori, in modo da ridurre la complessità del calcolo.  \todo{adam optimizer}
-\item Backpropagation and weights update: i valori dei pesi vengono aggiornati, a partire dal layer di output fino ad arrivare al primo layer, per far sì che il loss venga minimizzato. La retropropagazione dell'errore prevede la selezione di una costante rappresentata da un numero decimale molto piccolo, che viene moltiplicato per l'incremento. Facendo questo, i pesi vengono modificati più lentamente in modo da centrare il minimo della funzione di loss.
+\item Backpropagation and weights update: i valori dei pesi vengono aggiornati, a partire dal layer di output fino ad arrivare al primo layer, per far sì che il loss venga minimizzato. La retropropagazione dell'errore prevede la selezione di una costante rappresentata da un numero decimale molto piccolo, che viene moltiplicato per l'incremento. Grazie a questo passaggio i pesi vengono modificati più lentamente in modo da centrare il minimo della funzione di loss.
 \end{itemize}
-
+Tutti questi passi vengono ripetuti sequenzialmente diverse volte. Una singola iterazione prende il nome di \textit{epoca}.
 \section{Reti Neurali Convoluzionali}
-Il funzionamento delle reti neurali tradizonali è poco efficiente quando deve essere analizzato un numero molto grande di dati. Ogni neurone prevede una connessione con ogni neurone del layer successivo (per questo sono chiamati fully-connected layers). Ciò implica che al crescere della dimensione della rete, cresce inesorabilmente il numero di parametri di cui tener traccia, portando a casi si sovradattamento della rete.
+Il funzionamento delle reti neurali tradizonali è poco efficiente quando è necessario analizzare un numero molto grande di dati. Ogni neurone prevede una connessione con ogni neurone del layer successivo (per questo sono chiamati fully-connected layers). Ciò implica che al crescere della dimensione della rete, cresce inesorabilmente il numero di parametri di cui tener traccia, portando a casi si sovradattamento della rete.
 
-Già dalla fine degli anni `90 i progettisti di reti neurali hanno iniziato ad introdurre dei modelli di reti convoluzionali, che permettono di ridurre di molto la grandezza della rete. Queste sono molto simili alle reti tradizionali: sono anch'esse formate da neuroni e tengono traccia di parametri come funzioni di attivazione e pesi che vengono modificati durante l'apprendimento. La caratteristica differente risiede nei layer convoluzionali di queste reti. Essi sono particolarmente indicati per il riconoscimento di proprietà nell'architettura dei dati in ingresso, che sono trattati come fossero immagini. La convoluzione prende infatti spunto dal funzionamento della corteccia visiva animale. Intuitivamente, un layer convoluzionale ha il compito di riconoscere alcune caratteristiche visive dell'immagine, come contorni, linee, colori ecc.. concentrandosi su piccole porzioni dell'immagine, e non prendendola nel suo complesso come accade neille reti fully-connected. Una volta individuata una caratteristica in una certa sezione dell'immagine, la rete sarà in grado di riconoscerla se dovesse presentarsi in altri punti. In una successione di layer convoluzionali, inoltre, un layer più imparare a riconoscere combinazioni di caratteristiche base individuate nei precedenti strati. Ciò le rende particolarmente adatte alla comprensione di pattern complessi.
+Già dalla fine degli anni `90 i progettisti di reti neurali hanno iniziato ad introdurre dei modelli di reti convoluzionali, che permettono di ridurre di molto la grandezza della rete. Queste sono molto simili alle reti tradizionali: sono anch'esse formate da neuroni e tengono traccia di parametri come funzioni di attivazione e pesi che vengono modificati durante l'apprendimento. La caratteristica differente risiede nei layer convoluzionali di queste reti. Essi sono particolarmente indicati per il riconoscimento di proprietà nell'architettura dei dati in ingresso, che sono trattati come fossero immagini. La convoluzione prende infatti spunto dal funzionamento della corteccia visiva animale. Intuitivamente, un layer convoluzionale ha il compito di riconoscere alcune caratteristiche visive dell'immagine, come contorni, linee, colori ecc.. concentrandosi su piccole porzioni dell'immagine, e non prendendola nel suo complesso come accade nelle reti fully-connected. Una volta individuata una caratteristica in una certa sezione dell'immagine, la rete sarà in grado di riconoscerla se dovesse presentarsi in altri punti. In una successione di layer convoluzionali, inoltre, un layer più imparare a riconoscere combinazioni di caratteristiche base individuate nei precedenti strati. Ciò le rende particolarmente adatte alla comprensione di pattern complessi.
 
 Un convolutional layer è generalmente formato da un set di filtri (kernel) della stessa dimensione. Durante la computazione tali filtri vengono applicati ai dati in ingresso, attraverso una moltiplicazione element-wise. I valori della matrice di ogni moltiplicazione element-wise vengono sommati fra loro e restituiti in output.
 La \textit{Figura 1} mostra graficamente un'operazione di convoluzione. In verde, la matrice di output.
@@ -121,7 +147,7 @@ Lo stesso procedimento, con una dimensione in più, si applica alle convoluzioni
 \caption{Differenza convoluzione 1D e 2D}
 \end{figure}
 
-Per completezza, è bene specificare che a tutte le grandezze di input sopra indicate, va aggiunta un'ulteriore dimensione $N$. Essa rappresenta la \textit{batch size}, cioè il numero di campioni (sample) di input passati alla rete in fase di training. Con dataset molto grandi, infatti, è possibile passare ad una rete un certo numero di input contemporaneamente, in modo da velocizzare l'allenamento e ridurre la memoria. Le operazioni di calcolo del gradiente e backpropagation verranno effettuate a partire da ogni batch e non sul singolo input. 
+Per completezza, è bene specificare che a tutte le grandezze di input sopra indicate, va aggiunta un'ulteriore dimensione $N$. Essa rappresenta la \textit{batch size}, cioè il numero di campioni (sample) di input passati alla rete in fase di training. Con dataset molto grandi, infatti, è possibile passare ad una rete un certo numero di input contemporaneamente, in modo da velocizzare l'allenamento e contenere l'utilizzo di memoria. Le operazioni di calcolo del gradiente e backpropagation verranno effettuate a partire da ogni batch e non sul singolo input. 
 
 
 \subsection{Modello CNN proposto}
@@ -154,14 +180,15 @@ L'allenamento della rete è stato effettuato su finestre di 30 secondi di tempo.
 \item Isolamento segnali di crisi epilettica, in base ai secondi di inizio e fine crisi riportati nel file \textit{chbNN-summary.txt} di ogni paziente
 \item Suddivisione dei segnali di crisi in finestre da 30 secondi, applicando uno stride di 1 secondo (overlapping 29 secondi tra una finestra e l'altra)
 \item Eliminazione dei segnali pre e post ictali, scelti convenzionalmente 5 minuti prima e dopo la crisi. Questo per evitare di influenzare il dataset con segnali aventi parziali caratteristiche di crisi
-\item Selezione di finestre non di crisi, in numero pari alle finestre di crisi calcolate in precedenza
+\item Selezione di finestre non di crisi, in numero pari alle finestre di crisi calcolate in precedenza: in questo modo il dataset risulta perfettamente bilanciato.
 \end{itemize}
 \todo{Che altro aggiungere? }
+
 \section{Structure Application}
 L'applicazione creata è suddivisa in due grandi componenti, da una parte il backend che offre servizi e modella la struttura dei dati, dall'altra il frontend che richiede i servizi e ne implementa l'interfaccia grafica, in modo da garantire un'interazione user friendly con l'utente.
-Questa garantisce anche una più facile manutenzione del codice, visto che ognuna delle due parti è divisa in diversi componenti.
+Questo garantisce anche una più facile manutenzione del codice, visto che ognuna delle due parti è divisa in diversi componenti.
 L' aplicazione è una web app, essa infatti è capace di girare sia nell'ambito web che mobile grazie ai vari framework utilizzati.
-Essa è una single page application, cioè un'applicazione web che è fruibile su una sola pagina web garantendo una fluidità maggiore nell'esperienza dell'utente.
+Essa è una single page application, \todo{è vero?} cioè un'applicazione web che è fruibile su una sola pagina web garantendo una fluidità maggiore nell'esperienza dell'utente.
 \subsection{Funzionalità offerte}
 \todo{anaisi, predizione, creazione rete allenamento...}
 \section{Backend}
@@ -171,21 +198,13 @@ Django è un server-side web framework Python estremamente popolare. Un web fram
 Django aiuta a eliminare tutte quelle attività che vengono ripetute durante lo sviluppo dell'applicazione, rendendo il processo di sviluppo un'attività facile e rapida. 
 Si tratta di un web framework di alto livello scritto in linguaggio Python, sviluppato dalla Django Software Foundation e distribuito open source. 
 Essendo un framework di sviluppo web, quindi con un interfaccia web, si parla di un pattern alla base chiamato MVC, che corrisponde a tre componenti: Model, View e Controller.
-Anche Django usa questo pattern, però nel suo caso il pattern è chiamato MVT, che corrispondono a tre componenti quali: Model, View, Template.
+Anche Django usa questo pattern, però nel suo caso il pattern è chiamato MVT, acronimo che indica i tre componenti di cui dispone: Model, View e Template.
 \begin{itemize}
 \item Model: corrisponde a un insieme di classi python che descrivono il modello dei dati. Esse forniscono una rappresentazione delle tabelle del database, consentendo di sfruttare gli oggetti per effettuare operazioni CRUD sui dati. Le informazioni delle classi sono contenute nel file \textit{models.py}.
 
+\item Template: consiste in una serie di documenti per la generazione di codice HTML, combinando l'utilizzo di parti statiche e tag dinamici. Essa descrive quindi tutti quei componenti visuali facenti parte della GUI con cui l'utente andrà poi ad interagire. In questo progetto non è stato tuttavia utilizzato alcun template, dato che la parte visuale è gestita esternamente dal framework Ionic. 
 
-è la parte del programma che si occupa del database. Django fornisce una serie di comandi rapidi per la gestione delle operazioni più comuni.
-\item Template: corrisponde nella vista dell'applicazione, consente di effettuare l'interazione con l'app web essa descrive tutti i componenti visuali facenti parte della GUI con cui l'utente poi andrà ad interagire.
-Il Template consiste di file html che descrivono la presentazione dei dati implementando la \textit{View} del pattern. 
-
-consiste in una serie di documenti per la generazione di codice HTML, combinando l'utilizzo di parti statiche e tag dinamici. In questo progetto non è stato tuttavia utilizzato alcun template, dato che la parte visuale è gestita esternamente dal framework Ionic. 
-\item View: funzioni python che gestiscono il flusso di esecuzione dell'applicazione, implementando la parte del controller del pattern MVC. Garantisce la possibilità di creare delle pagine e di descriverne il comportamento che esse avranno in funzione dell'iterazione con l'utente.
-La View descrive e modella il comportamento dell'intera applicazione, rispondendo a eventi scaturiti dall'interazione con l'utente e modellando i dati facente parti del modello
-
-
-gestisce l'interazione tra utente, sistema e database. Si occupa di ricezione, elaborazione e risposta alle richieste dell'utente.
+\item View: funzioni python che gestiscono il flusso di esecuzione dell'applicazione, implementando la parte del controller del pattern MVC. Garantisce la possibilità di creare delle pagine e di descriverne il comportamento che esse avranno in funzione dell'iterazione con l'utente. La View descrive e modella il comportamento dell'intera applicazione, rispondendo a eventi scaturiti dall'interazione con l'utente e modellando i dati facente parti del modello.
 \end{itemize}
 \begin{figure}[!h]
 \centering
@@ -199,20 +218,19 @@ Esso supporta diversi paradgmi di programmazione, come quella procedurale, orien
 Di seguito verranno descritte le più importanti librerie utilizzate nel progetto.
 
 \subsection{PyEDFlib}
-Il funzionamento base del sistema prevede la lettura di tracciati EEG. Questi vengono comunemente distribuiti nel formato EDF (European Data Format), ideato per lo scambio di segnali multucanali fisici e biologici. La libreria che si occupa dell'interazione con tali file è PyEDFlib, basata a sua volta su edflib e Numpy. Essa mette a disposizione funzioni per la lettura dei segnali del file e dei suoi metadati, tra cui il numero di canali, la lunghezza e la frequenza del campionamento, l'inizio e la fine della rilevazione. 
+Il funzionamento base del sistema prevede la lettura di tracciati EEG. Questi vengono comunemente distribuiti nel formato EDF (European Data Format), ideato per lo scambio di segnali multicanali fisici e biologici. La libreria che si occupa dell'interazione con tali file è PyEDFlib, basata a sua volta su edflib e NumPy. Essa mette a disposizione funzioni per la lettura dei segnali del file e dei suoi metadati, tra cui il numero di canali, la lunghezza e la frequenza del campionamento, l'inizio e la fine della rilevazione. 
 
 \subsection{PyTorch}
-La parte di neural network e deep learning è stata realizzata mediante l'utilizzo del framework PyTorch
-PyTorch è una libreria del linguaggio Python basata sul framework torch.
+La parte di neural network e deep learning è stata realizzata mediante l'utilizzo del framework PyTorch. Si tratta di è una libreria del linguaggio Python basata sul framework torch.
 Essa contiene diverse funzioni e metodi scientifici per le applicazioni dedicate al machine learning, al deep learning e al natural processing language.
 PyTorch offre  due funzionalità di alto livello:
 \begin{itemize}
-\item Tensor Computing(come NumPy) con for vte accelerazione attraverso unità di elaborazione grafica(GPU)
-\item Piattaforma di ricerca del deep learning che offre la massima flessibilità e  velocità \todo {da vedere}
+\item Tensor Computing (come NumPy) con forte accelerazione attraverso unità di elaborazione grafica(GPU)
+\item Piattaforma di ricerca del deep learning che offre la massima flessibilità e velocità \todo {da vedere}
 \end{itemize}
 
 \subsection{API}
-L'utente ha la possibilità di interagire con il sistema attraverso richieste HTTP, ricevendo in risposta dei file in formato JSON. Di seguito sono descritte le principali Views messe a disposizione. Nelle successive sezioni verranno invece discusse le scelte riguardanti l'interfaccia grafica, che sfrutta queste views per fornire un'esperienza utente più facile e immediata anche per utenti poco esperti.
+L'utente ha la possibilità di interagire con il sistema attraverso richieste HTTP, ricevendo in risposta dei file in formato JSON. Di seguito sono descritte le principali Views messe a disposizione. Nelle successive sezioni verranno invece discusse le scelte riguardanti l'interfaccia grafica, che sfrutta queste views per fornire un'esperienza più facile e immediata anche agli utenti meno esperti.
 \paragraph{Single File analysis}
 \begin{itemize}
 \item \textit{/} [myfile]: upload del file mediante richiesta POST. Restituisce i parametri del file EDF caricato, come numero di canali, lunghezza, frequenza di campionamento. Solo dopo sver caricato il file è possibile fare richieste GET alle successive views.
@@ -226,11 +244,11 @@ L'utente ha la possibilità di interagire con il sistema attraverso richieste HT
 \begin{itemize}
 \item \textit{/uptraining} [myfile][seizureStart, seizureEnd]: caricamento dei files da utilizzare per l'allenamento della rete. Per ogni file l'utente deve specificare in quale intervallo di tempo si presenta la crisi. Vengono restituite le info sul file caricato e una lista di tutti i file finora caricati.
 \item \textit{/cleanfiles}: cancella tutti i file di training finora caricati. 
-\item \textit{/convert} [windowSize, stride]: converte tutti i file di training finora caricati in un dataset, con finestre della dimensione scelta. L'utente può inoltre scegliere un valore di stride da applicare alle finestre della crisi, in modo da ottenerne in numero maggiore. Questa view è necessaria prima di chiamare la view del training. La chiamata a questa view cancella tutti i files di training. \todo{come salvo i files}
-\item \textit{/addconv}[output, kernel, stride, padding, pool\textunderscore kernel, pool\textunderscore stride]: permette l'aggiunta di un livello convoluzionale alla rete da creare. I parametri scelti dall'utente vengono salvati come record del database, dopo averne controllato la consistenza (evitare che l'output sia nullo, o che il kernel sia di dimensioni maggiori della finestra di segnali. Notare che insieme al layer convoluzionale l'utente specifica anche i parametri di un livello di MaxPool
+\item \textit{/convert} [windowSize, stride]: converte tutti i file di training finora caricati in un dataset, con finestre della dimensione scelta. L'utente può inoltre scegliere un valore di stride da applicare alle finestre della crisi, in modo da ottenerne in numero maggiore. Questa view è necessaria prima di chiamare la view del training. La chiamata a questa view cancella tutti i files di training.
+\item \textit{/addconv}[output, kernel, stride, padding, pool\textunderscore kernel, pool\textunderscore stride]: permette l'aggiunta di un livello convoluzionale alla rete da creare. I parametri scelti dall'utente vengono salvati come record del database, dopo averne controllato la consistenza (evitare che l'output sia nullo, o che il kernel sia di dimensioni maggiori della finestra di segnali). Notare che insieme al layer convoluzionale l'utente specifica anche i parametri di un livello di MaxPool aggiunto automaticamente.
 \item \textit{/cleanlayers}: elimina tutti i livelli finora impostati.
-\item \textit{initializenet}[linear]: crea un'istanza di rete pronta per essere allenata. I parametri venfono rirpesi dal database in ordine di inserimento. Viene automaticamente aggiunto un livello lineare finale che standardizzi l'output a due valori; l'utente ha inoltre la possibilità di aggiungere un ulteriore livello lineare impostando il parametro \textit{linear}.
-\item \textit{/train} [epochs, train\textunderscore method]: crea una nuova rete e la allena sul dataset precendentemente creato. L'utente deve indicare il numero di epoche e quale metodo di validazione utilizzare. La validazione permette di prevenire l'overfitting dei dati, cioè che l'allenamento permetta alla rete di generalizzare il suo funzionamento. A tale scopo, vengono scelti dei dati da passare alla rete senza effettuare backpropagation. \'E possibile sccegliere il validation seti con diversi metodi. Ne sono stati implementati due:
+\item \textit{initializenet}[linear]: crea un'istanza di rete pronta per essere allenata. I parametri vengono ripresi dal database in ordine di inserimento. Viene automaticamente aggiunto un livello lineare finale che standardizzi l'output a due valori; l'utente ha inoltre la possibilità di aggiungere un ulteriore livello lineare impostando il parametro \textit{linear}.
+\item \textit{/train} [epochs, train\textunderscore method, name]: crea una nuova rete e la allena sul dataset precendentemente creato. L'utente deve indicare il numero di epoche e quale metodo di validazione utilizzare. La validazione permette di prevenire l'overfitting dei dati, cioè che l'allenamento permetta alla rete di generalizzare il suo funzionamento. A tale scopo, vengono scelti dei dati da passare alla rete senza effettuare backpropagation. \'E possibile sccegliere il validation seti con diversi metodi. Ne sono stati implementati due:
 \begin{itemize}
 	\item k-fold training: all'interno di ogni epoca i segnali di un file vengono isolati, e passati alla rete dopo l'allenamento senza 	effettuare backpropagation. Nell'epoca successiva questi segnali faranno parte del dataset di allenamento, e verrà selezionato il file successivo per la validazione.
 	\item k-window training: all'inizio di ogni epoca vengono selezionate randomicamente il 20\% delle finestre da utilizzare per la validazione.
@@ -242,25 +260,29 @@ Al termine dell'allenamento la rete viene salvata nel sistema, e sarà possibile
 
 
 \section{Frontend}
-La parte di frontend è stata implementata per garantire la gestione dell'interfaccia grafica che poi andrà ad interagire con l'utente, essa rappresenta il confine del sistema.
+La parte di frontend è stata implementata per garantire la gestione dell'interfaccia grafica con cui l'utente andrà ad interagire; essa rappresenta il confine del sistema.
 
 \subsection{Angular}
 Angular è un framework javascript  per la scrittura di applicazioni web  client. Per raggiungere questo obiettivo, viene usato l'approccio dichiarativo dell'Html per quanto riguarda l'interfaccia grafica, e vengono forniti strumenti per costruire un'architettura modulare avente logica applicativa.
-Un concetto fondamentale di angular sono i componenti, l'applicazione è formata da un insieme di componenti che interagiscono tra loro ed  hanno il controllo di una porzione dello schermo implementando una view.
-il Framework supporta il pattern MVC.
-il binding bidirezionale (two-way binding)
-la dependency injection
-il supporto al pattern MVC
-il supporto ai moduli
-la separazione delle competenze
-la testabilità del codice
-la riusabilità dei componenti
+Un concetto fondamentale di angular sono i componenti: l'applicazione è formata da un insieme di componenti che interagiscono tra loro ed  hanno il controllo di una porzione dello schermo implementando una view.
+Caratteristiche peculiari di Angular sono:
+\begin{itemize}
+\item binding bidirezionale (two-way binding)
+\item dependency injection
+\item supporto al pattern MVC
+\item supporto ai moduli
+\item separazione delle competenze
+\item testabilità del codice
+\item riusabilità dei componenti
+\end{itemize}
+
 \subsection{Ionic}
 Ionic framework è un toolkit  di interfaccia utente per la creazione di  applicazioni mobili e desktop performanti che utilizzano tecnologie web.
-Ionic si concentra sull'esperienza utente di un'app (controlli, interazioni, gesti, animazioni). Esso si integra in modo facile a tecnologie come angular.
-Il framework ionic consente di sviluppare app per tutte le piattaforme più comuni, come android, Ios e windows. Con Ionic risulta molto facile creare la parte di interfaccia grafica, che è molto vicina a quella nativa del dispositivo dove verrà eseguita l'app.
+Ionic si concentra sull'esperienza utente di un'app (controlli, interazioni, gesti, animazioni). Esso si integra in modo facile a tecnologie come Angular.
+Il framework Ionic consente di sviluppare app per tutte le piattaforme più comuni, come Android, iOs e Windows. Con Ionic risulta molto facile creare la parte di interfaccia grafica, che è molto vicina a quella nativa del dispositivo dove verrà eseguita l'app.
 \subsection{HIghChart}
-Highchart è una libreria grafica che permette di disegnare grafici a piacimento dello sviluppatore. e' capace di rappresentare grafici anche con grandi moli di dati.
+Highchart è una libreria grafica che permette di disegnare grafici a lasciando allo sviluppatore un alto grado di personalizzazione. Con Highchart è possibile rappresentare grafici anche con grandi moli di dati.
+\newpage
 \nocite{*}
 \printbibliography[heading = bibintoc]
 \end{document}
