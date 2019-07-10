@@ -185,6 +185,7 @@ export class ListPage implements OnInit {
       },
       series: [
         {
+          
           data: this.predict.values
         }
       ]
