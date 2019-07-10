@@ -19,43 +19,43 @@ Il progetto è stato realizzato con lo scopo di attuare delle predizioni di cris
 La predizione viene effettuata creando una rete neurale allenata per riconoscere le varie crisi presenti.
 Queste predizioni vengono eseguite su file .edf (European Data Format) i quali permettono un'archiviazione di segnali biologici e fisici multicanale.
 Il tool non solo permette di predirre le crisi presenti in un tracciato EEG, ma dispone di altre funzionalità come la definizione di alcune statistiche che riguardano tutti i segnali e tutti i canali presenti nel tracciato.
-Viene fornita all'utente l'opportunità di creare il proprio dataset di allenamento che poi sarà usato sulla rete neurale che esso stesso potrà definirsi. 
+Viene fornita all'utente l'opportunità di crearsi il proprio dataset di allenamento successivamente usato sulla rete neurale che esso stesso potrà definirsi settando i parametri  opportuni.
 Il progetto è stato suddiviso in:
 \begin{itemize}
 \item studio EEG e teoria delle crisi
 \item studio per la creazione del dataset (segnali ictali, preictali e postictali)
 \item bilanciamento dataset
-\item studio teorico cnn
+\item studio teorico CNN (Convolutional Neural Network)
 \item applicazione CNN con relativo allenamento
 \item costruzione architettura web con beckend e frontend 
 \end{itemize}
 
 
 \section{Epilessia}
-L'epilessia è una malattia neurologica che colpisce circa 50 milioni di persone nel mondo. Essa è caratterizzata da specifici eventi clinici, definiti crisi epilettiche, che si ripetono in modo consecutivo e attivano simultaneamente un grane numero di neuroni generalemente posti in un'area particolare dell'encefalo, detta corteccia celebrale. Quindi questi eventi scaturiti dalle crisi che si verificano alterano la normale attività elettrica dell'encefal, con conseguenze sul comportamento del soggetto colpito, come perdita di conoscenza, movimenti involontari, contrazioni della muscolatura che si tramutano in convulsioni.
-Le cause delle crisi epilettiche possono essere diverse, come in caso di patologie, in un trauma cranico, infenzioni SNC (meningite ecc..), ed anche a causa di vari farmaci che possono essere somministrati.
+L'epilessia è una malattia neurologica che colpisce circa 50 milioni di persone nel mondo. Essa è caratterizzata da specifici eventi clinici, definiti crisi epilettiche, che si ripetono in modo consecutivo e attivano simultaneamente un grande numero di neuroni generalmente posti in un'area particolare dell'encefalo, detta corteccia celebrale. Quindi questi eventi scaturiti dalle crisi che si verificano alterano la normale attività elettrica dell'encefalo, con conseguenze sul comportamento del soggetto colpito, come perdita di conoscenza, movimenti involontari, contrazioni della muscolatura che si tramutano in convulsioni.
+Le cause delle crisi epilettiche possono essere diverse, come in caso di patologie,  un trauma cranico, infezioni SNC (meningite ecc..), ed anche a causa di vari farmaci che possono essere somministrati.
 In base all'area di estensione del cervello che è interessata da scariche elettriche anomale, possono presentarvi due tipi di crisi, crisi parziali e crisi generalizzate.
 \begin{itemize}
 \item Crisi Parziali:  si manifestano convulsioni e alterazioni sensoriali. Esse si suddividono a loro volta da crisi semplici o complesse 
 \begin{itemize}
-\item Semplici: interessa una piccola regione del cervello, come il lobo temporale o l'ippocampo. questo tipo di crisi spesso precede una crisi peggiore, dove l'anomala attività elettrica coinvolge aree più vaste del cervello.
-\item Complessa: Interessa aree più vaste del cervello e non è concentrata solo su alcune di esse. Questo tipo di crisi è più dannosa perchè scaturisce nel soggetto coinvolto una perdita di coscienza.
+\item Semplici: interessa una piccola regione del cervello, come il lobo temporale o l'ippocampo. Questo tipo di crisi spesso precede una crisi peggiore, dove l'anomala attività elettrica coinvolge aree più vaste del cervello.
+\item Complessa: Interessa aree più vaste del cervello e non è concentrata solo su alcune di esse. Questo tipo di crisi è più dannosa perchè scaturisce nel soggetto coinvolto una perdita di conoscenza.
 \end{itemize}
 \item Generalizzate: crisi più frequenti rispetto alle parziali, esse vengono generate a causa di un'alterazione dell'attività neuronale di  entrambi gli emisferi.
 \end{itemize}
-\todo{ quando si può dire di essere affetti da epilessia  }
-\todo{ rimedi per l'epilessia, farmaci e se viene curata del tutto o meno   }
-\todo{spiegazione EEG tecnica per la registrazione, come funziona, cosa registra e come viene applicata allo scalpo}
- In alcuni casi dopo uno o più episodi di crisi epilettiche il fenomeno può tendere a scomparire per cause naturali senza l'apporto di farmaci per la sua cura. In molti casi però c'è bisogno di una cura effettuata attraverso farmaci, se questi ultimi non dovrebbero essere efficaci c'è bisogno di ricorre a operazioni chirurgiche.
+Prima di affermare con certezza di essere effetti da epilessia bisogna essere colpiti non da una crisi epilettica isolata, che può avvenire anche in termini molto brevi nella vita di tutte le persone, ma bisogna essere colpiti più volte e in modo ripetuto da più crisi epilettiche prima di affermare di essere affetti da epilessia.
+In alcuni casi dopo uno o più episodi di crisi epilettiche il fenomeno può tendere a scomparire per cause naturali senza l'apporto di farmaci per la sua cura. In molti casi però c'è bisogno di una cura effettuata attraverso farmaci, se questi ultimi non dovrebbero essere efficaci c'è bisogno di ricorre a operazioni chirurgiche.
 I farmaci risultano efficaci nel 60-70 per cento dei casi, questi non curano l'epilessia ma permettono al soggetto affetto di convivere con questa patologia.
- La diagnosi dell'epilessia viene fatta attraverso diversi strumenti, uno su tutti è l'elettroencefalogramma (EEG). Questo strumento registra le attività elettriche dell'encefalo, poi riprodotte su dei tracciati grafici che contengono diversi tracciati,  che mostrano delle onde, corrispondenti agli elettrodi applicati sullo scalpo del soggetto.
- Attraverso questo strumento è possibile individuare le cause di una crisi epilettica e le alterazioni  elettriche che avvengono all'interno del cervello sia in condizioni normali, di riposo, sia in situazioni di crisi. In base alle caratteristiche del tracciato risultante i medici possono dedurre di che tipo di epilessia si tratta e quale cura è meglio prescrivere. 
+La diagnosi dell'epilessia viene fatta attraverso diversi strumenti, uno su tutti è l'elettroencefalogramma (EEG). Questo strumento registra le attività elettriche dell'encefalo, poi riprodotte su dei tracciati grafici, che mostrano delle onde, corrispondenti agli elettrodi applicati sullo scalpo del soggetto.
+Questi tracciati riprodotti sono il risultato della differenza di potenziale tra un elettrodo e un altro applicati in diverse zone dello scalpo.
+Attraverso l'elettroencefalogramma è possibile individuare le cause di una crisi epilettica e le alterazioni  elettriche che avvengono all'interno del cervello sia in condizioni normali, di riposo, che in situazioni di crisi. In base alle caratteristiche del tracciato risultante i medici possono dedurre di che tipo di epilessia si tratta e quale cura è meglio prescrivere. 
 https://www.my-personaltrainer.it/salute/epilessia.html
-
+\todo{ spiegare frequenza eeg e loro composizione}
+\todo{ aggiungere foto dello scalpo con elettrodi oppure di un tracciato EEG   }
 
 \section{Reti Neurali}
 Le reti neurali sono modelli matematici basati su neuroni artificiali ispirati al funzionamento biologico del cervello umano. Inventate intorno alla metà degli anni 80, sono tornate in auge nell'ultimo decennio come strumento di risoluzione in svariati campi, dall'informatica, all'elettronica, alla simulazione. 
-Prendendo spunto dal cervello animale, una rete neurale(ANN) è composta da numerosi neuroni connessi fra loro. Ogni connessione, come le sinapsi cerebrali, trasmette un segnale da un neurone all'altro. Il neurone che riceve un segnale può processarlo e inviarlo ai neuroni a cui è a sua volta connesso. Tradizionalmente, un segnale trasmesso tra due neuroni è rappresentato da un numero reale, moltiplicato per un certo peso che indica la forza della connessione. Ogni neurone esegue una somma di tutti i segnali in ingresso, moltiplicandoli per il suo set di pesi. Tale somma viene poi modellata da una funzione di attivazione, tipicamente la sigmoide
+Prendendo spunto dal cervello animale, una rete neurale(ANN) è composta da numerosi neuroni connessi fra loro. Ogni connessione, come le sinapsi cerebrali, trasmette un segnale da un neurone all'altro. Il neurone che riceve un segnale può processarlo e inviarlo ai neuroni a cui è a sua volta connesso. Tradizionalmente, un segnale trasmesso tra due neuroni è rappresentato da un numero reale, moltiplicato per un certo peso che indica la forza della connessione. Ogni neurone esegue una somma di tutti i segnali in ingresso, moltiplicandoli per il suo set di pesi. Tale somma viene poi modellata da una funzione di attivazione, tipicamente la sigmoide.
 $\sigma(x) = {1 \over 1+e^-x}$.\\
 In una rete neurale i neuroni sono solitamente distribuiti su più layer, che applicano diverse trasformazioni agli input. I segnali in ingresso viaggiano sequenzialmente dal primo layer (input layer) all'ultimo (Output layer), attraversando un numero n di layer intermedi (Hidden layer).
 
@@ -78,9 +78,9 @@ L'allenamento supervisionato, quello implementato in questo progetto, prevede di
 \end{itemize}
 
 \section{Reti Neurali Convoluzionali}
-Il funzionamento delle reti neurali tradizonali è poco efficiente quando deve essere analizzato un numero molto grande di dati. Ogni neurone prevede una connessione con ogni neurone del layer successivo (per questo sono chiamati fully-connected layers). Ciò implica che al crescere della dimensione della rete, cresce inesorabilmente il numero di parametri di cui tener traccia, portando a casi si sovradattamento della rete.
+Il funzionamento delle reti neurali tradizionali è poco efficiente quando deve essere analizzato un numero molto grande di dati. Ogni neurone prevede una connessione con ogni neurone del layer successivo (per questo sono chiamati fully-connected layers). Ciò implica che al crescere della dimensione della rete, cresce inesorabilmente il numero di parametri di cui tener traccia, portando a casi si sovradattamento della rete.
 
-Già dalla fine degli anni `90 i progettisti di reti neurali hanno iniziato ad introdurre dei modelli di reti convoluzionali, che permettono di ridurre di molto la grandezza della rete. Queste sono molto simili alle reti tradizionali: sono anch'esse formate da neuroni e tengono traccia di parametri come funzioni di attivazione e pesi che vengono modificati durante l'apprendimento. La caratteristica differente risiede nei layer convoluzionali di queste reti. Essi sono particolarmente indicati per il riconoscimento di proprietà nell'architettura dei dati in ingresso, che sono trattati come fossero immagini. La convoluzione prende infatti spunto dal funzionamento della corteccia visiva animale. Intuitivamente, un layer convoluzionale ha il compito di riconoscere alcune caratteristiche visive dell'immagine, come contorni, linee, colori ecc.. concentrandosi su piccole porzioni dell'immagine, e non prendendola nel suo complesso come accade neille reti fully-connected. Una volta individuata una caratteristica in una certa sezione dell'immagine, la rete sarà in grado di riconoscerla se dovesse presentarsi in altri punti. In una successione di layer convoluzionali, inoltre, un layer più imparare a riconoscere combinazioni di caratteristiche base individuate nei precedenti strati. Ciò le rende particolarmente adatte alla comprensione di pattern complessi.
+Già dalla fine degli anni `90 i progettisti di reti neurali hanno iniziato ad introdurre dei modelli di reti convoluzionali, che permettono di ridurre di molto la grandezza della rete. Queste sono molto simili alle reti tradizionali: sono anch'esse formate da neuroni e tengono traccia di parametri come funzioni di attivazione e pesi che vengono modificati durante l'apprendimento. La caratteristica differente risiede nei layer convoluzionali di queste reti. Essi sono particolarmente indicati per il riconoscimento di proprietà nell'architettura dei dati in ingresso, che sono trattati come fossero immagini. La convoluzione prende infatti spunto dal funzionamento della corteccia visiva animale. Intuitivamente, un layer convoluzionale ha il compito di riconoscere alcune caratteristiche visive dell'immagine, come contorni, linee, colori ecc.. concentrandosi su piccole porzioni dell'immagine, e non prendendola nel suo complesso come accade nelle reti fully-connected. Una volta individuata una caratteristica in una certa sezione dell'immagine, la rete sarà in grado di riconoscerla se dovesse presentarsi in altri punti. In una successione di layer convoluzionali, inoltre, un layer può imparare a riconoscere combinazioni di caratteristiche base individuate nei precedenti strati. Ciò le rende particolarmente adatte alla comprensione di pattern complessi.
 
 Un convolutional layer è generalmente formato da un set di filtri (kernel) della stessa dimensione. Durante la computazione tali filtri vengono applicati ai dati in ingresso, attraverso una moltiplicazione element-wise. I valori della matrice di ogni moltiplicazione element-wise vengono sommati fra loro e restituiti in output.
 La \textit{Figura 1} mostra graficamente un'operazione di convoluzione. In verde, la matrice di output.
@@ -97,20 +97,21 @@ Un layer convoluzionale è governato da tre parametri:
 \item zero-padding (P): segnali settati a zero, aggiunti ai bordi dei segnali di input. Serve spesso per adattare la dimensione dell'input con quella dell'output. Uno strato aggiuntivo di zeri infatti aumenterà la dimensione del vettore di output. 
 \end{itemize}
 
-Dato un seti di dati in ingresso (I) la dimensione del volume di output (O) di un livello convoluzionale è calcolata come
+Dato un set di dati in ingresso (I) la dimensione del volume di output (O) di un livello convoluzionale è calcolata come
 \begin{equation}
 O={\frac{(I - K - 2P)}{S} +1}
 \end{equation}\todo{conv1d in pytorch, FORMULE CONVOLUZIONE}
 
-Tipicamente tra un layer convoluzionale e l'altro viene inserito uno strato di Pooling, che ha la funzione di diminuire la dimensione dell'input, riducendo il numero di parametri e controllando il sovradattamento. A differenza dei convolutional, il Pooling Layer non tiene traccia di alcun peso, dato che applica agli input una certa operazione deterministica, solitamente il massimo o la media.
+Tipicamente tra un layer convoluzionale e l'altro viene inserito uno strato di Pooling, che ha la funzione di diminuire la dimensione dell'input, riducendo il numero di parametri e controllando il sovradattamento. A differenza dei convolutional layer, il Pooling Layer non tiene traccia di alcun peso, dato che applica agli input una certa operazione deterministica, solitamente il massimo o la media.
 Anche il layer di pooling è caratterizzato dai parametri di dimensione del kernel, stride e padding. La dimensione del suo output è pertanto calcolabile come l'output del layer convoluzionale.
 
 L'architettura CNN può anche prevedere uno o più strati Fully-Connected, solitamente aggiunti alla fine della struttura. Il loro compito è quello di raggruppare le informazioni degli strati precedenti, esprimendole attraverso un numero da utilizzare nei calcoli successivi per la classificazione finale. 
+\todo{ si potrebbe aggiungere la funzione di softmax e spiegare il fully connected che avviene il reshape con un immagine }
 
 \subsection{Convoluzione 1D}
-Le reti di convoluzione più diffuse sono senza dubbio quelle bidimensionali. Esse sono particolarmente adatte per l'analisi e il riconoscimento di immagini. Le convoluzioni scelte per il nostro progetto sono invece monodimensionali. Queste sono utili quando ci si aspetta di derivare le caratteristiche di un segmento dei dati totali, e quando la posizione di tale segmento all'interno dell'insieme di input non è rilevante. Sono quindi utili per l'analisi di segnali e per il natural language processing (NLP), in cui il segmento analizzato corrisponde ad un insieme di parole contigue di una frase o, nel nostro caso, ad un a finestra di segnali.
+Le reti di convoluzione più diffuse sono senza dubbio quelle bidimensionali. Esse sono particolarmente adatte per l'analisi e il riconoscimento di immagini. Le convoluzioni scelte per il nostro progetto sono invece monodimensionali. Queste sono utili quando ci si aspetta di derivare le caratteristiche di un segmento dei dati totali, e quando la posizione di tale segmento all'interno dell'insieme di input non è rilevante. Sono quindi utili per l'analisi di segnali e per il natural language processing (NLP), in cui il segmento analizzato corrisponde ad un insieme di parole contigue di una frase o, nel nostro caso, ad una finestra di segnali.
 
-Tutte le CNN condividono le stesse caratteristiche e seguono lo stesso approccio. Ciò che distingue una convoluzione 1D, 2D o 3D è la dimensione dell'input e come i filtri (feature detector) scorrono lungo i dati. La \textit{Figura 2} mostra graficamente la differenza tra una convoluzione mono e una bidimensionale. Nella rete monodimensionale, l'input è in due dimensioni $C, W$. Nel caso di un elettroencefalogramma, W rappresenta il numero di segnali per una finestra e C il numero di canali campionati. Possiamo notare come il filtro ricopra completamente la prima dimensione e scorra lungo l'altra. Sempre nel nostro caso, un filtro verrà applicato ad un certo numero di segnali di tutti i canali, per poi essere traslato lungo la dimensione W fino a considerare tutta la finestra.\\
+Tutte le CNN condividono le stesse caratteristiche e seguono lo stesso approccio. Ciò che distingue una convoluzione 1D, 2D o 3D è la dimensione dell'input e come i filtri (feature detector) scorrono lungo i dati. La \textit{Figura 2} mostra graficamente la differenza tra una convoluzione monodimensionale e una bidimensionale. Nella rete monodimensionale, l'input è in due dimensioni $C, W$. Nel caso di un elettroencefalogramma, W rappresenta il numero di segnali per una finestra e C il numero di canali campionati. Possiamo notare come il filtro ricopra completamente la prima dimensione e scorra lungo l'altra. Sempre nel nostro caso, un filtro verrà applicato ad un certo numero di segnali di tutti i canali, per poi essere traslato lungo la dimensione W fino a considerare tutta la finestra.\\
 Graficamente possiamo invece notare come la convoluzione 2D si applichi facilmente alle immagini. I dati di input sono infatti in tre dimensioni $C, H, W$, dove H e W rappresentano rispettivamente il numero di pixel in altezza e larghezza, mentre C indica il numero dei canali di colore, solitamente i 3 canali RGB. La figura mostra come il filtro prenda una porzione dell'immagine considerando tutta la dimensione C (quindi tutti i canali di cui è composta) e scorra lungo le altre due dimensioni. \\
 Lo stesso procedimento, con una dimensione in più, si applica alle convoluzioni 3D. 
 \begin{figure}[!h]
@@ -126,6 +127,7 @@ Per completezza, è bene specificare che a tutte le grandezze di input sopra ind
 Una funzionalità offerta dal programma è quella di predizione delle crisi su un file di segnali attraverso una rete pre allenata. Il dataset su cui è stato effettuato il training è descritto nel successivo capitolo. In questo paragrafo verranno illustrati i vari layer della rete.
 
 La \textit{Figura 3} mostra l'architettura della CNN proposta. I primi due layer sono sequenziali, cioè sono un gruppo di layer che processa i dati in maniera progressiva. Essi comprendono un primo livello convoluzionale, una livello ReLu e uno di MaxPooling 1D. Il livello ReLu (Rectified Linear Unit) viene utilizzato come funzione di attivazione, in sostituzione della classica sigmoide. Consiste nell'applicazione della funzioe $f(x) = max(0,x)$ che permette di scartare tutti i valori negativi in output da un livello. 
+\todo{si potrebbe spiegare meglio la relu come spiegato per la sigmoide sopra}
 A seguire questi livelli sequenziali troviamo un livello di Dropout, che entra in funzione solo in fase di training. Dropout setta come nulli una percentuale $p$ di valori scelti in modo casuale ad ogni operazione di forward. Questa tecnica è utilizzata per prevenire il fenomeno di sovradattamento della rete ai dati di training.
 In coda la rete prevede due livelli lineari (o fully-connected) per il raggruppamento dei dati e un livello finale di Softmax per normalizzare l'output nell'intervallo $[0,1]$.
 
@@ -159,9 +161,26 @@ L'allenamento della rete è stato effettuato su finestre di 30 secondi di tempo.
 L'applicazione creata è suddivisa in due grandi componenti, da una parte il backend che offre servizi e modella la struttura dei dati, dall'altra il frontend che richiede i servizi e ne implementa l'interfaccia grafica, in modo da garantire un'interazione user friendly con l'utente.
 Questa garantisce anche una più facile manutenzione del codice, visto che ognuna delle due parti è divisa in diversi componenti.
 L' aplicazione è una web app, essa infatti è capace di girare sia nell'ambito web che mobile grazie ai vari framework utilizzati.
-Essa è una single page application, cioè un'applicazione web che è fruibile su una sola pagina web garantendo una fluidità maggiore nell'esperienza dell'utente.
+
 \subsection{Funzionalità offerte}
 \todo{anaisi, predizione, creazione rete allenamento...}
+\todo{ DA VERIFICARE LA PARTE SOTTOSTANTE, VEDERE DOVE METTERE QUESTA SEZIONE}
+L'applicazione costruita consente all'utente diverse esperienze e interazioni all'interno della web app. Le funzionalità offerte sono le seguenti:
+\begin{itemize}
+\item inserimento file edf (contenente tracciato EEG) con relativa ispezione di uno o tutti i canali settando la porzione temporale desiderata
+\item conseguenti statistiche riguardanti tutti i canali del file relativi a tutta la durata dello stesso
+\item sezione con relativo grafico che mostra il numero totale di valori registrati all'interno del tracciato ( PER un singolo CANALE O TUTTI ???)
+\item predizione sull'intero file selezionando la rete desiderata da usare con relativo grafico che mostra le finestre di crisi e statistiche del caso
+\item possibilità di creazione della propria rete neurale che avviene per passi successivi:
+\begin{itemize}
+\item possibilità di inserire una lista di file, aventi caratteristiche simili, come frequenza, numero canali ecc. Questa lista di file servirà poi per creare il proprio dataset di dati di allenamento 
+\item creazione del dataset inserendo la lunghezza delle finestre con relativo stride
+\item setting della rete con tutti i relativi parametri, possibilità di creare piu livelli convoluzionali, ma è possibile solo aggiungere un livello lineare
+\item infine vengono settate le impostazioni di allenamento della rete, attraverso l'inserimento del numero di epoche e il modo in cui viene fatto tale allenamento (cross-validation)
+\end{itemize}
+\end{itemize}
+
+
 \section{Backend}
 La parte di backend è utilizzabile indipendentemente dall'interfaccia fornita. Di seguito le librerie e i framework utilizzati e una descrizione delle API fornite. 
 \subsection{Django Framework}
@@ -173,17 +192,11 @@ Anche Django usa questo pattern, però nel suo caso il pattern è chiamato MVT, 
 \begin{itemize}
 \item Model: corrisponde a un insieme di classi python che descrivono il modello dei dati. Esse forniscono una rappresentazione delle tabelle del database, consentendo di sfruttare gli oggetti per effettuare operazioni CRUD sui dati. Le informazioni delle classi sono contenute nel file \textit{models.py}.
 
-
-è la parte del programma che si occupa del database. Django fornisce una serie di comandi rapidi per la gestione delle operazioni più comuni.
 \item Template: corrisponde nella vista dell'applicazione, consente di effettuare l'interazione con l'app web essa descrive tutti i componenti visuali facenti parte della GUI con cui l'utente poi andrà ad interagire.
 Il Template consiste di file html che descrivono la presentazione dei dati implementando la \textit{View} del pattern. 
 
-consiste in una serie di documenti per la generazione di codice HTML, combinando l'utilizzo di parti statiche e tag dinamici. In questo progetto non è stato tuttavia utilizzato alcun template, dato che la parte visuale è gestita esternamente dal framework Ionic. 
 \item View: funzioni python che gestiscono il flusso di esecuzione dell'applicazione, implementando la parte del controller del pattern MVC. Garantisce la possibilità di creare delle pagine e di descriverne il comportamento che esse avranno in funzione dell'iterazione con l'utente.
-La View descrive e modella il comportamento dell'intera applicazione, rispondendo a eventi scaturiti dall'interazione con l'utente e modellando i dati facente parti del modello
-
-
-gestisce l'interazione tra utente, sistema e database. Si occupa di ricezione, elaborazione e risposta alle richieste dell'utente.
+La View descrive e modella il comportamento dell'intera applicazione, rispondendo a eventi scaturiti dall'interazione con l'utente e modellando i dati facente parti del modello.
 \end{itemize}
 \begin{figure}[!h]
 \centering
@@ -258,7 +271,7 @@ Ionic framework è un toolkit  di interfaccia utente per la creazione di  applic
 Ionic si concentra sull'esperienza utente di un'app (controlli, interazioni, gesti, animazioni). Esso si integra in modo facile a tecnologie come angular.
 Il framework ionic consente di sviluppare app per tutte le piattaforme più comuni, come android, Ios e windows. Con Ionic risulta molto facile creare la parte di interfaccia grafica, che è molto vicina a quella nativa del dispositivo dove verrà eseguita l'app.
 \subsection{HIghChart}
-Highchart è una libreria grafica che permette di disegnare grafici a piacimento dello sviluppatore. e' capace di rappresentare grafici anche con grandi moli di dati.
+Highchart è una libreria grafica che permette di disegnare grafici a piacimento dello sviluppatore. E' capace di rappresentare grafici anche con grandi moli di dati.
 \nocite{*}
 \printbibliography[heading = bibintoc]
 \end{document}

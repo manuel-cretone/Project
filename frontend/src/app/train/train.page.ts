@@ -1,6 +1,8 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ServiceService } from './../service/service.service';
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { UploadData } from '../interface/UploadData.interface';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-train',
@@ -22,7 +24,11 @@ export class TrainPage implements OnInit, OnChanges {
     };
   };
   checked: boolean;
-  constructor(private service: ServiceService) {}
+  error: any;
+  constructor(
+    private service: ServiceService,
+    private loadingController: LoadingController
+  ) {}
 
   @Input() startSeizure: number;
   @Input() seizureEnd: number;
@@ -76,12 +82,19 @@ export class TrainPage implements OnInit, OnChanges {
     if (this.file != null) {
       uploadData.append('myfile', this.file, this.file.name);
       console.log(uploadData);
+      const loader: any = await this.loadingController.create({
+        message: 'Please Wait',
+        cssClass: 'custom-loading',
+        mode: 'ios',
+        spinner: 'bubbles'
+      });
+      loader.present();
       await this.service
         .upTraining(uploadData, this.startSeizure, this.seizureEnd)
         .then(data => {
           this.listOfFile = data.uploaded;
         });
-
+      loader.dismiss();
       console.log(this.listOfFile);
 
       this.checkFile = true;
@@ -91,7 +104,10 @@ export class TrainPage implements OnInit, OnChanges {
   }
 
   makeConvert() {
-    this.service.doConvert(this.windowSize, this.stride);
+    this.service.doConvert(this.windowSize, this.stride).then(
+      // data => {},
+      (errors: HttpErrorResponse) => (this.error = errors.statusText)
+    );
   }
 
   async makeTrain() {

@@ -88,9 +88,7 @@ export class Page1Page implements OnInit {
         this.upload.channelLabels,
         this.selectChannel
       );
-      console.log(channel);
-      console.log('SELECT CHANNEL');
-      console.log(this.selectChannel);
+
       if (channel === undefined) {
         await this.allSignals(this.selectStart, this.selectNumberSignal);
         this.distribution = null;
