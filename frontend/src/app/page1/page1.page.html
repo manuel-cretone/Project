@@ -196,7 +196,10 @@
                 </p>
                 <ion-card padding *ngIf="distribution && signals">
                   <div>
-                    <app-chart [distribution]="distribution"></app-chart>
+                    <div *ngIf="checkoccurency">
+                      <div id="chart"></div>
+                      <!-- <app-chart [distribution]="distribution"></app-chart> -->
+                    </div>
                   </div>
                 </ion-card>
               </div>
@@ -211,5 +214,5 @@
 
   <!-- </div> -->
 
-  <app-footer></app-footer>
+  <app-footer style="margin-top: 100px"></app-footer>
 </ion-content>

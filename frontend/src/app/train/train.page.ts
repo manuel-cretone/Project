@@ -25,11 +25,11 @@ export class TrainPage implements OnInit, OnChanges {
   };
   paramsConvolutional;
   checked: boolean;
-  error: any;
-  constructor(
-    private service: ServiceService,
-    private loadingController: LoadingController
-  ) {}
+  errorUploadFile;
+  errorDataset;
+  errorSettingNet;
+  errorCreateNet;
+  errorTrain;
 
   @Input() startSeizure: number;
   @Input() seizureEnd: number;
@@ -54,21 +54,16 @@ export class TrainPage implements OnInit, OnChanges {
   upload: UploadData;
   checkFile = false;
   trainParameters;
+  delete: boolean;
+
+  constructor(
+    private service: ServiceService,
+    private loadingController: LoadingController
+  ) {}
+
   ngOnInit() {}
 
-  ngOnChanges() {
-    // if (
-    //   this.input !== undefined &&
-    //   this.output !== undefined &&
-    //   this.kernel !== undefined &&
-    //   this.strideConv !== undefined &&
-    //   this.padding !== undefined &&
-    //   this.poolkernel !== undefined &&
-    //   this.poolstride !== undefined
-    // ) {
-    //   this.checked = true;
-    // }
-  }
+  ngOnChanges() {}
   /**
    *
    * @param event download file  event
@@ -90,7 +85,8 @@ export class TrainPage implements OnInit, OnChanges {
           data => {
             this.listOfFile = data.uploaded;
           },
-          (error: HttpErrorResponse) => (this.error = error)
+          (error: HttpErrorResponse) =>
+            (this.errorUploadFile = error.statusText)
         );
 
       console.log(this.listOfFile);
@@ -115,10 +111,10 @@ export class TrainPage implements OnInit, OnChanges {
         console.log(data);
       },
       (errors: HttpErrorResponse) => {
-        this.error = errors.statusText;
+        this.errorDataset = errors.statusText;
       }
     );
-    console.log(this.error);
+    console.log(this.errorDataset);
     loader.dismiss();
   }
 
@@ -137,7 +133,7 @@ export class TrainPage implements OnInit, OnChanges {
           this.trainParameters = data;
         },
         (error: HttpErrorResponse) => {
-          this.error = error;
+          this.errorTrain = error.statusText;
         }
       );
     loader.dismiss();
@@ -158,7 +154,7 @@ export class TrainPage implements OnInit, OnChanges {
       this.poolkernel !== undefined &&
       this.poolstride !== undefined
     ) {
-      this.checked = true;
+      this.delete = true;
       this.Convolutional();
       this.output = null;
       this.kernel = null;
@@ -185,21 +181,21 @@ export class TrainPage implements OnInit, OnChanges {
           this.paramsConv = data;
           console.log(this.paramsConv);
         },
-        (error: HttpErrorResponse) => (this.error = error)
+        (error: HttpErrorResponse) => (this.errorSettingNet = error.statusText)
       );
     this.paramsConvolutional = Object.keys(this.paramsConv);
-    console.log(this.paramsConvolutional);
   }
 
   async createNetwork() {
     await this.service.initializeNetwork(this.linear).then(
       data => {},
       (error: HttpErrorResponse) => {
-        this.error = error;
+        this.errorCreateNet = error.statusText;
       }
     );
   }
   cleanLayers() {
+    this.delete = false;
     this.service.makeCleanLayers();
   }
 }

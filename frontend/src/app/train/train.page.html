@@ -85,6 +85,7 @@
               (click)="onUploadTrain()"
               >Upload</ion-button
             >
+            <p>{{ errorUploadFile }}</p>
             <div *ngIf="listOfFile !== null">
               <div *ngFor="let list of listOfFile">
                 <p>{{ list }}</p>
@@ -131,7 +132,7 @@
                     (click)="makeConvert()"
                     >Create Dataset</ion-button
                   >
-                  <p>{{ error }}</p>
+                  <p>{{ errorDataset }}</p>
                 </ion-card>
               </div>
             </div>
@@ -147,12 +148,12 @@
               <div class="more-features-box-text-description">
                 <h3>Setting your Network</h3>
                 <p>
-                  adding your convolutional
+                  Adding your Convolutional
                 </p>
 
                 <ion-card>
                   <p>
-                    output convolutional
+                    Output Convolutional
                   </p>
                   <ion-input
                     type="number"
@@ -174,14 +175,14 @@
                     placeholder="Stride of neural network"
                   ></ion-input>
                   <p>
-                    padding
+                    Padding
                   </p>
                   <ion-input
                     [(ngModel)]="padding"
                     placeholder="Padding of neural network"
                   ></ion-input>
                   <p>
-                    pool_kernel
+                    Pool Kernel
                   </p>
                   <ion-input
                     value=""
@@ -189,7 +190,7 @@
                     placeholder="pool kernel of neural network"
                   ></ion-input>
                   <p>
-                    pool_stride
+                    Pool Stride
                   </p>
 
                   <ion-input
@@ -204,7 +205,7 @@
                       (click)="makeConvolutionalNet()"
                       >Create convolutional level</ion-button
                     >
-                    <p>{{ error }}</p>
+                    <p>{{ errorSettingNet }}</p>
                     <ion-button
                       color="secondary"
                       type="submit"
@@ -216,16 +217,34 @@
 
                 <ion-card>
                   <div *ngIf="paramsConv !== undefined">
-                    <div *ngFor="let item of paramsConv.message">
-                      <p>livello item</p>
-                      <p>id {{ item.id }}</p>
-                      <p>input {{ item.input }}</p>
-                      <p>out_dim {{ item.out_dim }}</p>
-                      <p>output {{ item.output }}</p>
-                      <p>padding {{ item.padding }}</p>
-                      <p>pool_kernel {{ item.pool_kernel }}</p>
-                      <p>pool_stride {{ item.pool_stride }}</p>
-                      <p>stride {{ item.stride }}</p>
+                    <div *ngIf="delete === true">
+                      <div *ngFor="let item of paramsConv.message">
+                        <ion-card>
+                          <p style="margin-left: 10px;">Convolutional Level</p>
+                          <p style="margin-left: 10px;">id => {{ item.id }}</p>
+                          <p style="margin-left: 10px;">
+                            input => {{ item.input }}
+                          </p>
+                          <p style="margin-left: 10px;">
+                            out_dim => {{ item.out_dim }}
+                          </p>
+                          <p style="margin-left: 10px;">
+                            output => {{ item.output }}
+                          </p>
+                          <p style="margin-left: 10px;">
+                            padding => {{ item.padding }}
+                          </p>
+                          <p style="margin-left: 10px;">
+                            pool_kernel => {{ item.pool_kernel }}
+                          </p>
+                          <p style="margin-left: 10px;">
+                            pool_stride => {{ item.pool_stride }}
+                          </p>
+                          <p style="margin-left: 10px;">
+                            stride => {{ item.stride }}
+                          </p>
+                        </ion-card>
+                      </div>
                     </div>
                   </div>
                 </ion-card>
@@ -256,7 +275,7 @@
                     (click)="createNetwork()"
                     >Create Your Network</ion-button
                   >
-                  <p>{{ error }}</p>
+                  <p>{{ errorCreateNet }}</p>
                 </ion-card>
               </div>
             </div>
@@ -302,6 +321,7 @@
                     (click)="makeTrain()"
                     >Train</ion-button
                   >
+                  <p>{{ errorTrain }}</p>
                   <div *ngIf="trainParameters !== undefined">
                     <p>num_epochs: {{ trainParameters.num_epochs }}</p>
                     <p>method: {{ trainParameters.method }}</p>
