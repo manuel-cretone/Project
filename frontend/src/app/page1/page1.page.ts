@@ -6,6 +6,7 @@ import { ServiceService } from '../service/service.service';
 import { Statistics } from '../interface/Statistics.interface';
 import { Page1Service } from './page1.service';
 import { LoadingController } from '@ionic/angular';
+import * as Highcharts from 'highcharts';
 
 @Component({
   selector: 'app-page1',
@@ -13,6 +14,7 @@ import { LoadingController } from '@ionic/angular';
   styleUrls: ['./page1.page.scss']
 })
 export class Page1Page implements OnInit {
+  checkoccurency: boolean;
   constructor(
     private service: ServiceService,
     private page1service: Page1Service,
@@ -120,10 +122,10 @@ export class Page1Page implements OnInit {
       // this.chart.fillLineChart(this.signals, this.selectChannel);
     }
 
-    // this.upload = null;
-    // this.selectChannel = null;
-    // this.selectStart = null;
-    // this.selectNumberSignal = null;
+    this.upload = null;
+    this.selectChannel = null;
+    this.selectStart = null;
+    this.selectNumberSignal = null;
   }
 
   async getStatistics(channel, start, numberSignals) {
@@ -141,6 +143,45 @@ export class Page1Page implements OnInit {
       start,
       numberSignals
     );
+    const dat = [];
+    dat.push({
+      data: this.distribution.hist
+    });
+
     console.log(this.distribution);
+    this.checkoccurency = true;
+    Highcharts.chart('chart', {
+      chart: {
+        type: 'column',
+        zoomType: 'x',
+        panning: true,
+        panKey: 'shift'
+      },
+      title: {
+        text: 'Monthly Average Rainfall'
+      },
+      subtitle: {
+        text: 'Source: WorldClimate.com'
+      },
+      xAxis: {
+        categories: this.distribution.bins,
+        crosshair: true
+      },
+      yAxis: {
+        title: {
+          text: ''
+        }
+      },
+
+      plotOptions: {
+        column: {
+          pointPadding: 0.2,
+          borderWidth: 0
+        }
+      },
+      series: dat
+    });
+
+    this.checkoccurency = false;
   }
 }
