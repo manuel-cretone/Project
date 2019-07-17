@@ -6,7 +6,7 @@ import { ServiceService } from '../service/service.service';
 import { Statistics } from '../interface/Statistics.interface';
 import { Page1Service } from './page1.service';
 import { LoadingController } from '@ionic/angular';
-import * as Highcharts from 'highcharts';
+import * as Highcharts from 'highcharts/highstock';
 
 @Component({
   selector: 'app-page1',
@@ -96,7 +96,9 @@ export class Page1Page implements OnInit {
         this.distribution = null;
         this.signals = null;
         this.Statistics = null;
+        this.checkoccurency = false;
       } else {
+        this.checkoccurency = true;
         const loader: any = await this.loadingController.create({
           message: 'Please Wait',
           cssClass: 'custom-loading',
@@ -115,6 +117,7 @@ export class Page1Page implements OnInit {
           this.selectStart,
           this.selectNumberSignal
         );
+
         loader.dismiss();
 
         this.allSignalsChannels = null;
@@ -143,14 +146,18 @@ export class Page1Page implements OnInit {
       start,
       numberSignals
     );
+
+    this.drawColumnChart(this.distribution);
+  }
+
+  drawColumnChart(distribution: { hist: []; bins: [] }) {
     const dat = [];
     dat.push({
       data: this.distribution.hist
     });
-
     console.log(this.distribution);
     this.checkoccurency = true;
-    Highcharts.chart('chart', {
+    Highcharts.chart('columnChart', {
       chart: {
         type: 'column',
         zoomType: 'x',
@@ -181,7 +188,5 @@ export class Page1Page implements OnInit {
       },
       series: dat
     });
-
-    this.checkoccurency = false;
   }
 }

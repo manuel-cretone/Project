@@ -115,12 +115,13 @@ export class TrainPage implements OnInit, OnChanges {
       }
     );
     console.log(this.errorDataset);
+    console.log();
     loader.dismiss();
   }
 
   async makeTrain() {
     const loader: any = await this.loadingController.create({
-      message: 'Please Wait, dataset creating...',
+      message: 'Please Wait, training in progress...',
       cssClass: 'custom-loading',
       mode: 'ios',
       spinner: 'bubbles'

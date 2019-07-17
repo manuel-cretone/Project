@@ -146,7 +146,7 @@ export class ListPage implements OnInit {
 
                   yAxis.push({
                     title: {
-                      text: 'da inserire canale'
+                      text: ''
                     },
                     visible: false,
                     height: axisHeight,
@@ -185,7 +185,6 @@ export class ListPage implements OnInit {
       },
       series: [
         {
-          
           data: this.predict.values
         }
       ]

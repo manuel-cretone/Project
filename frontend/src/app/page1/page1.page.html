@@ -184,6 +184,7 @@
                 </ion-card>
               </div>
             </div>
+
             <div class="more-features-box-text">
               <div class="more-features-box-text-icon">
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -194,14 +195,18 @@
                   Given equidistant intervarls, visualize the number of signals
                   for each interval.
                 </p>
-                <ion-card padding *ngIf="distribution && signals">
-                  <div>
-                    <div *ngIf="checkoccurency">
-                      <div id="chart"></div>
-                      <!-- <app-chart [distribution]="distribution"></app-chart> -->
-                    </div>
-                  </div>
-                </ion-card>
+                <!-- <div *ngIf="checkoccurency">
+                  <div id="columnChart" style=" width: 110%"></div>
+                </div> -->
+                <!-- <ion-card padding *ngIf="distribution && signals"> -->
+                <div *ngIf="checkoccurency">
+                  <p>serdtfyghbjnkml</p>
+                  <div id="columnChart" style=" width: 110%"></div>
+                </div>
+                <!-- <div id="columnChart" style=" width: 110%"></div> -->
+                <!-- <app-chart [distribution]="distribution"></app-chart> -->
+                <!-- </div> -->
+                <!-- </ion-card> -->
               </div>
             </div>
           </div>
