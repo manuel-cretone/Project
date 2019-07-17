@@ -19,8 +19,8 @@
         \vspace{2cm} 
  	\Large
  	\textit{Progetto di gruppo} \\
-        \textbf{Studenti:} Cretone Manuel, Silvestri Emilio\\
-        \textbf{Tutor:} Piangerelli Marco
+        \textbf{Studenti:} Manuel Cretone, Emilio Silvestri\\
+        \textbf{Tutor:} Prof. Marco Piangerelli
         \vfill
  
         \vspace{0.4cm}
@@ -70,14 +70,10 @@ In base all'area di estensione del cervello che è interessata da scariche elett
 \end{itemize}
 \item Generalizzate: crisi più frequenti rispetto alle parziali, esse vengono generate a causa di un'alterazione dell'attività neuronale di  entrambi gli emisferi.
 \end{itemize}
-\todo{ quando si può dire di essere affetti da epilessia  }
-\todo{ rimedi per l'epilessia, farmaci e se viene curata del tutto o meno   }
-\todo{spiegazione EEG tecnica per la registrazione, come funziona, cosa registra e come viene applicata allo scalpo}
  In alcuni casi dopo uno o più episodi di crisi epilettiche il fenomeno può tendere a scomparire per cause naturali senza l'apporto di farmaci per la sua cura. In molti casi però c'è bisogno di una cura effettuata attraverso farmaci, se questi ultimi non dovrebbero essere efficaci c'è bisogno di ricorre a operazioni chirurgiche.
 I farmaci risultano efficaci nel 60-70 per cento dei casi; questi non curano l'epilessia ma permettono al soggetto affetto di convivere con questa patologia.
  La diagnosi dell'epilessia viene fatta attraverso diversi strumenti, uno su tutti è l'elettroencefalogramma (EEG). Questo strumento registra le attività elettriche dell'encefalo, poi riprodotte su dei tracciati grafici che contengono diversi canali,  che mostrano delle onde corrispondenti agli elettrodi applicati sullo scalpo del soggetto.
  Attraverso questo strumento è possibile individuare le cause di una crisi epilettica e le alterazioni  elettriche che avvengono all'interno del cervello sia in condizioni normali, di riposo, sia in situazioni di crisi. In base alle caratteristiche del tracciato risultante i medici possono dedurre di che tipo di epilessia si tratta e quale cura è meglio prescrivere. 
-\todo{https://www.my-personaltrainer.it/salute/epilessia.html}
 
 
 \section{Reti Neurali}
@@ -86,6 +82,12 @@ Prendendo spunto dal cervello animale, una rete neurale (ANN, Artificial Neural 
 $\sigma(x) = {1 \over 1+e^-x}$. Un altro parametro associato ai neuroni è il \textit{bias}, un ulteriore peso che si considera collegato ad un input fittizio con valore sempre 1, che viene sommato ai valori di input moltiplicati per i pesi. Questo peso è utile per tarare il punto di lavoro ottimale del neurone.
 
 In una rete neurale i neuroni sono solitamente raggruppati in più layer, che applicano diverse trasformazioni agli input. I segnali in ingresso viaggiano sequenzialmente dal primo layer (Input layer) all'ultimo (Output layer), attraversando un numero n di layer intermedi (Hidden layer). Questo tipo di rete è detta feedforward, ed è senza dubbio la più diffusa. Modelli più complessi sono quelli di tipo recurrent, che prevedono connessioni di feedback verso neuroni dello stesso livello o anche all'indietro, ma non saranno trattate in questa istanza.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.3]{linear}
+\caption{Tipica architettura ANN feedforward}
+\end{figure}
 
 La peculiarità delle reti neurali rispetto all'utilizzo di sistemi di risoluzione tradizionali è l'apprendimento. Le ANN vengono addestrate per capire come dovranno comportarsi nel momento in cui andranno a risolvere un problema ingegneristico. L'approccio orientato all'apprendimento si basa sui principi del Machine Learning, la disciplina che studia i diversi metodi matematico-computazionali per apprendere informazioni dall'esperienza. Possiamo distinguere quattro principali metodologie di apprendimento:
 
@@ -100,11 +102,15 @@ L'allenamento supervisionato, quello implementato in questo progetto, prevede di
 \begin{itemize}
 \item Inizializzazione: il modello viene inizializzato con valori casuali per bias e pesi. 
 \item Feed-forward: il modello prende i dati in input e restituisce un output, rappresentante la predizione.
-\item Loss function: viene calcolata la differenza tra l'output atteso e quello calcolato dalla rete. Fornisce quindi una metrica sull'accuratezza della rete. \todo{CrossEntropyLoss} Inizialmente la precisione sarà molto bassa. L'obiettivo dell'allenamento è appunto quello di minimizzare il loss per aumentare la precisione della rete. 
-\item Differentiation: calcolando la derivata della funzione di loss, vengono identificate le modifiche da applicare ai pesi per diminuire l'errore sul risultato. Lo standard de facto per effettuare tale ottimizzazione è lo \textit{stochastic gradient descent}. Tale metodo prevede che per il calcolo del gradiente (il vettore contenente le derivate perziali della funzione di loss) venga preso solo un sottoinsieme dei valori, in modo da ridurre la complessità del calcolo.  \todo{adam optimizer}
+\item Loss function: viene calcolata la differenza tra l'output atteso e quello calcolato dalla rete. Fornisce quindi una metrica sull'accuratezza della rete. Inizialmente la precisione sarà molto bassa. L'obiettivo dell'allenamento è appunto quello di minimizzare il loss per aumentare la precisione della rete. 
+\item Differentiation: calcolando la derivata della funzione di loss, vengono identificate le modifiche da applicare ai pesi per diminuire l'errore sul risultato. Lo standard de facto per effettuare tale ottimizzazione è lo \textit{stochastic gradient descent}. Tale metodo prevede che per il calcolo del gradiente (il vettore contenente le derivate perziali della funzione di loss) venga preso solo un sottoinsieme dei valori, in modo da ridurre la complessità del calcolo.
 \item Backpropagation and weights update: i valori dei pesi vengono aggiornati, a partire dal layer di output fino ad arrivare al primo layer, per far sì che il loss venga minimizzato. La retropropagazione dell'errore prevede la selezione di una costante rappresentata da un numero decimale molto piccolo, che viene moltiplicato per l'incremento. Grazie a questo passaggio i pesi vengono modificati più lentamente in modo da centrare il minimo della funzione di loss.
 \end{itemize}
-Tutti questi passi vengono ripetuti sequenzialmente diverse volte. Una singola iterazione prende il nome di \textit{epoca}.
+Tutti questi passi vengono ripetuti sequenzialmente per tutti i dati di input diverse volte. Una singola iterazione prende il nome di \textit{epoca}.
+Per ridurre il fenomeno dell'\textit{overfitting} (sovradattamento: la rete impara a riconoscere il dataset ma non è in grado di generalizzare il problema a dati sconosciuti) durante l'allenamento viene scelto un sistema di validazione. Il dataset viene suddiviso in tre parti: trainset, validation set, test set. I dati del validation set vengono passati alla rete solo alla fine di ogni epoca, e questo passaggio non prevede i passi di backpropagation. In questo modo si può tenere conto dell'adattamento della rete ai dati del training set. Il test set viene invece utilizzato solo al termine dell'allenamento per ottenere una misura della precisione della rete.
+Per dataset di piccole dimensioni il validation set è solitamente un sottoinsieme del training set, isolato da esso all'inizio di ogni epoca. Nel progetto sono stati implementati due metodi di individuazione dei dati di validazione: k-fold training e k-window training. Il loro funzionamento è descritto nella sezione API.
+
+
 \section{Reti Neurali Convoluzionali}
 Il funzionamento delle reti neurali tradizonali è poco efficiente quando è necessario analizzare un numero molto grande di dati. Ogni neurone prevede una connessione con ogni neurone del layer successivo (per questo sono chiamati fully-connected layers). Ciò implica che al crescere della dimensione della rete, cresce inesorabilmente il numero di parametri di cui tener traccia, portando a casi si sovradattamento della rete.
 
@@ -128,13 +134,17 @@ Un layer convoluzionale è governato da tre parametri:
 Dato un set di dati in ingresso (I) la dimensione del volume di output (O) di un livello convoluzionale è calcolata come
 \begin{equation}
 O={\frac{(I - K - 2P)}{S} +1}
-\end{equation}\todo{conv1d in pytorch, FORMULE CONVOLUZIONE}
+\end{equation}
 
 Tipicamente tra un layer convoluzionale e l'altro viene inserito uno strato di Pooling, che ha la funzione di diminuire la dimensione dell'input, riducendo il numero di parametri e controllando il sovradattamento. A differenza dei convolutional layer, il Pooling Layer non tiene traccia di alcun peso, dato che applica agli input una certa operazione deterministica, solitamente il massimo o la media.
 Anche il layer di pooling è caratterizzato dai parametri di dimensione del kernel, stride e padding. La dimensione del suo output è pertanto calcolabile come l'output del layer convoluzionale.
 
 L'architettura CNN può anche prevedere uno o più strati Fully-Connected, solitamente aggiunti alla fine della struttura. Il loro compito è quello di raggruppare le informazioni degli strati precedenti, esprimendole attraverso un numero da utilizzare nei calcoli successivi per la classificazione finale. 
-\todo{ si potrebbe aggiungere la funzione di softmax e spiegare il fully connected che avviene il reshape con un immagine }
+\begin{figure}[!h]
+\centering
+\includegraphics[scale=0.7]{cnnlayer}
+\caption{Tipica architettura CNN}
+\end{figure}
 
 \subsection{Convoluzione 1D}
 Le reti di convoluzione più diffuse sono senza dubbio quelle bidimensionali. Esse sono particolarmente adatte per l'analisi e il riconoscimento di immagini. Le convoluzioni scelte per il nostro progetto sono invece monodimensionali. Queste sono utili quando ci si aspetta di derivare le caratteristiche di un segmento dei dati totali, e quando la posizione di tale segmento all'interno dell'insieme di input non è rilevante. Sono quindi utili per l'analisi di segnali e per il natural language processing (NLP), in cui il segmento analizzato corrisponde ad un insieme di parole contigue di una frase o, nel nostro caso, ad una finestra di segnali.
@@ -155,7 +165,6 @@ Per completezza, è bene specificare che a tutte le grandezze di input sopra ind
 Una funzionalità offerta dal programma è quella di predizione delle crisi su un file di segnali attraverso una rete pre allenata. Il dataset su cui è stato effettuato il training è descritto nel successivo capitolo. In questo paragrafo verranno illustrati i vari layer della rete.
 
 La \textit{Figura 3} mostra l'architettura della CNN proposta. I primi due layer sono sequenziali, cioè sono un gruppo di layer che processa i dati in maniera progressiva. Essi comprendono un primo livello convoluzionale, una livello ReLu e uno di MaxPooling 1D. Il livello ReLu (Rectified Linear Unit) viene utilizzato come funzione di attivazione, in sostituzione della classica sigmoide. Consiste nell'applicazione della funzioe $f(x) = max(0,x)$ che permette di scartare tutti i valori negativi in output da un livello. 
-\todo{si potrebbe spiegare meglio la relu come spiegato per la sigmoide sopra}
 A seguire questi livelli sequenziali troviamo un livello di Dropout, che entra in funzione solo in fase di training. Dropout setta come nulli una percentuale $p$ di valori scelti in modo casuale ad ogni operazione di forward. Questa tecnica è utilizzata per prevenire il fenomeno di sovradattamento della rete ai dati di training.
 In coda la rete prevede due livelli lineari (o fully-connected) per il raggruppamento dei dati e un livello finale di Softmax per normalizzare l'output nell'intervallo $[0,1]$.
 
@@ -184,28 +193,25 @@ L'allenamento della rete è stato effettuato su finestre di 30 secondi di tempo.
 \item Eliminazione dei segnali pre e post ictali, scelti convenzionalmente 5 minuti prima e dopo la crisi. Questo per evitare di influenzare il dataset con segnali aventi parziali caratteristiche di crisi
 \item Selezione di finestre non di crisi, in numero pari alle finestre di crisi calcolate in precedenza: in questo modo il dataset risulta perfettamente bilanciato.
 \end{itemize}
-\todo{Che altro aggiungere? }
 
 \section{Structure Application}
 L'applicazione creata è suddivisa in due grandi componenti, da una parte il backend che offre servizi e modella la struttura dei dati, dall'altra il frontend che richiede i servizi e ne implementa l'interfaccia grafica, in modo da garantire un'interazione user friendly con l'utente.
 Questo garantisce anche una più facile manutenzione del codice, visto che ognuna delle due parti è divisa in diversi componenti.
 L' aplicazione è una web app, essa infatti è capace di girare sia nell'ambito web che mobile grazie ai vari framework utilizzati.
-Essa è una single page application, \todo{è vero?} cioè un'applicazione web che è fruibile su una sola pagina web garantendo una fluidità maggiore nell'esperienza dell'utente.
+
 \subsection{Funzionalità offerte}
-\todo{anaisi, predizione, creazione rete allenamento...}
-\todo{ DA VERIFICARE LA PARTE SOTTOSTANTE, VEDERE DOVE METTERE QUESTA SEZIONE}
 L'applicazione costruita consente all'utente diverse esperienze e interazioni all'interno della web app. Le funzionalità offerte sono le seguenti:
 \begin{itemize}
 \item inserimento file edf (contenente tracciato EEG) con relativa ispezione di uno o tutti i canali settando la porzione temporale desiderata
 \item conseguenti statistiche riguardanti tutti i canali del file relativi a tutta la durata dello stesso
-\item sezione con relativo grafico che mostra il numero totale di valori registrati all'interno del tracciato ( PER un singolo CANALE O TUTTI ???)
+\item sezione con relativo grafico che mostra il numero totale di valori registrati all'interno del tracciato, suddivisi per intervalli.
 \item predizione sull'intero file selezionando la rete desiderata da usare con relativo grafico che mostra le finestre di crisi e statistiche del caso
 \item possibilità di creazione della propria rete neurale che avviene per passi successivi:
 \begin{itemize}
 \item possibilità di inserire una lista di file, aventi caratteristiche simili, come frequenza, numero canali ecc. Questa lista di file servirà poi per creare il proprio dataset di dati di allenamento 
 \item creazione del dataset inserendo la lunghezza delle finestre con relativo stride
-\item setting della rete con tutti i relativi parametri, possibilità di creare piu livelli convoluzionali, ma è possibile solo aggiungere un livello lineare
-\item infine vengono settate le impostazioni di allenamento della rete, attraverso l'inserimento del numero di epoche e il modo in cui viene fatto tale allenamento (cross-validation)
+\item setting della rete con tutti i relativi parametri, possibilità di creare piu livelli convoluzionali
+\item setting delle impostazioni di allenamento della rete, attraverso l'inserimento del numero di epoche e la modalità di validazione
 \end{itemize}
 \end{itemize}
 
@@ -245,7 +251,7 @@ Essa contiene diverse funzioni e metodi scientifici per le applicazioni dedicate
 PyTorch offre  due funzionalità di alto livello:
 \begin{itemize}
 \item Tensor Computing (come NumPy) con forte accelerazione attraverso unità di elaborazione grafica(GPU)
-\item Piattaforma di ricerca del deep learning che offre la massima flessibilità e velocità \todo {da vedere}
+\item Piattaforma di ricerca del deep learning che offre la massima flessibilità e velocità
 \end{itemize}
 
 \subsection{API}

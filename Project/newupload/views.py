@@ -559,13 +559,13 @@ def initializeNet(linear = None):
         conv_list.append(seq)
         # conv_dict.update({str(i): seq})
     linear_input = conv_out_dim * conv_out_r
-    if(linear):
+    try:
         linear = int(linear)
         linear_list.append(nn.Linear(in_features = linear_input, out_features = linear))
         linear_list.append(nn.Linear(in_features = linear, out_features=2))
         # linear_dict.update({"1": nn.Linear(in_features = linear_input, out_features = linear)})
         # linear_dict.update({"2": nn.Linear(in_features = linear, out_features=2)})
-    else:
+    except:
         linear_list.append(nn.Linear(in_features = linear_input, out_features=2))
         # linear_dict.update(("1", nn.Linear(in_features = linear_input, out_features=2)))
     # print("parametri in lista: ", conv_list, linear_list)
