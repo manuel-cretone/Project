@@ -44,14 +44,14 @@ export class ChartComponent implements OnChanges {
       xAxis: {
         categories: this.categories,
         min: 0,
-        max: 1000,
+        max: 2048,
         crosshair: true
       },
       plotOptions: this.optionsPlot,
       yAxis: this.yAxses,
-      tooltip: {
-        valueSuffix: 'd'
-      },
+      // tooltip: {
+      //   valueSuffix: 'd'
+      // },
       series: this.barChartData
     };
   }
@@ -117,7 +117,7 @@ export class ChartComponent implements OnChanges {
     const dat = [];
     console.log('DISTRIBUTION IN FUNCTION');
     console.log(distr);
-    // this.barChartData.push({ data: distr.hist });
+    this.barChartData.push({ data: distr.hist });
     this.barChartData = [];
     dat.push({
       data: distr.hist
@@ -137,9 +137,10 @@ export class ChartComponent implements OnChanges {
       panning: true,
       panKey: 'shift'
     };
-    console.log(this.barChartData);
-    console.log(this.categories);
+
     this.loadData();
+    ////////////////////////////////////////////////////////
+
     // this.barChartOptions.scales.xAxes = [];
   }
 
@@ -152,8 +153,8 @@ export class ChartComponent implements OnChanges {
   }) {
     this.signals = null;
     const dat = [];
-    const seriesCount = 20;
-    let axisTop = 50;
+
+    let axisTop = 20;
     const axisHeight = 100;
     const yAxis = [];
 
@@ -179,16 +180,17 @@ export class ChartComponent implements OnChanges {
         },
         height: axisHeight,
         top: axisTop,
-        offset: 0
+        offset: 0,
+        visible: false
       });
-      axisTop += 20;
+      axisTop += 40;
     }
     this.barChartData = [];
     this.barChartData = dat;
     this.yAxses = yAxis;
 
     this.chartType = {
-      height: 3500,
+      height: 1050,
       width: 760,
       type: 'line',
       zoomType: 'x  ',
