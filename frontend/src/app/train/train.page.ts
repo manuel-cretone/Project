@@ -3,6 +3,7 @@ import { ServiceService } from './../service/service.service';
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { UploadData } from '../interface/UploadData.interface';
 import { LoadingController } from '@ionic/angular';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-train',
@@ -55,6 +56,14 @@ export class TrainPage implements OnInit, OnChanges {
   checkFile = false;
   trainParameters;
   delete: boolean;
+  checkDataset: boolean;
+
+  checkNetConvolutional: boolean;
+  checkLinearNet: boolean;
+
+  checkTrain: boolean;
+  messageCreationDataset: boolean;
+  messageCreationNet: boolean;
 
   constructor(
     private service: ServiceService,
@@ -89,7 +98,6 @@ export class TrainPage implements OnInit, OnChanges {
             (this.errorUploadFile = error.statusText)
         );
 
-      console.log(this.listOfFile);
       this.startSeizure = null;
       this.seizureEnd = null;
       this.checkFile = true;
@@ -109,14 +117,19 @@ export class TrainPage implements OnInit, OnChanges {
     await this.service.doConvert(this.windowSize, this.stride).then(
       data => {
         console.log(data);
+        this.checkDataset = false;
       },
       (errors: HttpErrorResponse) => {
         this.errorDataset = errors.statusText;
+        this.checkDataset = true;
+        this.messageCreationDataset = false;
       }
     );
-    console.log(this.errorDataset);
-    console.log();
+
     loader.dismiss();
+    if (this.checkDataset === false) {
+      this.messageCreationDataset = true;
+    }
   }
 
   async makeTrain() {
@@ -131,10 +144,12 @@ export class TrainPage implements OnInit, OnChanges {
       .getTrain(this.epochs, this.selectMethod, this.networkName)
       .then(
         data => {
+          this.checkTrain = false;
           this.trainParameters = data;
         },
         (error: HttpErrorResponse) => {
           this.errorTrain = error.statusText;
+          this.checkTrain = true;
         }
       );
     loader.dismiss();
@@ -180,18 +195,27 @@ export class TrainPage implements OnInit, OnChanges {
         data => {
           console.log(data);
           this.paramsConv = data;
+          this.checkNetConvolutional = false;
           console.log(this.paramsConv);
         },
-        (error: HttpErrorResponse) => (this.errorSettingNet = error.statusText)
+        (error: HttpErrorResponse) => {
+          this.errorSettingNet = error.statusText;
+          this.checkNetConvolutional = true;
+        }
       );
     this.paramsConvolutional = Object.keys(this.paramsConv);
   }
 
   async createNetwork() {
     await this.service.initializeNetwork(this.linear).then(
-      data => {},
+      data => {
+        this.checkLinearNet = false;
+        this.messageCreationNet = true;
+      },
       (error: HttpErrorResponse) => {
         this.errorCreateNet = error.statusText;
+        this.checkLinearNet = true;
+        this.messageCreationNet = false;
       }
     );
   }

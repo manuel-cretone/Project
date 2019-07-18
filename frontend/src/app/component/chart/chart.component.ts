@@ -34,12 +34,15 @@ export class ChartComponent implements OnChanges {
   optionsPlot;
 
   loadData() {
-    console.log(this.barChartData);
-    console.log(this.categories);
     this.barChartOptions = {
       chart: this.chartType,
       scrollbar: {
         enabled: true
+      },
+      title: {
+        style: {
+          display: 'none'
+        }
       },
       xAxis: {
         categories: this.categories,

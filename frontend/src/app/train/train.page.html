@@ -85,7 +85,9 @@
               (click)="onUploadTrain()"
               >Upload</ion-button
             >
-            <p>{{ errorUploadFile }}</p>
+            <!-- <p>
+              {{ errorUploadFile }} error in parameters, please check parameters
+            </p> -->
             <div *ngIf="listOfFile !== null">
               <div *ngFor="let list of listOfFile">
                 <p>{{ list }}</p>
@@ -132,7 +134,11 @@
                     (click)="makeConvert()"
                     >Create Dataset</ion-button
                   >
-                  <p>{{ errorDataset }}</p>
+                  <p *ngIf="messageCreationDataset">DATASET CREATED</p>
+                  <p *ngIf="checkDataset">
+                    {{ errorDataset }} error in parameters, please check
+                    parameters
+                  </p>
                 </ion-card>
               </div>
             </div>
@@ -153,49 +159,49 @@
 
                 <ion-card>
                   <p>
-                    Output Convolutional
+                    <b>Output Convolutional : </b>
                   </p>
                   <ion-input
                     type="number"
                     [(ngModel)]="output"
-                    placeholder="number of output"
+                    placeholder="number of kernel to apply (feature detectors)"
                   ></ion-input>
                   <p>
-                    Kernel
+                    <b>Kernel dimension:</b>
                   </p>
                   <ion-input
                     [(ngModel)]="kernel"
-                    placeholder="Kernel of neural network"
+                    placeholder="width of each kernel to apply"
                   ></ion-input>
                   <p>
-                    Stride
+                    <b>Stride : </b>
                   </p>
                   <ion-input
                     [(ngModel)]="strideConv"
-                    placeholder="Stride of neural network"
+                    placeholder="Number of signals you want the filter to shift in every movement"
                   ></ion-input>
                   <p>
-                    Padding
+                    <b>Padding: </b>
                   </p>
                   <ion-input
                     [(ngModel)]="padding"
-                    placeholder="Padding of neural network"
+                    placeholder="add some zeroes around the signal window"
                   ></ion-input>
                   <p>
-                    Pool Kernel
+                    <b> Pool Kernel dimension: </b>
                   </p>
                   <ion-input
                     value=""
                     [(ngModel)]="poolkernel"
-                    placeholder="pool kernel of neural network"
+                    placeholder="width of the max pool kernel"
                   ></ion-input>
                   <p>
-                    Pool Stride
+                    <b>Pool Stride : </b>
                   </p>
 
                   <ion-input
                     [(ngModel)]="poolstride"
-                    placeholder="pool stride of neural network"
+                    placeholder="Number of signals you want the pool filter to shift in every movement"
                   ></ion-input>
                   <div>
                     <p *ngIf="!checked">Inserire tutti i parametri</p>
@@ -205,7 +211,10 @@
                       (click)="makeConvolutionalNet()"
                       >Create convolutional level</ion-button
                     >
-                    <p>{{ errorSettingNet }}</p>
+                    <p *ngIf="checkNetConvolutional">
+                      {{ errorSettingNet }} error in parameters, please check
+                      parameters
+                    </p>
                     <ion-button
                       color="secondary"
                       type="submit"
@@ -275,7 +284,11 @@
                     (click)="createNetwork()"
                     >Create Your Network</ion-button
                   >
-                  <p>{{ errorCreateNet }}</p>
+                  <p *ngIf="messageCreationNet">NETWORK CREATED</p>
+                  <p *ngIf="checkLinearNet">
+                    {{ errorCreateNet }} error in parameters, please check
+                    parameters
+                  </p>
                 </ion-card>
               </div>
             </div>
@@ -321,7 +334,11 @@
                     (click)="makeTrain()"
                     >Train</ion-button
                   >
-                  <p>{{ errorTrain }}</p>
+
+                  <p *ngIf="checkTrain">
+                    {{ errorTrain }} error in parameters, please check
+                    parameters
+                  </p>
                   <div *ngIf="trainParameters !== undefined">
                     <p>num_epochs: {{ trainParameters.num_epochs }}</p>
                     <p>method: {{ trainParameters.method }}</p>

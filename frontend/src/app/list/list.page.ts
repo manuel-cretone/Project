@@ -104,7 +104,11 @@ export class ListPage implements OnInit {
         panning: true,
         panKey: 'shift'
       },
-
+      title: {
+        style: {
+          display: 'none'
+        }
+      },
       xAxis: {
         categories: this.predict.time,
         min: 0,
@@ -163,6 +167,11 @@ export class ListPage implements OnInit {
                     zoomType: 'x',
                     panning: true,
                     panKey: 'shift'
+                  },
+                  title: {
+                    style: {
+                      display: 'none'
+                    }
                   },
                   scrollbar: { enabled: true },
                   plotOptions: {

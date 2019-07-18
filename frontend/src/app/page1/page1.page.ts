@@ -165,11 +165,11 @@ export class Page1Page implements OnInit {
         panKey: 'shift'
       },
       title: {
-        text: 'Monthly Average Rainfall'
+        style: {
+          display: 'none'
+        }
       },
-      subtitle: {
-        text: 'Source: WorldClimate.com'
-      },
+
       xAxis: {
         categories: this.distribution.bins,
         crosshair: true
@@ -179,7 +179,9 @@ export class Page1Page implements OnInit {
           text: ''
         }
       },
-
+      scrollbar: {
+        enabled: true
+      },
       plotOptions: {
         column: {
           pointPadding: 0.2,
