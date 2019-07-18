@@ -13,3 +13,5 @@ Il progetto è stato suddiviso in:
 - studio teorico cnn
 - applicazione CNN con relativo allenamento
 - costruzione architettura web con beckend e frontend 
+
+Il progetto è correlato da una relazione dettagliata (report.pdf) e una presentazione 
