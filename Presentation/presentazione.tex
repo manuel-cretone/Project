@@ -7,7 +7,7 @@
 %%
 
 \documentclass[xcolor=x11names,compress, 
-					%handout %rimuove i pause
+					handout %rimuove i pause
 ]{beamer}
 
 %% General document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -95,19 +95,41 @@
 
 
 \section{Introduzione}
-	\subsection{Workflow progetto}
+		
+	\subsection{Epilessia}
 		\begin{frame}{\subsecname}
+			Malattia neurologica che colpisce 50 milioni di persone nel mondo.
+			
+			 Caratterizzata da specifici eventi clinici: crisi epilettiche
 			\begin{itemize}
-				\item studio EEG e crisi epilettiche\pause
-				\item studio teorico CNN\pause
-				\item studio tool di sviluppo\pause
-				\item creazione di un dataset di allenamento bilanciato\pause
-				\item creazione e allenamento rete per le predizioni\pause
-				\item costruzione di architettura web backend e frontend
+				\item Alterazione del normale funzionamento dell'encefalo
+				\item Tipi di crisi epilettiche:
+				 \begin{itemize}
+				 	\item Parziali: una singola parte
+				 	\item Generalizzate: entrambi gli emisferi
+				 \end{itemize}
+			\end{itemize}
+		\end{frame}
+		
+	%\subsection{EEG e edf}
+		\begin{frame}{EEG e EDF}
+			Diagnosi epilessia tramite analisi elettroencefalogramma
+			
+			Segnali generati dalla differenza di potenziale degli elettrodi applicati allo scalpo
+			
+			\begin{itemize}
+				\item Registra attività elettrica dell'encefalo
+				\item Riproduce segnali su tracciati grafici
+			\end{itemize}
+			
+			Uso di file .edf (European Data Format) 
+			\begin{itemize}
+				\item Archiviazione dei segnali registrati
+				\item Caratteristiche della registrazione (frequenza di campionamento, durata...)
 			\end{itemize}
 		\end{frame}
 	
-	\subsection{Obiettivi}
+	\subsection{Il progetto: obiettivi}
 		\begin{frame}{\subsecname}
 			\begin{figure}
 				\includegraphics[scale=0.3]{immagini/prova3-piccolo}
@@ -121,59 +143,22 @@
 			\end{itemize}
 		\end{frame}
 		
-		\begin{frame}{Sviluppi futuri}
+	\subsection{Workflow progetto}
+		\begin{frame}{\subsecname}
 			\begin{itemize}
-				\item Deployment su server remoto\pause
-				\item Maggiore personalizzazione delle reti \pause
-				\item Ottimizzazione e diversificazione delle reti pre-allenate offerte
+				\item studio EEG e crisi epilettiche\pause
+				\item studio teorico CNN\pause
+				\item studio tool di sviluppo\pause
+				\item creazione di un dataset di allenamento bilanciato\pause
+				\item creazione e allenamento rete per le predizioni\pause
+				\item costruzione di architettura web backend e frontend
 			\end{itemize}
 		\end{frame}
-	%		\begin{frame}{Funzionalità}
-	%			\begin{itemize}
-	%				\item visualizzazione tracciati EEG
-	%				\item calcolo statistiche su EEG
-	%				\item predizione di crisi epilettiche attraverso reti neurali preallenate
-	%				\item creazione rete neurale personalizzata e predizione
-	%			\end{itemize}
-	%		\end{frame}
 	
-\section{Tecnologie}
-	\subsection{Backend}
-		\begin{frame}{\subsecname}
-			django, pytorch, pyedflib
-		\end{frame}
 	
-	\subsection{Frontend}
-		\begin{frame}{\subsecname}
-			angular, ionic , highchart
-		\end{frame}
-	
-
-\section{Il software}
-	\subsection{Tool analisi}
-		\begin{frame}{\subsecname}
-			blablabla
-		\end{frame}
-	
-	\subsection{Tool predizione}
-		\begin{frame}{\subsecname}
-			blablabla
-		\end{frame}
-	
-	\subsection{Tool training}
-		\begin{frame}{\subsecname}
-			blablabla
-		\end{frame}
-
-
-\section{Basi teoriche}
-	\subsection{Epilessia}
-		\begin{frame}{\subsecname}
-			bla bla
-		\end{frame}
-	
-	\subsection{Reti neurali}
-		\begin{frame}{\subsecname}
+\section{Reti Neurali}	
+	\subsection{Reti Neurali}
+		\begin{frame}{\subsecname: Overview}
 			\begin{figure}
 				\includegraphics[scale=0.3]{immagini/linear}
 			\end{figure}
@@ -184,7 +169,7 @@
 			\end{itemize}
 		\end{frame}
 		
-		\begin{frame}{\subsecname}
+		\begin{frame}{\subsecname: Overview}
 			Funzionamento neurone:
 			\begin{itemize}
 				\item Una o più connessioni in ingresso e uscita
@@ -229,7 +214,7 @@
 			\end{columns}
 		\end{frame}
 	
-	\subsection{Reti neurali Convoluzionali}
+	\subsection{Reti Neurali Convoluzionali}
 		\begin{frame}{\subsecname}
 			\begin{itemize}
 				\item Adatte ad input di grandi dimensioni\pause
@@ -346,10 +331,99 @@
 				\item\textbf{Test} su file esterni al training set
 			\end{itemize}
 		\end{frame}
+	
+
+\section{Tecnologie}
+	\subsection{Backend}
+		\begin{frame}{\subsecname}
+			\begin{itemize}
+				\item Python
+				\item Django Web Framework 
+				\item PyTorch 
+				\item PyEdflib
+			\end{itemize}
+			\begin{figure}
+				\includegraphics[width=0.3\textwidth]{immagini/python}
+				\includegraphics[width=0.3\textwidth]{immagini/django}
+				\includegraphics[width=0.5\textwidth]{immagini/pytorch}
+			\end{figure}
+		\end{frame}
+	
+	\subsection{Frontend}
+		\begin{frame}{\subsecname}
+			\begin{itemize}
+				\item Angular
+				\item Ionic
+				\item Highcharts 
+			\end{itemize}
+			\begin{figure}
+				\includegraphics[width=0.2\textwidth]{immagini/angular}
+				\includegraphics[width=0.4\textwidth]{immagini/ionic}
+				\includegraphics[width=0.7\textwidth]{immagini/highcharts}
+			\end{figure}
+		\end{frame}
+
+
+\section{Il software}
+	\begin{frame}{\secname}
+		\begin{itemize}
+			\item Tool Analisi
+			\item Tool Predizione
+			\item Tool Training
+		\end{itemize}
+	\end{frame}
+	\subsection{Tool analisi}
+		\begin{frame}{\subsecname}
+			Servizi offerti:
+			\begin{itemize}
+				\item Visualizzazione EEG singolo canale / intero tracciato
+				\item Statistiche intero file 
+				\item Visualizzazione grafico distribuzione valori
+			\end{itemize}
+		\end{frame}
+	
+	\subsection{Tool predizione}
+		\begin{frame}{\subsecname}
+			Servizi offerti:
+			\begin{itemize}
+				\item Visulizzazione predizione crisi per ogni finestra
+				\item Statistiche predizione
+				\item Grafico EEG finestra selezionata 
+			\end{itemize}
+		\end{frame}
+	
+	\subsection{Tool training}
+		\begin{frame}{\subsecname}
+			Servizi offerti:
+			\begin{itemize}
+				\item Inserimento file di training e creazione dataset
+				\item Creazione rete personalizzata
+				\item Training della rete creata
+			\end{itemize}
+		\end{frame}
+		
+		
 
 
 
-\section*{Ringraziamenti}
+\section*{Conclusioni}
+	\begin{frame}{Vantaggi}
+		\begin{itemize}
+			\item visualizzazione tracciati EEG
+			\item calcolo statistiche su EEG
+			\item predizione di crisi epilettiche attraverso reti neurali preallenate
+			\item creazione rete neurale personalizzata e predizione
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}{Sviluppi futuri}
+		\begin{itemize}
+			\item Deployment su server remoto\pause
+			\item Maggiore personalizzazione delle reti \pause
+			\item Ottimizzazione e diversificazione delle reti pre-allenate offerte
+		\end{itemize}
+	\end{frame}
+	
 	\begin{frame}
 		\begin{center}
 			\includegraphics[width=6.5cm]{./immagini/thanks}
