@@ -27,7 +27,7 @@
     "angular-highcharts": "^7.2.0",
     "chart.js": "^2.8.0",
     "core-js": "^2.5.4",
-    "highcharts": "^7.1.1",
+    "highcharts": "^9.0.0",
     "highcharts-angular": "^2.4.0",
     "ng2-charts": "^2.2.3",
     "rxjs": "~6.5.1",
